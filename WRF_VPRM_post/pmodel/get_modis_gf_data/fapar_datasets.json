@@ -1,0 +1,2145 @@
+{
+  "@id": "https://land.copernicus.eu/api/@search?portal_type=DataSet&metadata_fields=UID&metadata_fields=dataset_full_format&metadata_fields=dataset_download_information", 
+  "batching": {
+    "@id": "https://land.copernicus.eu/api/@search?portal_type=DataSet&metadata_fields=UID&metadata_fields=dataset_full_format&metadata_fields=dataset_download_information", 
+    "first": "https://land.copernicus.eu/api/@search?b_start=0&portal_type=DataSet&metadata_fields=UID&metadata_fields=dataset_full_format&metadata_fields=dataset_download_information", 
+    "last": "https://land.copernicus.eu/api/@search?b_start=175&portal_type=DataSet&metadata_fields=UID&metadata_fields=dataset_full_format&metadata_fields=dataset_download_information", 
+    "next": "https://land.copernicus.eu/api/@search?b_start=25&portal_type=DataSet&metadata_fields=UID&metadata_fields=dataset_full_format&metadata_fields=dataset_download_information"
+  }, 
+  "items": [
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/soil-moisture/soil-water-index-static-layers-v3-0-12-5-km", 
+      "@type": "DataSet", 
+      "UID": "93502460f78d4766af9f3a0399d8e78f", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "ba7efa6c-c9ae-41c4-a553-907b585b74ef", 
+            "collection": "Correlation information (CI) with Global Land Data Assimilation (GLDAS) models \u2013 12.5km", 
+            "full_format": {
+              "title": "Netcdf", 
+              "token": "Netcdf"
+            }, 
+            "full_path": "https://globalland.vito.be/download/manifest/swi_12.5km_v3_static_netcdf/manifest_clms_global_swi-ci_12.5km_v3_static_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER", 
+            "wekeo_choices": ""
+          }
+        ]
+      }, 
+      "dataset_full_format": "Netcdf", 
+      "description": "Provides static masks and ancillary files that aid in the analysis of the global daily Surface Water Index version 3, the global 10-daily Surface Water Index version 3 and the global Surface Water Index time series products version 3.", 
+      "effective": "2022-01-21T11:07:00+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-9ea3a5b0123730de90a39f0d67d4c87d.jpeg", 
+            "filename": "Soil Water Index (Static Layers) 2007-present (raster 12.5 km), global, daily \u2013 version 3.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-1b3b6329a669faf22e78099cbd1588f7.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-65570f6bf531c75f2d186d0b9f66b017.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-67314c14d77d7f2d981db2b3296a40e7.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-245fd1499905a4000f322d17559ca969.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-b7c6846f1408724be2504c7c156970fe.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-ee8873ec50d631387b55c566054efdb8.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-45b86487c45a517571d36db84142edf0.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-7fb11d927a2f74403a0b18fe7df5e482.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-efbabdeba38846b4bd0b437a39368f27.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 7352, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Soil Water Index - Static Layers (raster 12.5 km), global, 10-daily \u2013 version 3", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/water-bodies/lake-ice-extent-europe-v2-250m", 
+      "@type": "DataSet", 
+      "UID": "3ee460dfc0eb48b09a3283bdcb913a50", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "bec918b1-0ac9-4a8f-8973-a88393c37905", 
+            "collection": "250m", 
+            "full_format": "Netcdf", 
+            "full_path": "https://globalland.vito.be/download/manifest/lie_250m_v2_daily_netcdf/manifest_clms_global_lie_250m_v2_daily_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER", 
+            "wekeo_choices": ""
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "On a daily basis, classifies pixels of Continental Europe freshwater bodies as 1) Fully snow-covered ice, 2) Partially snow-covered or snow-free ice, and 3) Open water. The data is available in near real time in a spatial resolution of 250 m and with the temporal extent from July the 1st, onwards. In June 2024, the data input sensor was transferred from Terra MODIS (VERSION 1.2.1) to NOAA-20 VIIRS (VERSION 2.2.1), and the area was extended from the Baltic region to cover Continental Europe.", 
+      "effective": "2022-01-21T11:07:15+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-400-ef278a25af80930f0b106391465e9e1e.png", 
+            "filename": "Lake Ice Extent 2017-present (raster 250 m), Baltic, daily \u2013 version 1.png", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-0fd34ef1dd6a76aed419b55272d3e8b4.png", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-f928cb72bd384f675c173034614f347c.png", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-469e905f4694765e57eba5fa17196c4f.png", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-32a8882370a2335efbb3dc53ab6734e2.png", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-f237b19570c48999ffcf1bfe16dd0bb2.png", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-ed068eaf967e5dae1995b04a3e7706f3.png", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-a5ded3b6e5c8fdda911608b0a2b7210c.png", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-3f9c3d564905f10524401d684f6a7321.png", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-2e9cf309a9f844b2b2c089c36b8a8e46.png", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 2346, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Lake Ice Extent 2024-present (raster 250 m), Europe, daily \u2013 version  2", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/european-image-mosaic/very-high-resolution-image-mosaic-2021-true-colour-2m", 
+      "@type": "DataSet", 
+      "UID": "c0b301ebe1fa40da8117ca6f13240baa", 
+      "dataset_download_information": {
+        "items": []
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides at pan-European level one cloud-free very high resolution optical coverage for the 2021 reference year, acquired within predefined windows corresponding to the vegetation season in 2020-2021-2022. The very high resolution images are obtained from various missions and have a spatial resolution from 2 m to maximum 4 m.", 
+      "effective": "2024-07-29T08:52:08+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-35b7ef781fcf4e1e26b55fbb5fe1532f.jpeg", 
+            "filename": "vhr-2021-thumbnail.jpg", 
+            "height": 289, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-1695eb20c0ce2fded9f03c61d83febe5.jpeg", 
+                "height": 57, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-c1b5134d10ce0059f841f51b441dc4a5.jpeg", 
+                "height": 23, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-04958deef2184177d84c6fd1d25e6e6d.jpeg", 
+                "height": 43, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-c1b410debdbdd9bc00fcef79354b78a0.jpeg", 
+                "height": 144, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-d8c3d8a8a4550a6083bfe80deceecf7c.jpeg", 
+                "height": 289, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-10d53d189f73684df66fecdbf086ebd9.jpeg", 
+                "height": 34, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-d5162a9d0e7abdfcf3bcab96a120e29a.jpeg", 
+                "height": 92, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-865fa6822b47ffa10c97219c6e63b10d.jpeg", 
+                "height": 46, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-bb127aea98d1726d801ff6bcbc8c3d65.jpeg", 
+                "height": 17, 
+                "width": 24
+              }
+            }, 
+            "size": 38063, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Very High Resolution Image Mosaic 2021 True Colour (raster 2 m), Europe", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/water-bodies/lake-water-quality-near-real-time-v2-0-300m", 
+      "@type": "DataSet", 
+      "UID": "9e8be500204945a48ce15fc8d1c57482", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "8fa1dbba-3898-4eb7-b84c-643c283246ca", 
+            "collection": "300m", 
+            "full_format": "Netcdf", 
+            "full_path": "https://globalland.vito.be/download/manifest/lwq_300m_v2_10daily-nrt_netcdf/manifest_clms_global_lwq_300m_v2_10daily-nrt_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER"
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides semi-continuous observations for a large number of medium and large-sized lakes. 10-daily observations are available in near real time at 300 m spatial resolution from September 2024 to present.", 
+      "effective": "2024-09-05T11:20:09+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-201-15c2912b16e5161035c630b4a974872c.png", 
+            "filename": "LakeWaterQuality.png", 
+            "height": 197, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-ad557f118cfc7f20e73db5e96f266b02.png", 
+                "height": 78, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-39f1052f4da586f3a3f1ed7b05a32f2c.png", 
+                "height": 31, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-a6641a4c43e9c482f988eb8299c6f70f.png", 
+                "height": 58, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-bb1941626c728914d6e00bfbab95c46d.png", 
+                "height": 196, 
+                "width": 200
+              }, 
+              "small": {
+                "download": "@@images/image-48-bf8fcb9da0c32a44dadd80bc56e33f97.png", 
+                "height": 47, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-93eed409a03d1e11075667308799103e.png", 
+                "height": 125, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-c500b2ef4d50d96bab65281f1e5067dd.png", 
+                "height": 62, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-6bace106c43ad37b0bfc248655527af7.png", 
+                "height": 23, 
+                "width": 24
+              }
+            }, 
+            "size": 67109, 
+            "width": 201
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Lake Water Quality 2024-present (raster 300 m), global, 10-daily \u2013 version 2", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/european-ground-motion-service/egms-basic", 
+      "@type": "DataSet", 
+      "UID": "00f7264e92d54a70b02bce9b315d7b32", 
+      "dataset_download_information": {
+        "items": []
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides InSAR displacement data provided in the satellite Line-of-Sight, with annotated geo-localisation and quality measures per measurement point. The dataset is generated from the interferometric analysis of Sentinel-1 radar images at full resolution (20x5 m).   EGMS Basic is visualised as a vector map of measurement points colour-coded by average line-of-sight velocity and distributed to users in comma-separated values format. Each point is associated with a time series of displacement, i.e. a plot with values of displacement per acquisition of the satellite. The dataset is generated for both ascending and descending orbits. ", 
+      "effective": "2023-11-28T14:57:50+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-500-4f21f87e4b38b81d4b7eee50c214a250.png", 
+            "filename": "Basic.png", 
+            "height": 257, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-63a201138f8952729b4396d5b1cfc3b2.png", 
+                "height": 41, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-385c60989645c1eeff4abe35bb19e5d6.png", 
+                "height": 16, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-a3812170e3f7eb2500b2a6234f7047c1.png", 
+                "height": 30, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-e353fc7658932827d705e9f78923335c.png", 
+                "height": 102, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-ad2553b22017292495aea48edcdcd7dd.png", 
+                "height": 205, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-f919dbb66165df345a66c9daff552659.png", 
+                "height": 24, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-899eb712d2cf3bb590c61840ce15e305.png", 
+                "height": 65, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-417572c5fcfc39e14836b0c8210b8212.png", 
+                "height": 32, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-3b95de64d3dcf3f924b3e728a79a02dc.png", 
+                "height": 12, 
+                "width": 24
+              }
+            }, 
+            "size": 378172, 
+            "width": 500
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "European Ground Motion Service: Basic 2019-2023 (vector), Europe, yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/clc-backbone/clc-backbone-2021", 
+      "@type": "DataSet", 
+      "UID": "4d0d78ad472c45819aff1d9fa7af0461", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "b9461c94-2e4e-4058-81c4-b274c0e8b12b", 
+            "collection": "10 m", 
+            "full_format": "Geotiff", 
+            "full_path": "H:\\Corine_Land_Cover_Backbone\\Corine_Land_Cover_Backbone_CLCBB_2021\\CLC_BB_2021\\Data\\data-master\\CLC_BB_2021_tiled", 
+            "full_source": "EEA", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides a pan-European spatially consistent and seamless, detailed land cover inventory for the 2021 reference year, for each pixel showing the dominant land cover among the 11 basic land cover classes. The dataset is available as 10 m raster.", 
+      "effective": "2023-05-15T11:40:00+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-793-ec7212bce7acd8fb29826373e70a0bee.jpeg", 
+            "filename": "Thumbnail CLC+Backbone 2021.jpg", 
+            "height": 789, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-1d7423590abf0f5cfd6dc6e8ca20b49e.jpeg", 
+                "height": 79, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-21bab64b598197d6a1008b1a360450ae.jpeg", 
+                "height": 31, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-0fd33eba851696d4d96a160762629d2c.jpeg", 
+                "height": 59, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-37b7a7a77d041399369c018e43c24a4f.jpeg", 
+                "height": 198, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-a40ee395436687171918cd9f5754aa54.jpeg", 
+                "height": 397, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-85f6941bb6901b8c0422a9472bd8066c.jpeg", 
+                "height": 47, 
+                "width": 48
+              }, 
+              "teaser": {
+                "download": "@@images/image-600-d36017f5dd54c9a786bf4723b6fce446.jpeg", 
+                "height": 596, 
+                "width": 600
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-0dfefa09bceba7aa9f2f37aca038f334.jpeg", 
+                "height": 127, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-b811558f2ae1731adbd6b7f7b9a8c605.jpeg", 
+                "height": 63, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-082c7631fc439f9863c9ffb9b8c870ad.jpeg", 
+                "height": 23, 
+                "width": 24
+              }
+            }, 
+            "size": 327346, 
+            "width": 793
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "CLCplus Backbone 2021 (raster 10 m), Europe, 3-yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/burnt-area-v3-1-daily-300m", 
+      "@type": "DataSet", 
+      "UID": "6897d6fbb6a948f2819a836fe2341f48", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "e38378ca-6fea-40a9-8939-a5425a4bdf91", 
+            "collection": "300m", 
+            "full_format": {
+              "title": "Netcdf", 
+              "token": "Netcdf"
+            }, 
+            "full_path": "https://globalland.vito.be/download/manifest/ba_300m_v3_daily_netcdf/manifest_clms_global_ba_300m_v3_daily_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER", 
+            "wekeo_choices": ""
+          }
+        ]
+      }, 
+      "dataset_full_format": "Netcdf", 
+      "description": "Maps burn scars, surfaces which have been sufficiently affected by fire to display significant changes in the vegetation cover (destruction of dry material, reduction or loss of green material) and in the ground surface (temporarily darker because of ash). Daily datasets are available at global scale, in the spatial resolution of 300 m, and within 24 hours after the satellite acquisition. They cover the period from July 2023 to present.", 
+      "effective": "2023-12-12T12:59:18+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-cc443fb1540759200ad01a7e53402b7f.jpeg", 
+            "filename": "burnt area daily.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-ed8754d74b4614c28f8d052231ed6dd8.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-85fb8d4e1bb98246af84d2747e6c99e6.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-946764193e08e54a4db1d0ad936e0b54.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-aaa4d3a83f19e249733dcd0f05bdd388.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-fd9116743c7d7e624ce7bfd3b0e2e97f.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-d113a528246d927d0d9fa01382971a56.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-a0edbf11f69d8f59b25e82659e7063c8.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-3f08005aabf608dbe135abf77706ccbb.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-77e6af190f415e7812cd8edebbfb8d4e.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 16741, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Burnt Area 2023 - present (raster 300 m), global, daily \u2013 version 3.1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/clc-backbone/clc-backbone-2018", 
+      "@type": "DataSet", 
+      "UID": "1c3f3e078a844661bbe23db99bdc8e2c", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "b9461c94-2e4e-4058-81c4-b274c0e8b12b", 
+            "collection": "10 m", 
+            "full_format": "Geotiff", 
+            "full_path": "H:\\Corine_Land_Cover_Backbone\\Corine_Land_Cover_Backbone_CLCBB_2018\\CLC_BB_2018\\Data\\data-master\\CLC_BB_2018_tiled", 
+            "full_source": "EEA", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides a pan-European spatially consistent and seamless, detailed land cover inventory for the 2018 reference year, for each pixel showing the dominant land cover among the 11 basic land cover classes. The dataset is available as 10 m raster.", 
+      "effective": "2023-01-31T12:40:59+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-795-222df3f9613dec739c3574833f48e9cc.jpeg", 
+            "filename": "Thumbnail CLC+Backbone 2018.jpg", 
+            "height": 787, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-c2bea8e7d7b721eba4449244694e3a44.jpeg", 
+                "height": 79, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-121149e39103172c244bd3ee1ea523b8.jpeg", 
+                "height": 31, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-c8981df449478ca6e83c7b40e8a3453c.jpeg", 
+                "height": 59, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-c293db6fb4acc1f9034156ecd79e4193.jpeg", 
+                "height": 197, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-1d9f2aa9c20032acf18b7dc5db9b9972.jpeg", 
+                "height": 395, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-6d771afb3648921ddecfb5dd05317680.jpeg", 
+                "height": 47, 
+                "width": 48
+              }, 
+              "teaser": {
+                "download": "@@images/image-600-650b816f0a45ab90a0f53e1b09051725.jpeg", 
+                "height": 593, 
+                "width": 600
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-d6db894d7c988ca602383230deeb6746.jpeg", 
+                "height": 126, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-5a6ca4d078fba5cff7d80caaecb8764a.jpeg", 
+                "height": 63, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-6e6db07496200be6c530a4f6c3e9b30b.jpeg", 
+                "height": 23, 
+                "width": 24
+              }
+            }, 
+            "size": 308747, 
+            "width": 795
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "CLCplus Backbone 2018 (raster 10 m), Europe, 3-yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/season-maximum-value-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "28a93a5edcce4b6a931dc53b1c3f1eab", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-maxv-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-maxv-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the maximum (peak) value that the Plant Phenology Index reaches during the vegetation growing season. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:46+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-79ae20dc3d50b0a8ed1d4c8441642770.jpeg", 
+            "filename": "Season maximum value global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-f7ae72ad01b37f07940cafa6552a23ca.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-e11a639a34c62588842b0bda87910c67.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-d2f8b0a865d7a177ca13763bf73d6c2c.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-c21ae73b3bbd22896791525a55af5e92.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-ef852743dcd3a7b08c01723312c73e0f.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-73bbfcd50a49f2a47ca0838117c56ee2.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-f3dc5505fd7cc368f22ec95c8875386b.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-b7facc66d6d4d5ccbd6fa9eb0fe3e85a.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-233a2527c0fe7a5fac8f8e132bb91e6b.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 39792, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Season Maximum Value 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/slope_of_green-up-period-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "832db625b44e46af8da33ead4525ae64", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-lslope-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-lslope-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the rate of change in the values of the Plant Phenology Index at the day when the vegetation growing season starts. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:49+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-8e64c025a7d8883309373e65f2bfbca6.jpeg", 
+            "filename": "Slope of the green up period global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-f149bb74073f40df1b91364fad890df9.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-938259c7c54367eac389c065b3bd0b99.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-360611fd09e9d32261a55cad4a4dfe22.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-0f0646414766bb1e8e8accdb1f72783a.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-f29b6e4aa2b12746217113a1aabd3eab.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-7c7fd7ae1ebc9b4166c4d020a2db2382.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-aae94c5ce1068c85495fa60ce75e5405.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-6363071d45336adbfcfd7acf648b50c2.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-4e6cca8c4f92bdfabdcfa081d030f46a.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 56953, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Slope of the Green-up Period 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/slope_of_green-down-period-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "98d1cbefc0f5491cbc5657263df330b1", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-rslope-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-rslope-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the rate of change in the values of the Plant Phenology Index at the day when the vegetation growing season ends. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:47+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-ff2ab6696918a69f9a2ce94e8dcf7372.jpeg", 
+            "filename": "Slope of the green down period global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-5b799f8d45899afa98ae7bc6a98d3473.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-f86da1f8a6f832318905288c04f4a2a1.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-67d565602c313d0d4621d45cb12c51ea.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-684fe8c624d0a271b626522412fc3e29.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-8b4fd8db5947ef5871c487b99f070426.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-e0b7a8ad545c33df4e8e320e4995d00b.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-17710c28dd554e6239d335f9427883e4.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-2e99cc800edfd4e9fad0cf9cea3096be.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-09a6036e89e43471592dc8bfec973b5d.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 53286, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Slope of the Green-down Period 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/start-of-season-value-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "7a7d182341294c4ca1c982527ed843f5", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sosv-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sosv-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the value of the Plant Phenology Index at the start of the vegetation growing season. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:44+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-7195ca0837eff63ee49732df193cc7f5.jpeg", 
+            "filename": "StartOfSeasonValue2023PresentRaster300mGlobalYearlyVersion1.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-d5b6cb2381ba3076b97f920e817268fa.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-f3fa4e15b25bb2d0a7f516974682d25d.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-e04a45a58c9a097528bc606595a9fe61.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-fe470a78d3f99e55c9f35166654b9400.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-a3b0cb157802f3ff754a726f1a89365a.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-6bee4753eb67a9e8fc0a2dfc425dd00b.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-c568ede1c1612334f4e24ea8a6799da6.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-ef160b078a3df902f2f1cd6eda25322a.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-660f57240b2a8b10879a6a2877062501.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 29103, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Start-of-season Value 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/total-productivity-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "cb40b7b09ce745a2805e0788f99932d2", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-tprod-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-tprod-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the growing season integral computed as the sum of all daily Plant Phenology Index values between the dates of the season start and end. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:45+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-5e2c39b606dc294948a035c0e6f4b1e5.jpeg", 
+            "filename": "TotalProductivity2023PresentRaster300mGlobalYearlyVersion1.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-287baa256bb69da55fb38796d61a5bde.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-0a33fd6eb220dceca2cb7652512df34f.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-22cca3258aa7420979b0cece4ed7140a.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-a61fc91f8fb01360c408d8bd786afa90.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-4b0c131bb490933584afffde03af7fd8.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-c4ffc710891a29c22d2781459c8f3868.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-09db5847ab366e3ce9dfd0f3137f66d3.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-4baddfdd15da7e6731d6ef551cc8034d.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-0a84c0cb49144721448011e29f08f623.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 51569, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Total Productivity 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/season-minimum-value-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "43dbbad7ac834152aa59c25032e45144", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-minv-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-minv-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the average Plant Phenology Index value of the minima on left and right sides of each season. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:46+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-7e2821406f0b6d46f04c8b19960faa5e.jpeg", 
+            "filename": "Season minimum value global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-f48d65631f30d9788b4d136530b3a1ce.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-83309ae32fb22e838c9be604a0cc0a5f.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-537ea43c0bd1d6d0bce48daa1dcfe2f2.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-9041ecdfba17b452e9c5311c017590f4.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-0a836340679f8d5a9587757bc7633da4.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-cdc85cda667d396be62bfa65242df3b7.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-bc75151408862830eadc7e9fd070de14.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-fb5521b1b37872c58bd0c629931a9372.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-3862b8241a8c41618d349651ec602287.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 30573, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Season Minimum Value 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/season-length-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "5da40dac469e44649c36c11e95883ac5", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-length-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-length-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the number of days between the start and end dates of the vegetation growing season. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:45+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-4460f9fe1181369aa815d9a7dd2513cc.jpeg", 
+            "filename": "Season length global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-30e8d000fe15a211a0fe646291a028c9.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-4709e3cef91621823005d4d7f0246417.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-516e3721d74bb8db261277157c9a4b2d.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-71c8c65d69e589e93a73dec21e0629a9.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-479b1701250d79f44e3c5e0ba1d301b3.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-587d6be581f1d04140807738cec88dd1.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-773cb843f1e262677d82d1121e99a3e2.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-dc5d2210bc3dbdc95b5bd86b632a51ff.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-42a5db41a0ef75b8f20e7d72ad081f86.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 32996, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Season Length 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/season-amplitude-value-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "d75fa8cc26c34d509ef927266e39e308", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-ampl-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-ampl-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the difference between the maximum and minimum Plant Phenology Index values reached during the season. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:46+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-384c1e0f11c6572c2021ab5a7f381831.jpeg", 
+            "filename": "Season amplitude global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-c76ae7a0d5ee0b10e4088ef5fb78c56d.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-6f37c7daf525332951f12858e08b1607.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-0b9d2521e608c98aa0c5cb32a192dd44.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-fbbfd24ad9160aa7b77e081bf40ecb50.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-a707c5ce23629fe5780a2b573ce7f254.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-0a4eb2d280b760714ecc1a3c5bb5a1fb.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-3b50e424b3fea9f881f8ebc2f2c783d0.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-a508558ad3d36945812f437496c377bc.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-9125ee1d1e13569d4af41ba0db6f4eab.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 58689, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Season Amplitude 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/burnt-area-v3-1-monthly-300m", 
+      "@type": "DataSet", 
+      "UID": "15353abe103e4be0aa5c9b82cee5a4d5", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "e38378ca-6fea-40a9-8939-a5425a4bdf91", 
+            "collection": "300m", 
+            "full_format": {
+              "title": "Netcdf", 
+              "token": "Netcdf"
+            }, 
+            "full_path": "https://globalland.vito.be/download/manifest/ba_300m_v3_monthly_netcdf/manifest_clms_global_ba_300m_v3_monthly_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER", 
+            "wekeo_choices": ""
+          }
+        ]
+      }, 
+      "dataset_full_format": "Netcdf", 
+      "description": "Maps burn scars, surfaces which have been sufficiently affected by fire to display significant changes in the vegetation cover (destruction of dry material, reduction or loss of green material) and in the ground surface (temporarily darker because of ash). Monthly datasets are available at global scale, in the spatial resolution of 300 m, and with a time lag of two months. They cover the period from 2019 to present.", 
+      "effective": "2023-12-12T14:43:58+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-3e429bd16222fa08f1a378f9f21a4eaf.jpeg", 
+            "filename": "burnt area monthly.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-fa6154f2eaf00ed44a78220b8233ed5b.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-2872b5407ef9d02cfffe506b764cadb2.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-964dfd48be25321d47e2c52ead70c0cf.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-4bbaa4e06264696c60c44bf0d6646d4c.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-23dc460bc6870764b2b9401bbdff4450.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-a0f4d8af1cd3f7c2b05aecdfa3831084.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-0ee08eba4a1abae356e6db5d63d138bd.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-6c9ba6a7567e349b68578e59fcbd68de.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-49bd91ce38622f959323a4513d1ceeac.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 17028, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Burnt Area 2019 - present (raster 300 m), global, monthly - version 3.1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/european-ground-motion-service/egms-gnssmodel", 
+      "@type": "DataSet", 
+      "UID": "83454e31c13f401eb954dc6211f2701d", 
+      "dataset_download_information": {
+        "items": []
+      }, 
+      "dataset_full_format": null, 
+      "description": "Satellite interferometry offers detailed, local-scale measurements (up to tens of kilometres) that are relative to specific spatial references, while global navigation satellite system (GNSS) provides absolute spatial data over larger extents. Utilizing the synergistic capabilities of satellite interferometry and GNSS, EGMS provides high-resolution local measurements across a broad spatial scale. The GNSS velocity model is derived from 4716 GNSS stations around Europe using state of the art geodetic methodologies. It is a 50-km gridded model that it is delivered as comma-separated values file. Each grid cell is identified by latitude and longitude coordinates and by the values of the three components of the velocity with their quality parameters.", 
+      "effective": "2024-05-29T13:41:08+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-971-e1f7ce25ab5bf2972f6232a64711e078.png", 
+            "filename": "egms-gnss.png", 
+            "height": 749, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-704bfe12bb46f3a394bd23d65418ba40.png", 
+                "height": 61, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-237c3d11de451846eabb7c4579cb91fc.png", 
+                "height": 24, 
+                "width": 32
+              }, 
+              "large": {
+                "download": "@@images/image-800-d5741baa10128b0eb6b1ab37a2ecbbd6.png", 
+                "height": 617, 
+                "width": 800
+              }, 
+              "medium": {
+                "download": "@@images/image-60-3dd30fe7cf48af313b38d641c683dfe3.png", 
+                "height": 46, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-4432b6f2d6a8e0dae63838b2a8d71488.png", 
+                "height": 154, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-511698d0680cd7363e16d946ffa5993e.png", 
+                "height": 308, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-81ae920472e559b29a976eb36133d56a.png", 
+                "height": 37, 
+                "width": 48
+              }, 
+              "teaser": {
+                "download": "@@images/image-600-55d9c651dfcd28867c223ce75d40ff8f.png", 
+                "height": 462, 
+                "width": 600
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-8d3a8a54887e19f784d3a082da132988.png", 
+                "height": 98, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-5423e4e45e9f321e0a12a8f5366b69e0.png", 
+                "height": 49, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-8b774fb57c144c760aa2d7fcc23e8c59.png", 
+                "height": 18, 
+                "width": 24
+              }
+            }, 
+            "size": 851136, 
+            "width": 971
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "European Ground Motion Service: GNSS model (vector), Europe, 2-yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/european-ground-motion-service/egms-ortho", 
+      "@type": "DataSet", 
+      "UID": "b970371a405e4c9e8d1cae8a72054e0a", 
+      "dataset_download_information": {
+        "items": []
+      }, 
+      "dataset_full_format": null, 
+      "description": "The EGMS Ortho exploits the information provided by ascending and descending orbits of the EGMS Calibrated to derive two further layers; one of purely vertical displacements (EGMS Ortho Vertical), the other of purely east-west displacements (EGMS Ortho East/West). Both layers are resampled to a 100 m grid, so that the final resolution is 100 by 100 m. EGMS Ortho is visualised as a vector map of measurement points colour-coded by average velocity (vertical or east-west components) and distributed to users in comma-separated values format. Each point is associated with a time series of displacement, i.e. a plot with values of displacement per acquisition of the satellite. ", 
+      "effective": "2023-11-28T14:57:53+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-500-8a3ca4e926bda99a259d8f373f0f369b.png", 
+            "filename": "Ortho.png", 
+            "height": 257, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-8df9052a9594a9fac1cf1bbde677c544.png", 
+                "height": 41, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-1c029b1119bf4e08e858677f19fcb4ef.png", 
+                "height": 16, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-1101e03577d41029465c69bc257b07b6.png", 
+                "height": 30, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-e9716e2214cf8194655f8a253ee77997.png", 
+                "height": 102, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-26a9fdd98bd51caa52fcc97b836a01d8.png", 
+                "height": 205, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-6f86d3ea7c9fd0db4f98dc784d868930.png", 
+                "height": 24, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-2f13c6ea8ca9ac0e728159240675e824.png", 
+                "height": 65, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-5c431505267ddcf02b719817cbf740a8.png", 
+                "height": 32, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-05679244afa55fb87c7c708274fb6d79.png", 
+                "height": 12, 
+                "width": 24
+              }
+            }, 
+            "size": 349940, 
+            "width": 500
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "European Ground Motion Service: Ortho 2019-2023 (vector), Europe, yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/soil-moisture/daily-soil-water-index-temporal-series-global-v3-0-12-5km", 
+      "@type": "DataSet", 
+      "UID": "53cd952bd30a42cfbbcab0326a6faf64", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "741f1127-a0a1-4b7e-be24-74535d4d02bb", 
+            "full_format": "Netcdf", 
+            "full_path": "https://globalland.vito.be/download/manifest/swi_12.5km_v3_time-series_netcdf/manifest_clms_global_swi_12.5km_v3_time-series_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": "Netcdf", 
+      "description": "Reformats the daily Soil Water Index 0.1\u00b0 v3 into a time series format, which makes it easier to perform local, time series based analysis without having to download and convert data for the whole globe.", 
+      "effective": "2022-01-21T11:07:36+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "", 
+      "image_scales": null, 
+      "review_state": "published", 
+      "title": "Soil Water Index - Time Series 2007-present (raster 12.5 km), global, daily \u2013 version 3", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/gross-primary-production-v1-0-300m", 
+      "@type": "DataSet", 
+      "UID": "bdaa99b9878c4eb4a8cf481f4a414ba0", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "b9b52e62-29aa-4608-b869-6509d3ee088a", 
+            "collection": "300M", 
+            "full_format": "Netcdf", 
+            "full_path": "https://globalland.vito.be/download/manifest/gpp_300m_v1_10daily_netcdf/manifest_clms_global_gpp_300m_v1_10daily_netcdf_latest.txt", 
+            "full_source": "LEGACY", 
+            "layers": [
+              "ALL BANDS"
+            ], 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": "Netcdf", 
+      "description": "Provides the total amount of carbon compounds produced by photosynthesis of plants in an ecosystem in a given period of time. 10-daily observations are available at global scale in the spatial resolution of 300 m and with the temporal extent from 2023 to present.", 
+      "effective": "2023-10-30T11:07:00+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-e0366008e1a0089fad263d1655cf00ec.jpeg", 
+            "filename": "GrossPrimaryProduction2023toPresentRaster300mGlobal10DailyVersion1.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-2a03417bb7216d8f1270394fa517a095.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-9554fda27bfc52de40c4e97e66565f3b.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-88a593d553b376ca16c23e4889afd4d6.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-249e79b59c66aaba2e8c70be92a8333e.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-f496489292cd6fb6b10db5e45a10e2ee.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-c8e96029bda8a7895e2a5d74a369d118.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-f474e2fa252461f8431b26d8b34c2511.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-557b3ebf97f4208238f60ef6ceee1fec.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-ac49e257e8e95fe7415786e588713aad.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 32582, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Gross Primary Production 2023-present (raster 300 m), global, 10-daily \u2013 version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/european-ground-motion-service/egms-calibrated", 
+      "@type": "DataSet", 
+      "UID": "fea9248133ce46a6b274cae33eed78e6", 
+      "dataset_download_information": {
+        "items": []
+      }, 
+      "dataset_full_format": null, 
+      "description": "Contains the same type of information as the EGMS Basic, but the measurement points are referenced to a model derived from global navigation satellite system data. This dataset is generated from the interferometric analysis of Sentinel-1 radar images at full resolution (20x5 m). EGMS Calibrated is visualised as a vector map of measurement points, colour-coded by average velocity, and distributed to users in comma-separated values format. Each point is associated with a time series of displacement, i.e. a plot with values of displacement per acquisition of the satellite. The dataset is generated for both ascending and descending orbits. ", 
+      "effective": "2023-11-28T14:57:51+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/png", 
+            "download": "@@images/image-500-b8a3c20cf833402b8f6fb88097ce4236.png", 
+            "filename": "Calibrated.png", 
+            "height": 257, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-dd83e0360703f09fa45978c63f974884.png", 
+                "height": 41, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-494639a31e09746f30006474ebacbae9.png", 
+                "height": 16, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-cc0e860696d53b022931afec6cebae53.png", 
+                "height": 30, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-d434a50cdc1385c51eed681eaafc22b3.png", 
+                "height": 102, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-616248db59f27d12d00dccde9dcb6712.png", 
+                "height": 205, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-0b1e60e4f1bd9b36f18120e79d852e58.png", 
+                "height": 24, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-ebc89cf757633a5085844748a85a53f4.png", 
+                "height": 65, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-743c8a0428f07cfcbd393fa4dad7606c.png", 
+                "height": 32, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-541152a0319458a575426a19cc31a9a6.png", 
+                "height": 12, 
+                "width": 24
+              }
+            }, 
+            "size": 373842, 
+            "width": 500
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "European Ground Motion Service: Calibrated 2019-2023 (vector), Europe, yearly", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/season-maximum-date-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "c0fb68d1286e4954a2e657205dc135e1", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-maxd-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-maxd-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the date in the vegetation growing season when the maximum Plant Phenology Index value is reached. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:45+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-5845c6310ec3d15c96fed17f9f004083.jpeg", 
+            "filename": "Season maximum date global.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-9e6a0a4ba0f6bf7f8b5d01781bca36e0.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-a09b497741b0ba027389009a5a9ebc59.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-e6b7bbfe444e712388208a8a0190a349.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-b6291a0e3be928a156196371e7a061ac.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-07e2f9671b6d16356630d4abd1e99812.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-863d1fa026deb6d9f299e7b40c229706.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-e7c5edde90334610509ab5c7e4b6066c.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-5152c20afeac68c7bb9dc1d514543b99.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-41e9dd574b3e3175130df78cbcd5de3c.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 42714, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Season Maximum Date 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/start-of-season-date-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "2a1b048c66ab48f79aaa75181284760f", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sosd-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sosd-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the date when the vegetation growing season starts in the time profile of the Plant Phenology Index. The start-of-season occurs, by definition, when the Plant Phenology Index value reaches 25% of the season amplitude during the green-up period. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:48+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-7e65a3817474db0c2e6d5702126af400.jpeg", 
+            "filename": "StartOfSeasonDate2023PresentRaster300mGlobalYearlyVersion1.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-7a3ad41895e2dfd721495ec76c96531b.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-50e969d173be5e918da65f1bf49b8e93.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-06260817cf0f4961b8d22d650161dff9.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-d599727448aaa114d5d43ec500e61493.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-b0c2b74f944a059215469057d61511e8.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-5bd11073cc8ea07961851eb2e6d82de3.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-79dc6cd9f2578f322d40c4d9ec8929ed.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-d676df37489ed754d27334c9c363659f.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-528dab77bad7ca3a881c53d17ff95919.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 33394, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Start-of-season Date 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }, 
+    {
+      "@id": "https://land.copernicus.eu/api/en/products/vegetation/seasonal-productivity-2023-raster-300m-global-yearly-version-1", 
+      "@type": "DataSet", 
+      "UID": "9a15b017d84e4d6285f2b653a5df8d1b", 
+      "dataset_download_information": {
+        "items": [
+          {
+            "@id": "1c7acc95-02e5-4503-82fc-966a6dd225dd", 
+            "collection": "Season 1", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sprod-s1_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }, 
+          {
+            "@id": "0a3b6b1e-d6a0-4bb7-9bd5-386d3acc84a2", 
+            "collection": "Season 2", 
+            "full_format": "Geotiff", 
+            "full_path": "https://globalland.vito.be/download/manifest/lsp_300m_v1_yearly_geotiff/manifest_clms_global_lsp-sprod-s2_300m_v1_yearly_geotiff_latest.txt", 
+            "full_source": "VITO_Geotiff_LSP", 
+            "name": "RASTER "
+          }
+        ]
+      }, 
+      "dataset_full_format": null, 
+      "description": "Provides the growing season integral computed as sum of all daily Plant Phenology Index values between the dates of the season start and end, minus their base level value. The data at global level are updated in the first quarter of each year. The data are available from 2023 to the present at about 300 m spatial resolution.", 
+      "effective": "2024-05-23T09:41:47+00:00", 
+      "getRemoteUrl": null, 
+      "image_field": "image", 
+      "image_scales": {
+        "image": [
+          {
+            "content-type": "image/jpeg", 
+            "download": "@@images/image-400-fe88f02cfde41eb0a826dd76d42fca35.jpeg", 
+            "filename": "SeasonalProductivity2023PresentRaster300mGlobalYearlyVersion1.jpg", 
+            "height": 400, 
+            "scales": {
+              "big": {
+                "download": "@@images/image-80-82f333d78f044e83bb7d3446421830f8.jpeg", 
+                "height": 80, 
+                "width": 80
+              }, 
+              "icon": {
+                "download": "@@images/image-32-d4a1fd223d08d4304b30531bdd47fcca.jpeg", 
+                "height": 32, 
+                "width": 32
+              }, 
+              "medium": {
+                "download": "@@images/image-60-ee37883d4f764f27ca0e266a03781ef6.jpeg", 
+                "height": 60, 
+                "width": 60
+              }, 
+              "mini": {
+                "download": "@@images/image-200-a392f57d79dde6632055b2209b5758eb.jpeg", 
+                "height": 200, 
+                "width": 200
+              }, 
+              "preview": {
+                "download": "@@images/image-400-30c6693874f3e333c3ead8bf444a9de3.jpeg", 
+                "height": 400, 
+                "width": 400
+              }, 
+              "small": {
+                "download": "@@images/image-48-c7e213f4132eca01af4ae4bbc0acbd2d.jpeg", 
+                "height": 48, 
+                "width": 48
+              }, 
+              "thumb": {
+                "download": "@@images/image-128-4a854ffab7cfb6d00384df99d36fa290.jpeg", 
+                "height": 128, 
+                "width": 128
+              }, 
+              "tile": {
+                "download": "@@images/image-64-860f424b3d48d2aaaa15c4323440783b.jpeg", 
+                "height": 64, 
+                "width": 64
+              }, 
+              "tiny": {
+                "download": "@@images/image-24-15e19db267feb7f317975aa5201b8beb.jpeg", 
+                "height": 24, 
+                "width": 24
+              }
+            }, 
+            "size": 53582, 
+            "width": 400
+          }
+        ]
+      }, 
+      "review_state": "published", 
+      "title": "Seasonal Productivity 2023-present (raster 300 m), global, yearly, version 1", 
+      "type_title": "DataSet"
+    }
+  ], 
+  "items_total": 192
+}

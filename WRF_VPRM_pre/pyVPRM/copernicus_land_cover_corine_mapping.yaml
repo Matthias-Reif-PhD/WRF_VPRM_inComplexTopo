@@ -1,0 +1,100 @@
+Evergreen Forest:
+    vprm_class: 1
+    class_numbers:
+        - 24  # Coniferous Forest
+    tmin: -5
+    topt: 20
+    tmax: 40 
+
+Deciduous Forest:
+    vprm_class: 2
+    class_numbers:
+        - 23  # Broad-leaved Forest
+    tmin: 0
+    topt: 20
+    tmax: 40
+
+Mixed Forest:
+    vprm_class: 3
+    class_numbers:
+        - 25  # Mixed Forest
+        - 29  # Transitional Woodland-Shrub
+    tmin: -3
+    topt: 20
+    tmax: 40   
+
+Shrubland:
+    vprm_class: 4
+    class_numbers:
+        - 27  # Moors and Heathland
+        - 28  # Sclerophyllous Vegetation
+    tmin: 2
+    topt: 20
+    tmax: 40 
+
+Wetlands:
+    vprm_class: 5
+    class_numbers:
+        - 35  # Inland Marshes
+        - 36  # Peat Bogs
+        - 37  # Salt marshes
+    tmin: 0
+    topt: 20
+    tmax: 40  
+
+Cropland:
+    vprm_class: 6
+    class_numbers:
+        - 12  # Non-irrigated Arable Land
+        - 13  # Permanently Irrigated Land
+        - 15  # Vineyards
+        - 16  # Fruit Trees and Berry Plantations
+        - 17  # Olive Groves
+        - 19  # Annual Crops Associated with Permanent Crops
+        - 20  # Complex Cultivation Patterns
+        - 21  # Land Principally Occupied by Agriculture
+        - 22  # Agro-forestry areas
+        - 14  # Rice Fields
+    tmin: -2
+    topt: 22
+    tmax: 40 
+
+Grassland:
+    vprm_class: 7
+    class_numbers:
+      - 18  # Pastures
+      - 26  # Natural Grasslands
+    tmin: -3
+    topt: 18
+    tmax: 40
+
+Other:
+    vprm_class: 8
+    class_numbers:
+      - 1   # Continuous Urban Fabric
+      - 2   # Discontinuous Urban Fabric
+      - 3   # Industrial or Commercial Units
+      - 4   # Road and Rail Networks
+      - 5   # Port Areas
+      - 6   # Airports
+      - 7   # Mineral Extraction Sites
+      - 8   # Dump Sites
+      - 9   # Construction Sites
+      - 10  # Green Urban Areas
+      - 11  # Sport and Leisure Facilities
+      - 30  # Beaches, Dunes, Sands
+      - 31  # Bare Rocks
+      - 32  # Sparsely Vegetated Areas
+      - 33  # Burnt Areas
+      - 34  # Glaciers and Perpetual Snow
+      - 38  # Salines
+      - 39  # Intertidal flats
+      - 40  # Water courses
+      - 41  # Water bodies
+      - 42  # Coastal lagoons
+      - 43  # Estuaries
+      - 44  # Estuaries
+    tmin: 2
+    topt: 18
+    tmax: 40
+
