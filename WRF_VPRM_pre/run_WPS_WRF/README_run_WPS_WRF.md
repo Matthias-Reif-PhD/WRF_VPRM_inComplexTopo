@@ -3,9 +3,10 @@
 ## Overview
 Scripts for running WPS (WRF Preprocessing System) and WRF (Weather Research & Forecasting) model with VPRM integration.
 
-Clone the modified WRF code to your scratch directory:
+Clone the modified WRF and WPS code to your scratch directory, or search through the commits:
 ``` 
 clone https://github.com/Matthias-Reif-PhD/WRF/tree/WRF-P
+clone https://github.com/Matthias-Reif-PhD/WPS/tree/WRF-VPRM-CLC
 ```
 
 ## Scripts
