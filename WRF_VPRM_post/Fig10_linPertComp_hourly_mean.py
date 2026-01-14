@@ -20,12 +20,18 @@ from collections import defaultdict
 save_plot_maps = False
 save_plot2 = True
 print_output = False
-# date = "2012-07-27"  # "2012-06-28"
-start_date = "2012-01-01 00:00:00"
-end_date = "2012-12-31 00:00:00"
+# use all dates within this range
+# start_date = "2012-01-01 00:00:00"
+# end_date = "2012-12-31 00:00:00"
+
+# for zenodo data there is only available 2012-07-27
+start_date = "2012-07-27 00:00:00"
+end_date = "2012-07-28 00:00:00"
+sim_type = ""  # "", "_cloudy"
+# for Fig. 10 you need the full wrf output, there is no extraction into csv files
 wrf_basepath = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS"  # without resolution suffix
 dx_all = ["_54km", "_9km"]  # "_54km",
-sim_type = "_cloudy"  # "", "_cloudy"
+
 plots_folder = f"./plots/components{sim_type}_L2_"
 interp_method = "nearest"  # 'linear', 'nearest', 'cubic'
 STD_TOPO = 200

@@ -3,6 +3,11 @@
 ## Overview
 Scripts for running WPS (WRF Preprocessing System) and WRF (Weather Research & Forecasting) model with VPRM integration.
 
+Clone the modified WRF code to your scratch directory:
+``` 
+clone https://github.com/Matthias-Reif-PhD/WRF/tree/WRF-P
+```
+
 ## Scripts
 
 ### `job_wrf_chain.slurm`
