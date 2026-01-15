@@ -9,16 +9,19 @@ Refactored into functions for clarity and reuse.
 
 from __future__ import annotations
 
-import math
+import os
 import numpy as np
-import pandas as pd
 import matplotlib
+from dotenv import load_dotenv
 
 # use non-interactive backend for script execution (headless servers)
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple
 import traceback
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 # ---------------- PFT parameters (clean table) ----------------
@@ -194,7 +197,7 @@ def plot_dGPP_dT_and_dRECO_dT(
 
 def main() -> None:
     """Run both figures and save outputs."""
-    OUTFOLDER = "./plots/"
+    OUTFOLDER = os.getenv("OUTFOLDER", "./plots/")
     print(f"W-scale = {W_SCALE:.3f}")
     try:
         plot_gpp_and_reco(pft_parameters, outpath=f"{OUTFOLDER}/VPRM_pft_GPP_RECO.pdf")

@@ -1,0 +1,51 @@
+name: VPRM_tools_post
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core scientific Python packages
+  - python=3.11
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - jupyter
+  - ipython
+  
+  # Geospatial and Earth data packages
+  - netCDF4
+  - xarray
+  - cartopy
+  - rasterio
+  - geopandas
+  - shapely
+  - pyproj
+  - xesmf
+  
+  # Data processing and analysis
+  - scikit-learn
+  - seaborn
+  - astropy
+  - joblib
+  
+  # GDAL/OGR for geospatial data
+  - gdal
+  
+  # Time and timezone handling
+  - python-dateutil
+  - pytz
+  
+  # API and web requests
+  - requests
+  - beautifulsoup4
+  - pyyaml
+  - pyjwt
+  - python-dotenv
+  
+  # Additional utilities
+  - cdsapi
+  
+  # Pip dependencies (packages not available in conda-forge)
+  - pip:
+    - permetrics
+    - pyrealm

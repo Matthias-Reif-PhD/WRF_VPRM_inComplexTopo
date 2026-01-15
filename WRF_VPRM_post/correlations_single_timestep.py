@@ -9,12 +9,21 @@ Created on Sun Dec 26 11:36:35 2021
 import netCDF4 as nc
 import glob
 import os
+from dotenv import load_dotenv
 import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 import xarray as xr
 import pandas as pd
 from datetime import datetime, timedelta
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo")
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -101,15 +110,15 @@ T_bin_flag = True
 # start_date = "2012-07-01 01:00:00"
 # end_date = "2012-07-31 00:00:00"
 wrf_paths = [
-    "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km",
-    "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km",
-    "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km",
-    "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_27km",
-    "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km",
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_1km"),
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_3km"),
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_9km"),
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_27km"),
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_54km"),
 ]
 wrf_file = "wrfout_d01_2012-07-27_15:00:00"
 wrf_file_d2 = "wrfout_d02_2012-07-27_15:00:00"
-outfolder = "./plots/"
+outfolder = OUTFOLDER
 
 timedelt = 0
 month = "07"
@@ -117,8 +126,7 @@ month = "07"
 
 #######################################################################################
 # load CAMS data
-CAMS_path = (
-    "/scratch/c7071034/DATA/CAMS/ghg-reanalysis_surface_2012-07-01_2012-07-31.nc"
+CAMS_path = os.path.join(SCRATCH_PATH, "DATA/CAMS/ghg-reanalysis_surface_2012-07-01_2012-07-31.nc")
 )
 
 CAMS_data = nc.Dataset(CAMS_path)

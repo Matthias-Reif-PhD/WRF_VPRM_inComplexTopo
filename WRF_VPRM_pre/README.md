@@ -17,16 +17,13 @@ Github/
 └── WRF_VPRM_pre
 ```
 
-find all old path
+find all old path and replace them with yours
+
 ```
 grep -ir /home/c707/c7071034
 grep -ir /scratch/c7071034
 ```
-replace old path with yours (be careful here!)
-```
-find ~ -type f -not -path '*/.*' -exec sed -i 's|/scratch/c7071034|/your-scratch-path|g' {} +
-find ~ -type f -not -path '*/.*' -exec sed -i 's|/scratch/c7071034|/your-scratch-path|g' {} +
-```
+
 
 **Scratch folder:**
 Clone the WRF and WPS repos 
@@ -58,12 +55,14 @@ Install WRF/WPS: https://www2.mmm.ucar.edu/wrf/OnLineTutorial/
 ## Step 1: CAMS Data (CO₂)
 
 Setup API credentials (`$HOME/.cdsapirc`):
+
 ```
 url: https://ads.atmosphere.copernicus.eu/api
 key: YOUR_KEY
 ```
 
 Download and merge:
+
 ```bash
 cd $HOME/Github/WRF_VPRM_pre/CAMS
 bash job_get_CAMS_CO2.sh

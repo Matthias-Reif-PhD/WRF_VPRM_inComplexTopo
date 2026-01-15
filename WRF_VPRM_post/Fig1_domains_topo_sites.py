@@ -16,10 +16,19 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.lines as mlines
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ==================== Configuration ====================
 
-OUTFOLDER = "./plots/"
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
 
 # Map rendering configuration
 FIGSIZE_SINGLE = (12, 15)
@@ -410,20 +419,19 @@ def main():
     """
     # ---- Plot 1: Single domain (54km) ----
     print("Generating single domain plot (d01)...")
-    hgt_d01, lat_d01, lon_d01 = load_wrf_data(
-        "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km/wrfinput_d01"
+    wrfout_54km = os.path.join(
+        SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_54km/wrfinput_d01"
     )
+    hgt_d01, lat_d01, lon_d01 = load_wrf_data(wrfout_54km)
     plot_single_domain(hgt_d01, lat_d01, lon_d01, "d01", "domains_topo_sites_d01.pdf")
     print("✓ Saved: domains_topo_sites_d01.pdf")
 
     # ---- Plot 2: Nested domains (9km parent + 3km nested) ----
     print("Generating nested domain plot (d02 + d03)...")
-    hgt_d02, lat_d02, lon_d02 = load_wrf_data(
-        "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km/wrfinput_d01"
-    )
-    hgt_d03, lat_d03, lon_d03 = load_wrf_data(
-        "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km/wrfinput_d02"
-    )
+    wrfout_9km = os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_9km/wrfinput_d01")
+    wrfout_3km = os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_3km/wrfinput_d02")
+    hgt_d02, lat_d02, lon_d02 = load_wrf_data(wrfout_9km)
+    hgt_d03, lat_d03, lon_d03 = load_wrf_data(wrfout_3km)
 
     domain_labels = [
         ("d02", lon_d02[0, 0], lat_d02[0, 0]),

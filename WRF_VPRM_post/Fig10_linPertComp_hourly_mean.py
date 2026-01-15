@@ -15,6 +15,10 @@ import os
 import glob
 from datetime import datetime, timedelta
 from collections import defaultdict
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 ############# INPUT ############
 save_plot_maps = False
@@ -29,10 +33,11 @@ start_date = "2012-07-27 00:00:00"
 end_date = "2012-07-28 00:00:00"
 sim_type = ""  # "", "_cloudy"
 # for Fig. 10 you need the full wrf output, there is no extraction into csv files
-wrf_basepath = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS"  # without resolution suffix
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+wrf_basepath = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS"  # without resolution suffix
 dx_all = ["_54km", "_9km"]  # "_54km",
-
-plots_folder = f"./plots/components{sim_type}_L2_"
+OUTFOLDER = os.getenv("OUTFOLDER", "./plots/")
+plots_folder = f"{OUTFOLDER}components{sim_type}_L2_"
 interp_method = "nearest"  # 'linear', 'nearest', 'cubic'
 STD_TOPO = 200
 ##############################
@@ -340,8 +345,8 @@ for dx in dx_all:
         date = date_time.split("_")[0]
         wrfinput_path_1km = f"{wrf_basepath}_1km{sim_type}/wrfout_d02_{date_time}:00:00"
         wrfinput_path_d01 = f"{wrf_basepath}{dx}{sim_type}/wrfout_d01_{date_time}:00:00"
-        vprm_input_path_1km = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_{date}_00:00:00.nc"
-        vprm_input_path_d01 = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine{dx}/vprm_input_d01_{date}_00:00:00.nc"
+        vprm_input_path_1km = f"{SCRATCH_PATH}/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_{date}_00:00:00.nc"
+        vprm_input_path_d01 = f"{SCRATCH_PATH}/DATA/VPRM_input/vprm_corine{dx}/vprm_input_d01_{date}_00:00:00.nc"
 
         # Load the NetCDF file
         conv_factor = 1 / 3600

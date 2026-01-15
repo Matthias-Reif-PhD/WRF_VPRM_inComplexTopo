@@ -16,6 +16,10 @@ import xarray as xr
 import pandas as pd
 from datetime import datetime
 from sklearn.metrics import r2_score, mean_squared_error
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -119,9 +123,10 @@ filename_str = subfolder if not cloudy_and_clear else "_clearsky_and_cloudy"
 subfolders = [subfolder] if not cloudy_and_clear else ["", "_cloudy"]
 wrf_files = "wrfout_d01*"
 wrf_files_1km = "wrfout_d02*"
-outfolder = "./plots/"
-pmodel_path = "/scratch/c7071034/DATA/MODIS/MODIS_FPAR/gpp_pmodel/"
-migli_path = "/scratch/c7071034/DATA/RECO_Migli/"
+outfolder = os.getenv("OUTFOLDER", "./plots/")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+pmodel_path = os.path.join(SCRATCH_PATH, "DATA/MODIS/MODIS_FPAR/gpp_pmodel/")
+migli_path = os.path.join(SCRATCH_PATH, "DATA/RECO_Migli/")
 
 # WRF_vars = ["GPP_pmodel", "RECO_Migli", "NEE_PM", "EBIO_GEE"+ref_sim, "EBIO_RES"+ref_sim, "NEE","T2"]
 WRF_vars = [
@@ -170,16 +175,16 @@ for coarse_domain in coarse_domains:
 
     for subfolder in subfolders:
         if coarse_domain == "3km":
-            wrf_path_i = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km{subfolder}"
+            wrf_path_i = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km{subfolder}"
         elif coarse_domain == "9km":
-            wrf_path_i = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km{subfolder}"
+            wrf_path_i = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_9km{subfolder}"
         elif coarse_domain == "27km":
-            wrf_path_i = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_27km{subfolder}"
+            wrf_path_i = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_27km{subfolder}"
         elif coarse_domain == "54km":
-            wrf_path_i = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km{subfolder}"
+            wrf_path_i = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{subfolder}"
 
         wrf_paths = [
-            f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}",
+            f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}",
             wrf_path_i,
         ]
 
@@ -589,17 +594,17 @@ for coarse_domain in coarse_domains:
                 mask, hgt_1km, np.nan
             )
             diff_hgt_mean = np.nanmean(diff_hgt)
-            diff_hgt_mean_nonproj = np.nanmean(hgt_coarse_domain) - np.nanmean(hgt_1km)
             print(
                 f"Mean difference in height between {coarse_domain} and 1km is {diff_hgt_mean:.2f}m"
             )
-            print(
-                f"Unmasked means of 1km: {np.nanmean(hgt_1km):.2f}m and of {coarse_domain}: {np.nanmean(hgt_coarse_domain):.2f}m with difference  {diff_hgt_mean_nonproj:.2f}m  "
-            )
+            # diff_hgt_mean_nonproj = np.nanmean(hgt_coarse_domain) - np.nanmean(hgt_1km)
+            # print(
+            #     f"Unmasked means of 1km: {np.nanmean(hgt_1km):.2f}m and of {coarse_domain}: {np.nanmean(hgt_coarse_domain):.2f}m with difference  {diff_hgt_mean_nonproj:.2f}m  "
+            # )
 
             if plot_coeff:
                 ax = df_coeff.plot(linestyle="-", figsize=(10, 6), grid=True)
-                ax.set_ylim(-2, 2)
+                # ax.set_ylim(-2, 2)
                 ax.set_xlim(T_ref_min, T_ref_max)
                 ax.set_xlabel(r"$T_{\mathrm{ref}}$ °C", fontsize=20)
                 ax.set_ylabel("[μmol m² s⁻¹ °C⁻¹]", fontsize=20)

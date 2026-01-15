@@ -20,24 +20,44 @@ import warnings
 import netCDF4 as nc
 import pandas as pd
 from scipy.interpolate import RegularGridInterpolator
+from dotenv import load_dotenv
 
-# --- Input Parameters ---
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+
+############# INPUT PARAMETERS FIG 2a ############
 dx = "_54km"
 domain = "_d01"
-base_mz = f"/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out{domain}_2012{dx}"
-t_file_fra = "VPRM_input_VEG_FRA_d01_2012.nc"
-outfolder = "./plots/"
+base_mz = os.path.join(SCRATCH_PATH, f"DATA/VPRM_input/vprm_corine{dx}")
+t_file_fra = f"vprm_input{domain}_2012-07-27_00:00:00.nc"
+
+############# INPUT PARAMETERS  FIG 2b ############
+domain_b = "_d02"
+dx_b = "_1km"
+base_mz_b = os.path.join(SCRATCH_PATH, f"DATA/VPRM_input/vprm_corine{dx_b}")
+t_file_fra_b = f"vprm_input{domain_b}_2012-07-27_00:00:00.nc"
+radius_b = 30  # should be set to dx*20 to fit to extract_timeseries.py
+std_threshold_b = 200
+###########################################
+
 
 # --- Load vegetation fraction map ---
 """Load vegetation fraction data from xarray dataset."""
 ds = xr.open_dataset(os.path.join(base_mz, t_file_fra))
-veg_frac_map = ds["vegetation_fraction_map"]
-lat = ds["lat"].values
-lon = ds["lon"].values
+veg_frac_map = ds["VEGFRA_VPRM"]
+lat = ds["XLAT"].values
+lon = ds["XLONG"].values
 
 # --- Load d02 domain and restrict data to that extent ---
 """Load d02 WRF domain extent and mask vegetation data accordingly."""
-d2 = xr.open_dataset("/scratch/c7071034/WPS/geo_em.d02.nc")
+d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WPS/geo_em.d02.nc"))
 lat2 = (
     d2["XLAT_M"]
     .isel(Time=0, south_north=slice(10, -10), west_east=slice(10, -10))
@@ -101,7 +121,8 @@ norm = mcolors.BoundaryNorm(bounds, cmap.N)
 
 # --- Compute Dominant PFT ---
 """Calculate dominant PFT (1-8) for each grid cell as argmax of vegetation fractions."""
-dominant_type = veg_frac_map.argmax(dim="vprm_classes") + 1
+dominant_type = veg_frac_map.argmax(dim="vprm_vgcls") + 1
+dominant_type = dominant_type.isel(Time=0).values  # Convert to numpy array
 
 # --- Create Base Map with Cartopy ---
 """Plot domain map with dominant vegetation type background and topographic features."""
@@ -120,7 +141,7 @@ im = ax.pcolormesh(
     dominant_type,
     cmap=cmap,
     norm=norm,
-    shading="auto",
+    shading="nearest",
     transform=ccrs.PlateCarree(),
 )
 
@@ -149,7 +170,7 @@ pie_size = 1.2
 
 for i in range(1, lat.shape[0] - 1, step):
     for j in range(1, lat.shape[1] - 1, step):
-        f = veg_frac_map[:, i, j].values
+        f = veg_frac_map[0, i, j].values
         if np.isnan(f).all() or np.sum(f) == 0:
             continue
         f = f / np.sum(f)
@@ -170,7 +191,7 @@ for i in range(1, lat.shape[0] - 1, step):
 
 plt.tight_layout()
 # plt.show()
-plt.savefig(f"{outfolder}/domain_d02_PFTs_pie_per_cell.pdf", bbox_inches="tight")
+plt.savefig(f"{OUTFOLDER}/domain_d02_PFTs_pie_per_cell.pdf", bbox_inches="tight")
 plt.close()
 
 # ============================================================================
@@ -451,32 +472,19 @@ def get_int_var(lat_target, lon_target, lats, lons, WRF_var):
     return interpolated_value
 
 
-############# INPUT PARAMETERS ############
-"""Configuration for domain, resolution, and file paths."""
-domain = "_d02"
-dx = "_1km"
-dx_int = dx[1:-2]
-radius = 30  # should be set to dx*20 to fit to extract_timeseries.py
-std_threshold = 200
-base_mz = (
-    "/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out"
-    + domain
-    + "_2012"
-    + dx
-)
+##################### second plot #########################
 
-t_file_fra = "VPRM_input_VEG_FRA_d01_2012.nc"
-if dx == "_1km":
-    wrfinput_path = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km/wrfinput_d02"
-    t_file_fra = "VPRM_input_VEG_FRA_d02_2012.nc"
-elif dx == "_3km":
-    wrfinput_path = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km/wrfinput_d01"
-elif dx == "_9km":
-    wrfinput_path = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km/wrfinput_d01"
-elif dx == "_27km":
-    wrfinput_path = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_27km/wrfinput_d01"
-elif dx == "_54km":
-    wrfinput_path = "/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km/wrfinput_d01"
+dx_int = dx_b[1:-2]
+
+if dx_b == "_1km":
+    wrfinput_path = os.path.join(
+        SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_3km/wrfinput_d02"
+    )
+else:
+    wrfinput_path = os.path.join(
+        SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS{dx_b}}/wrfinput_d01"
+    )
+
 
 # --- FLUXNET Site Elevation Reference ---
 """Elevation of known FLUXNET sites (m above sea level)."""
@@ -498,7 +506,7 @@ locations_hgt = {
     "IT-Tor": 2160,
 }
 
-if dx == "_1km":
+if dx_b == "_1km":
     """1 km resolution: high-altitude mountain sites."""
     sites = [
         {
@@ -859,25 +867,38 @@ IVGTYP_vprm.shape
 
 # --- Load Vegetation Fraction Map ---
 """Load pre-processed vegetation fraction data and reclassify water bodies."""
-in_veg_frac = xr.open_dataset(os.path.join(base_mz, t_file_fra))
-veg_frac_map = in_veg_frac["vegetation_fraction_map"][:, 10:-10, 10:-10]
+in_veg_frac = xr.open_dataset(os.path.join(base_mz_b, t_file_fra_b))
+veg_frac_map = (
+    in_veg_frac["VEGFRA_VPRM"]
+    .isel(Time=0, south_north=slice(10, -10), west_east=slice(10, -10))
+    .load()
+)
 
-veg_frac_class_8 = veg_frac_map.sel(vprm_classes=8)
-mask_ivgtyp_trimmed = IVGTYP == 44
+veg_frac_class_8 = veg_frac_map.sel(vprm_vgcls=7)
+
+mask_ivgtyp_trimmed = xr.DataArray(
+    IVGTYP == 44,
+    dims=veg_frac_class_8.dims,
+    coords=veg_frac_class_8.coords,
+)
+
 veg_frac_class_8 = veg_frac_class_8.where(~mask_ivgtyp_trimmed, 1)
 
-veg_frac_map.loc[{"vprm_classes": 8}] = veg_frac_class_8
+veg_frac_map.loc[{"vprm_vgcls": 7}] = veg_frac_class_8
 
 # --- Compute Dominant Vegetation Type ---
 """Get dominant VPRM class for each grid cell and convert to DataFrame."""
-VPRM_in_dom_vgtyp = veg_frac_map.argmax(dim="vprm_classes") + 1
+VPRM_in_dom_vgtyp = veg_frac_map.argmax(dim="vprm_vgcls") + 1
 df_VPRM_in_dom_vgtyp = VPRM_in_dom_vgtyp.to_dataframe(
     name="vegetation_type"
 ).reset_index()
-if dx == "_1km":
+if dx_b == "_1km":
     """Load 1km VPRM input data for high-resolution domain."""
     d0X = "wrfout_d02"
-    vprm_input_path_1km = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_2012-06-23_00:00:00.nc"
+    vprm_input_path_1km = os.path.join(
+        SCRATCH_PATH,
+        "DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_2012-07-27_00:00:00.nc",
+    )
     ds = xr.open_dataset(vprm_input_path_1km)
     # ['Times', 'XLONG', 'XLAT', 'EVI_MIN', 'EVI_MAX', 'EVI', 'LSWI_MIN', 'LSWI_MAX', 'LSWI', 'VEGFRA_VPRM']
     veg_frac_map = (
@@ -888,7 +909,10 @@ if dx == "_1km":
     veg_frac_map = np.nan_to_num(veg_frac_map, nan=0.0)
 else:
     """Load coarser resolution VPRM input data."""
-    vprm_input_path = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_2012-06-23_00:00:00.nc"
+    vprm_input_path = os.path.join(
+        SCRATCH_PATH,
+        f"DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_2012-07-27_00:00:00.nc",
+    )
     ds = xr.open_dataset(vprm_input_path)
     # ['Times', 'XLONG', 'XLAT', 'EVI_MIN', 'EVI_MAX', 'EVI', 'LSWI_MIN', 'LSWI_MAX', 'LSWI', 'VEGFRA_VPRM']
     veg_frac_map = ds["VEGFRA_VPRM"].values
@@ -922,7 +946,7 @@ for site in sites:
         veg_frac_map,
         HGT_M,
         site["hgt_site"],
-        radius,
+        radius_b,
     )
     print(
         f"Cost: \n  [{site['site']}] "
@@ -962,7 +986,7 @@ df_sites_match = pd.DataFrame(sites)
 
 # Print the table
 print(df_sites_match)
-df_sites_match.to_csv("pft_site_match_at" + dx + ".csv")
+df_sites_match.to_csv("pft_site_match_at" + dx_b + ".csv")
 
 
 # --- Define Color Map for Simplified Vegetation Types ---
@@ -1004,12 +1028,12 @@ norm = mcolors.BoundaryNorm(bounds, cmap.N)
 # --- Prepare 2D Vegetation Data for Plotting ---
 """Pivot DataFrame to 2D array and create topography-based mask."""
 veg_2d = df_VPRM_in_dom_vgtyp.pivot(
-    index="lat", columns="lon", values="vegetation_type"
+    index="XLAT", columns="XLONG", values="vegetation_type"
 )
 # veg_2d.fillna(0, inplace=True)
 
 # mask low std areas (kept separate from veg values)
-mask_low_std = STDVAR < std_threshold
+mask_low_std = STDVAR < std_threshold_b
 
 # --- Create Vegetation Plot ---
 """Main plot: dominant vegetation on Cartopy map with hatched overlay for low topography variability."""
@@ -1170,5 +1194,5 @@ plt.xticks(fontsize=20)  # for tick labels
 plt.yticks(fontsize=20)
 plt.tight_layout()
 plt.savefig(
-    f"{outfolder}/VGT_VPRM_{domain+dx}_STD{std_threshold}.pdf", bbox_inches="tight"
+    f"{OUTFOLDER}/VGT_VPRM_{domain_b+dx}_STD{std_threshold_b}.pdf", bbox_inches="tight"
 )

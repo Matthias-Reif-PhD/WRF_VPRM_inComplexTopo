@@ -1,5 +1,17 @@
 import numpy as np
 import matplotlib
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
 
 # use non-interactive backend for headless environments
 matplotlib.use("Agg")
@@ -12,7 +24,7 @@ from scipy.ndimage import binary_erosion, distance_transform_edt
 import xarray as xr
 
 ############# INPUT ############
-plots_folder = "./plots/areafluxes_"
+plots_folder = os.path.join(OUTFOLDER, "areafluxes_")
 save_plot = True
 dx = "_54km"
 interp_method = "nearest"  # 'linear', 'nearest', 'cubic'
@@ -21,10 +33,20 @@ STD_TOPO = 200
 # Set time
 dateime = "2012-07-27_12"  # second plot time "2012-07-27_05"
 subfolder = ""  # "" or "_cloudy"
-wrfinput_path_1km = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}/wrfout_d02_{dateime}:00:00"
-wrfinput_path_54km = f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS{dx}{subfolder}/wrfout_d01_{dateime}:00:00"
-t_file_fra = "/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out_d02_2012_1km/VPRM_input_VEG_FRA_d02_2012.nc"
-t_file_fra_d01 = "/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out_d01_2012_54km/VPRM_input_VEG_FRA_d01_2012.nc"
+wrfinput_path_1km = os.path.join(
+    SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}/wrfout_d02_{dateime}:00:00"
+)
+wrfinput_path_54km = os.path.join(
+    SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS{dx}{subfolder}/wrfout_d01_{dateime}:00:00"
+)
+t_file_fra = os.path.join(
+    SCRATCH_PATH,
+    "DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_2012-07-27_00:00:00.nc",
+)
+t_file_fra_d01 = os.path.join(
+    SCRATCH_PATH,
+    "DATA/VPRM_input/vprm_corine_54km/vprm_input_d01_2012-07-27_00:00:00.nc",
+)
 ################################
 
 
@@ -132,16 +154,10 @@ CLDFRC_54km = nc_fid54km.variables["CLDFRA"][0, :, :, :]
 # --- Load vegetation fraction map ---
 ds = xr.open_dataset(t_file_fra)
 ds_d01 = xr.open_dataset(t_file_fra_d01)
-veg_frac_map = ds["vegetation_fraction_map"].isel(
-    south_north=slice(10, -10), west_east=slice(10, -10)
+veg_frac_map = ds["VEGFRA_VPRM"].isel(
+    Time=0, south_north=slice(10, -10), west_east=slice(10, -10)
 )
-
-veg_frac_map_d01 = ds_d01["vegetation_fraction_map"]
-
-# lat = ds["lat"].isel(south_north=slice(1, -1), west_east=slice(1, -1)).values
-# lon = ds["lon"].isel(south_north=slice(1, -1), west_east=slice(1, -1)).values
-# lat_d01 = ds_d01["lat"].isel(south_north=slice(1, -1), west_east=slice(1, -1)).values
-# lon_d01 = ds_d01["lon"].isel(south_north=slice(1, -1), west_east=slice(1, -1)).values
+veg_frac_map_d01 = ds_d01["VEGFRA_VPRM"].isel(Time=0)
 
 
 PAR0_of_PFT = {

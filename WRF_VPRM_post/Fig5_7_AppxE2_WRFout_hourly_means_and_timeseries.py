@@ -18,6 +18,18 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
 
 # Variable labels for scientific LaTeX-style plotting
 var_labels = {
@@ -52,7 +64,7 @@ def plot_timeseries_differences(
     column: str,
     unit: str,
     resolutions: list,
-    outfolder: str,
+    OUTFOLDER: str,
     ref_sim: bool,
     resolution_colors: dict,
     STD_TOPO: int,
@@ -145,7 +157,7 @@ def plot_timeseries_differences(
     plt.tight_layout()
 
     plt.savefig(
-        f"{outfolder}timeseries_diff_of_resolutions_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
+        f"{OUTFOLDER}timeseries_diff_of_resolutions_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
         bbox_inches="tight",
     )
     plt.close()
@@ -157,7 +169,7 @@ def plot_timeseries_by_resolution(
     column: str,
     unit: str,
     resolutions: list,
-    outfolder: str,
+    OUTFOLDER: str,
     ref_sim: bool,
     resolution_colors: dict,
     STD_TOPO: int,
@@ -236,7 +248,7 @@ def plot_timeseries_by_resolution(
     plt.legend(fontsize=20)
     plt.tight_layout()
     plt.savefig(
-        f"{outfolder}timeseries_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
+        f"{OUTFOLDER}timeseries_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
         bbox_inches="tight",
     )
     plt.close()
@@ -248,7 +260,7 @@ def plot_hourly_averages(
     column: str,
     unit: str,
     resolutions: list,
-    outfolder: str,
+    OUTFOLDER: str,
     ref_sim: bool,
     resolution_colors: dict,
     STD_TOPO: int,
@@ -291,7 +303,7 @@ def plot_hourly_averages(
     plt.legend(fontsize=24, frameon=True, framealpha=0.4)
     plt.tight_layout()
     plt.savefig(
-        f"{outfolder}timeseries_hourly_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
+        f"{OUTFOLDER}timeseries_hourly_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
         bbox_inches="tight",
     )
     plt.close()
@@ -303,7 +315,7 @@ def plot_hourly_differences(
     column: str,
     unit: str,
     resolutions_diff: list,
-    outfolder: str,
+    OUTFOLDER: str,
     ref_sim: bool,
     resolution_colors: dict,
     STD_TOPO: int,
@@ -346,7 +358,7 @@ def plot_hourly_differences(
     plt.tick_params(axis="y", labelsize=30)
     plt.tight_layout()
     plt.savefig(
-        f"{outfolder}timeseries_hourly_diff_of_54km_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
+        f"{OUTFOLDER}timeseries_hourly_diff_of_54km_{column}_domain_averaged_std_topo_{STD_TOPO}{sim_type}_{start_date}_{end_date}.pdf",
         bbox_inches="tight",
     )
     plt.close()
@@ -534,8 +546,7 @@ def write_domain_average_table(
 
 
 def main():
-    csv_folder = "./csv/"
-    outfolder = "./plots/"
+    csv_folder = os.path.join(GITHUB_PATH, "WRF_VPRM_post/csv/")
     start_date, end_date = "2012-01-01 00:00:00", "2012-12-31 00:00:00"
     STD_TOPO = 200
     ref_sim = True
@@ -580,7 +591,7 @@ def main():
         df_means,
         df_diffs,
         df_pct,
-        outfile=f"{outfolder}Table_1_domain_averaged_2012{sim_type}.tex",
+        outfile=f"{OUTFOLDER}Table_1_domain_averaged_2012{sim_type}.tex",
     )
 
     resolution_colors = {
@@ -597,7 +608,7 @@ def main():
             column,
             unit,
             resolutions,
-            outfolder,
+            OUTFOLDER,
             ref_sim,
             resolution_colors,
             STD_TOPO,
@@ -611,7 +622,7 @@ def main():
             column,
             unit,
             resolutions,
-            outfolder,
+            OUTFOLDER,
             ref_sim,
             resolution_colors,
             STD_TOPO,
@@ -625,7 +636,7 @@ def main():
             column,
             unit,
             resolutions,
-            outfolder,
+            OUTFOLDER,
             ref_sim,
             resolution_colors,
             STD_TOPO,
@@ -639,7 +650,7 @@ def main():
             column,
             unit,
             resolutions_diff,
-            outfolder,
+            OUTFOLDER,
             ref_sim,
             resolution_colors,
             STD_TOPO,
