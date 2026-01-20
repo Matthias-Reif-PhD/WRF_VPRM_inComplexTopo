@@ -28,7 +28,7 @@ set +a
 module purge
 module load $CONDA_MODULE
 
-eval "$("$CONDA_DIR/bin/conda" shell.bash hook)"
+eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
 conda activate "$CONDA_ENV"
 
 PYTHON="$CONDA_ENV/bin/python"
@@ -57,11 +57,4 @@ end_date="2013-01-01"
 echo "processing $start_date to $end_date"
 "$PYTHON" CAMS_get_CO2_API.py -s "$start_date" -e "$end_date"
 
-# ------------------------------------------------------------------
-# Unpack downloaded files
-# ------------------------------------------------------------------
-for file in ghg-reanalysis_CO2_*.nc; do
-    newname="${file%.nc}.zip"
-    mv "$file" "$newname"
-    unzip "$newname" -d "${newname%.zip}"
-done
+

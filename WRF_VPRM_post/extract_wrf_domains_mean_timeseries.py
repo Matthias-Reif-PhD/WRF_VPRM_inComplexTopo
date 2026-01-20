@@ -11,9 +11,11 @@ from collections import defaultdict
 import argparse
 import sys
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 # ==================== Configuration ====================
 SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")

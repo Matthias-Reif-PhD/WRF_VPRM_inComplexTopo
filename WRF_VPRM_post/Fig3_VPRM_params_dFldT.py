@@ -19,9 +19,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from typing import Dict, Tuple
 import traceback
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 
 # ---------------- PFT parameters (clean table) ----------------
