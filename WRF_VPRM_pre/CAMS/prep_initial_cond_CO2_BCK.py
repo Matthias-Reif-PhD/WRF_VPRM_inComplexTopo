@@ -5,6 +5,8 @@ print("modified by David Ho, MPI-BGC Jena")
 print("For handling CAMS product from Santiago,")
 print("Translated for python by Noelia Rojas, IFUSP Brazil")
 print("over the Amazon domain.")
+print("Adopted by Matthias Reif")
+print("========================================================================")
 
 import numpy as np
 import pandas as pd
@@ -15,18 +17,31 @@ import scipy.io
 import os
 import shutil
 import sys
+from dotenv import load_dotenv
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
 
 if len(sys.argv) < 5:
-    print("Usage: python prep_boundary_cond_CO2_BCK.py <res> <sim_start_time> <sim_end_time>")
+    print(
+        "Usage: python prep_boundary_cond_CO2_BCK.py <res> <sim_start_time> <sim_end_time>"
+    )
     res = "3km"
     sim_time = ["2012-07-01 18:00:00", "2012-07-03 00:00:00"]
-else:   
-    res = sys.argv[1]  
-    sim_time = [sys.argv[2]+" "+sys.argv[3], sys.argv[4]+" "+sys.argv[5]]
+else:
+    res = sys.argv[1]
+    sim_time = [sys.argv[2] + " " + sys.argv[3], sys.argv[4] + " " + sys.argv[5]]
 
 # Setting important paths to files and directories
-wrfinput_dir_path = f"/scratch/c7071034/WRF_{res}/test/em_real"
-CAMS_data_dir_path = "/scratch/c7071034/DATA/CAMS/"
+wrfinput_dir_path = f"{SCRATCH_PATH}/WRF_{res}/test/em_real"
+CAMS_data_dir_path = os.path.join(SCRATCH_PATH, "DATA/CAMS/")
+
 
 # Find wrfinput_d0* files and extract their endings
 def find_wrfinput_files(dir_path):
@@ -63,25 +78,27 @@ next_month_str = f"{next_month_int:02d}"
 next_year = str(int(year) + 1)
 
 path_CAMS_file = os.path.join(
-    CAMS_data_dir_path + f"ghg-reanalysis_CO2_{year}-{month}-01_{year}-{next_month_str}-01/data_mlev.nc"
+    CAMS_data_dir_path
+    + f"ghg-reanalysis_CO2_{year}-{month}-01_{year}-{next_month_str}-01/data_mlev.nc"
 )
 path_CAMS_lnsp_file = os.path.join(
-    CAMS_data_dir_path + f"ghg-reanalysis_lnsp_{year}-{month}-01_{year}-{next_month_str}-01.nc"
+    CAMS_data_dir_path
+    + f"ghg-reanalysis_lnsp_{year}-{month}-01_{year}-{next_month_str}-01.nc"
 )
 if month == "12":
     path_CAMS_file = os.path.join(
-        CAMS_data_dir_path + f"ghg-reanalysis_CO2_{year}-{month}-01_{next_year}-01-01/data_mlev.nc"
+        CAMS_data_dir_path
+        + f"ghg-reanalysis_CO2_{year}-{month}-01_{next_year}-01-01/data_mlev.nc"
     )
     path_CAMS_lnsp_file = os.path.join(
-        CAMS_data_dir_path + f"ghg-reanalysis_lnsp_{year}-{month}-01_{next_year}-01-01.nc"
+        CAMS_data_dir_path
+        + f"ghg-reanalysis_lnsp_{year}-{month}-01_{next_year}-01-01.nc"
     )
 
-CAMS_interpolation_indices_file_path = (
-    "/home/c707/c7071034/Github/WRF_VPRM_pre/settings/interp_indices.txt.npz"
+CAMS_interpolation_indices_file_path = os.path.join(
+    GITHUB_PATH, "WRF_VPRM_pre/ERA5/interp_indices.txt.npz"
 )
-IFS_L60_ab_file = (
-    "/home/c707/c7071034/Github/WRF_VPRM_pre/settings/ecmwf_coeffs_L60.csv"
-)
+IFS_L60_ab_file = os.path.join(GITHUB_PATH, "WRF_VPRM_pre/ERA5/ecmwf_coeffs_L60.csv")
 
 wrfinput_path = os.path.join(wrfinput_dir_path, "wrfinput_d01")
 wrfinput = xr.open_dataset(wrfinput_path)
@@ -105,8 +122,10 @@ cams_lon = xr.open_dataset(path_CAMS_file)["longitude"]
 mesh_lat, mesh_lon = np.meshgrid(cams_lat, cams_lon)
 cams_times = xr.open_dataset(path_CAMS_file)["valid_time"]
 cams_dates = pd.to_datetime(cams_times.values)
-cams_timestamps = cams_dates.astype('int64') // 10**9  # convert ns to seconds
-simstart_timestamp = int(datetime.strptime(simstart_time, "%Y%m%d %H:%M:%S").timestamp())
+cams_timestamps = cams_dates.astype("int64") // 10**9  # convert ns to seconds
+simstart_timestamp = int(
+    datetime.strptime(simstart_time, "%Y%m%d %H:%M:%S").timestamp()
+)
 
 # Prefer exact match, fall back to nearest
 match_indices = np.where(cams_timestamps == simstart_timestamp)[0]

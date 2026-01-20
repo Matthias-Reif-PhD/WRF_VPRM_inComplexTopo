@@ -1,16 +1,31 @@
 import subprocess
 import numpy as np
 import rasterio
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_inComplexTopo")
 
 # Paths
-input_tif = "/scratch/c7071034/DATA/CORINE_LC/u2018_clc2018_v2020_20u1_raster100m/DATA/U2018_CLC2018_V2020_20u1.tif"
-reprojected_tif = (
-    "/scratch/c7071034/DATA/CORINE_LC/reprojected_for_VPRM_U2018_CLC2018_V2020_20u1.tif"
+input_tif = os.path.join(
+    SCRATCH_PATH,
+    "DATA/CORINE_LC/u2018_clc2018_v2020_20u1_raster100m/DATA/U2018_CLC2018_V2020_20u1.tif",
 )
-converted_tif = (
-    "/scratch/c7071034/DATA/CORINE_LC/converted_for_VPRM_U2018_CLC2018_V2020_20u1.tif"
+reprojected_tif = os.path.join(
+    SCRATCH_PATH, "DATA/CORINE_LC/reprojected_for_VPRM_U2018_CLC2018_V2020_20u1.tif"
 )
-modified_tif = "/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/data/copernicus/modified_for_VPRM_U2018_CLC2018_V2020_20u1.tif"
+converted_tif = os.path.join(
+    SCRATCH_PATH, "DATA/CORINE_LC/converted_for_VPRM_U2018_CLC2018_V2020_20u1.tif"
+)
+modified_tif = os.path.join(
+    SCRATCH_PATH,
+    "DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/data/copernicus/modified_for_VPRM_U2018_CLC2018_V2020_20u1.tif",
+)
 
 # Step 1: Use gdalwarp and gdal_translate for reprojection and conversion
 subprocess.run(

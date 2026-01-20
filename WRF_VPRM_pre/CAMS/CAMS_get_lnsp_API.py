@@ -1,8 +1,14 @@
 import cdsapi
 import argparse
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
-# use the correct url in ~/.cdsapirc
-# url: https://ads.atmosphere.copernicus.eu/api
+
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
+
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 
 
 def get_lnsp_data(start_date, end_date, output_folder):
@@ -87,7 +93,7 @@ def get_lnsp_data(start_date, end_date, output_folder):
 def main():
     start_date = "2012-02-01"
     end_date = "2012-03-01"
-    output_folder = "/scratch/c7071034/DATA/CAMS"
+    output_folder = os.path.join(SCRATCH_PATH, "DATA/CAMS")
     # for CAMS you have to ads url in ~/.cdsapirc
     # file_path="$HOME/.cdsapirc"
     # sed -i '/^url:/c\url: https://ads.atmosphere.copernicus.eu/api' "$file_path"

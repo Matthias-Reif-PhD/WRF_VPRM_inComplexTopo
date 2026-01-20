@@ -9,6 +9,18 @@ import os
 from collections import defaultdict
 import argparse
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+CSVFOLDER = os.getenv("CSVFOLDER", "./csv/")
 
 
 def generate_coastal_mask(
@@ -94,7 +106,7 @@ def extract_datetime_from_filename(filename):
 
 def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
     ############# INPUT ############
-    csv_folder = "./csv/"
+    csv_folder = CSVFOLDER
     interp_method = "nearest"  # 'linear', 'nearest', 'cubic'
     temp_gradient = -6.5  # K/km
     STD_TOPO = 200
@@ -309,9 +321,9 @@ def main():
         sim_type = "_cloudy"  # "", "_parm_err" or "_cloudy"
 
     wrf_paths = [
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",  # 1km resolution hat to be included, as dPdT is calculated from 1km to a coarse resolution
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km{sim_type}",
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",  # 1km resolution hat to be included, as dPdT is calculated from 1km to a coarse resolution
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_9km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",
     ]
 
     exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type)

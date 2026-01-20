@@ -13,6 +13,17 @@ print("========================================================================"
 import os
 import xarray as xr
 import numpy as np
+from dotenv import load_dotenv
+from pathlib import Path
+
+
+# Load environment variables from .env file
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
 
 
 def short_dist(latlon1, latlon2):
@@ -78,8 +89,8 @@ def short_dist(latlon1, latlon2):
 
 
 # Set directory and file paths
-cams_path = "/scratch/c7071034/DATA/CAMS/"
-geo_em_path = "/scratch/c7071034/WPS/"
+cams_path = os.path.join(SCRATCH_PATH, "DATA/CAMS/")
+geo_em_path = os.path.join(SCRATCH_PATH, "WPS/")
 
 # Specify output file
 # output_file = '../../bck_ghg/';

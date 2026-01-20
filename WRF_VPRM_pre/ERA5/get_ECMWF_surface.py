@@ -1,14 +1,17 @@
 import cdsapi
 import argparse
+import os
+from dotenv import load_dotenv
 
-"""
-Example usage:
-    python get_ECMWF_surface.py --start 1 --end 3 --month 6 --year 2012
+# Load environment variables from .env file
+load_dotenv()
 
-This will download ERA5 surface level data
-"""
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
 
-parser = argparse.ArgumentParser(description="Download ERA5 pressure level data for a given date range.")
+parser = argparse.ArgumentParser(
+    description="Download ERA5 pressure level data for a given date range."
+)
 parser.add_argument("--start", type=int, required=True, help="Start day")
 parser.add_argument("--end", type=int, required=True, help="End day")
 parser.add_argument("--month", type=int, required=True, help="Month")
@@ -85,7 +88,10 @@ for day in range(start, end + 1):
 
     client = cdsapi.Client()
     # Construct a dynamic file name based on the day
-    file_name = f"/scratch/c7071034/DATA/ECMWF/surface/era5_surface_{year}_{month:02d}_{day:02d}.grib"
+    file_name = os.path.join(
+        SCRATCH_PATH,
+        f"DATA/ECMWF/surface/era5_surface_{year}_{month:02d}_{day:02d}.grib",
+    )
 
     # Download and save the file with the dynamic name
     client.retrieve(dataset, request).download(file_name)

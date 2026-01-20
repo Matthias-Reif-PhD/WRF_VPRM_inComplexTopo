@@ -19,6 +19,14 @@ from shapely.geometry import box, Polygon
 import geopandas as gpd
 from datetime import datetime, timedelta
 from pyproj import Transformer
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_inComplexTopo")
 
 # Read command line arguments
 p = argparse.ArgumentParser(
@@ -27,7 +35,10 @@ p = argparse.ArgumentParser(
 p.add_argument(
     "--config",
     type=str,
-    default="/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/config/preprocessor_config.yaml",
+    default=os.path.join(
+        SCRATCH_PATH,
+        "DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/config/preprocessor_config.yaml",
+    ),
 )
 p.add_argument("--year", type=int, default=2012)
 p.add_argument("--n_cpus", type=int, default=1)

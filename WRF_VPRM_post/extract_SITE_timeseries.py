@@ -10,6 +10,18 @@ import sys
 import xarray as xr
 from scipy.interpolate import RegularGridInterpolator
 from collections import defaultdict
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+CSVFOLDER = os.getenv("CSVFOLDER", "./csv/")
 
 
 def compute_slope_aspect(hgt, lats, lons):
@@ -161,21 +173,29 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
     run_Pmodel = False
     subday = ""
     if run_Pmodel:
-        gpp_pmodel_path = "/scratch/c7071034/DATA/MODIS/MODIS_FPAR/gpp_pmodel/"
-        migli_path = "/scratch/c7071034/DATA/RECO_Migli"
+        gpp_pmodel_path = os.path.join(
+            SCRATCH_PATH, "DATA/MODIS/MODIS_FPAR/gpp_pmodel/"
+        )
+        migli_path = os.path.join(SCRATCH_PATH, "DATA/RECO_Migli")
         subday = "subdailyC3_"
 
-    output_dir = "./csv"
+    output_dir = CSVFOLDER
     d0X = "wrfout_d01"
     if res == "1km":
         d0X = "wrfout_d02"
-        vprm_input_path_1km = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_2012-06-23_00:00:00.nc"
+        vprm_input_path_1km = os.path.join(
+            SCRATCH_PATH,
+            "DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_2012-06-23_00:00:00.nc",
+        )
         ds = xr.open_dataset(vprm_input_path_1km)
         # ['Times', 'XLONG', 'XLAT', 'EVI_MIN', 'EVI_MAX', 'EVI', 'LSWI_MIN', 'LSWI_MAX', 'LSWI', 'VEGFRA_VPRM']
         veg_frac_map = ds["VEGFRA_VPRM"].values
         veg_frac_map = np.nan_to_num(veg_frac_map, nan=0.0)
     else:
-        vprm_input_path = f"/scratch/c7071034/DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_2012-06-23_00:00:00.nc"
+        vprm_input_path = os.path.join(
+            SCRATCH_PATH,
+            f"DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_2012-06-23_00:00:00.nc",
+        )
         ds = xr.open_dataset(vprm_input_path)
         # ['Times', 'XLONG', 'XLAT', 'EVI_MIN', 'EVI_MAX', 'EVI', 'LSWI_MIN', 'LSWI_MAX', 'LSWI', 'VEGFRA_VPRM']
         veg_frac_map = ds["VEGFRA_VPRM"].values
@@ -778,8 +798,8 @@ def main():
         sim_type = ""  # "" or "_cloudy" - run one after the other
 
     wrf_paths = [
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km",
-        # f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km",
+        # f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km",
     ]
     radius = 10  # radius in which the best fitting locaiton is searched
 

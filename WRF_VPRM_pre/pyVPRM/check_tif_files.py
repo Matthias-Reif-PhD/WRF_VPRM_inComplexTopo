@@ -1,5 +1,13 @@
 from osgeo import gdal
 import numpy as np
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
 
 # Open the dataset
 dataset = gdal.Open("cropped_3km_U2018_CLC2018_V2020_20u1_with_255.tif")

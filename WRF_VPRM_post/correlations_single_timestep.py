@@ -263,8 +263,8 @@ for (
 
     # VPRM:
     if VPRM_flag:
-        file_path_VPRM = (
-            "/media/madse/scratch/VPRM_data/VPRM_ECMWF_" + VPRM_var + "_2020_CP.nc"
+        file_path_VPRM = os.path.join(
+            SCRATCH_PATH, "DATA/VPRM_data/VPRM_ECMWF_" + VPRM_var + "_2020_CP.nc"
         )
         VPRM_data = nc.Dataset(file_path_VPRM)
         times_VPRM = VPRM_data.variables["time"]

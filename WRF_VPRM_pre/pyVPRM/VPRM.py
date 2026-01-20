@@ -3,6 +3,15 @@ import warnings
 warnings.filterwarnings("ignore")
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_inComplexTopo")
+
 import pathlib
 import numpy as np
 import pyVPRM

@@ -94,7 +94,7 @@ cd $HOME/Github/WRF_VPRM_pre/CORINE
 
 ## Step 4: VPRM Inputs
 
-1. Clone & setup [pyVPRM](https://github.com/tglauch/pyVPRM)
+1. Clone & setup (see "Installation" in README) [pyVPRM](https://github.com/tglauch/pyVPRM)
 2. Download satellite data (MODIS)
 3. Run pyVPRM preprocessing
 4. Clone & run [vprm_shapeshifter](https://github.com/michal-galkowski/vprm_shapeshifter)

@@ -4,12 +4,19 @@ import glob
 import xarray as xr
 import numpy as np
 import shutil
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
 
 warnings.filterwarnings("ignore")
 
 # Base directory path
-base = (
-    "/scratch/c7071034/DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out_d01_2012_9km/"
+base = os.path.join(
+    SCRATCH_PATH, "DATA/pyVPRM/pyVPRM_examples/wrf_preprocessor/out_d01_2012_9km/"
 )
 
 # Iterate over unique base file prefixes

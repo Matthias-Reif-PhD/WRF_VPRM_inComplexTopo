@@ -10,6 +10,18 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import argparse
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+CSVFOLDER = os.getenv("CSVFOLDER", "./csv/")
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -75,20 +87,24 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
     ################################# INPUT ##############################################
 
     run_Pmodel = False  # set to True if you want to run Pmodel and Migliavacca RECO
-    csv_folder = "./csv/"
+    csv_folder = CSVFOLDER
     # set standard deviation of topography
     STD_TOPOs = [200]
     STD_TOPO_flags = ["gt"]  # "lt" lower than or "gt" greater than STD_TOPO
     ref_sims = ["", "_REF"]  # "_REF" to use REF simulation or "" for tuned values
 
     if run_Pmodel:
-        migli_path = "/scratch/c7071034/DATA/RECO_Migli/"
-        gpp_folder = "/scratch/c7071034/DATA/MODIS/MODIS_FPAR/gap_filled/gpp_pmodel/"
+        migli_path = os.path.join(SCRATCH_PATH, "DATA/RECO_Migli/")
+        gpp_folder = os.path.join(
+            SCRATCH_PATH, "DATA/MODIS/MODIS_FPAR/gap_filled/gpp_pmodel/"
+        )
         subdaily = "_subdailyC3v2"  # "_subdailyC3v2" or "" to use subdaily GPP
 
     #######################################################################################
     # load CAMS data
-    CAMS_path = "/scratch/c7071034/DATA/CAMS/ghg-reanalysis_surface_2012_full.nc"
+    CAMS_path = os.path.join(
+        SCRATCH_PATH, "DATA/CAMS/ghg-reanalysis_surface_2012_full.nc"
+    )
 
     CAMS_data = nc.Dataset(CAMS_path)
     times_CAMS = CAMS_data.variables["valid_time"]
@@ -709,11 +725,11 @@ def main():
         sim_type = ""  # "" or "_cloudy" or "_parm_err"
 
     wrf_paths = [
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_3km{sim_type}",
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_9km{sim_type}",
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_27km{sim_type}",
-        f"/scratch/c7071034/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",  # all resolutions have to be used, otherwise code needs to be changed
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_9km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_27km{sim_type}",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",  # all resolutions have to be used, otherwise code needs to be changed
     ]
 
     exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_type)

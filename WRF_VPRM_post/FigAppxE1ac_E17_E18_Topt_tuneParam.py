@@ -8,6 +8,17 @@ import matplotlib.pyplot as plt
 import os
 from scipy.optimize import curve_fit, minimize
 import seaborn as sns
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+GITHUB_PATH = os.getenv(
+    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
+)
+OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
 
 
 # Define a mirrored Gaussian function (to model negative GPP)
@@ -57,11 +68,11 @@ def find_minimum_of_cubic_poly(coeffs, x_range):
 
 
 # Define paths and parameters
-base_path = "/scratch/c7071034/DATA/Fluxnet2015/Alps/"
-plot_path = "./plots/"
+base_path = os.path.join(SCRATCH_PATH, "DATA/Fluxnet2015/Alps/")
+plot_path = OUTFOLDER
 font_size = 20
 site_info = pd.read_csv(
-    "/scratch/c7071034/DATA/Fluxnet2015/Alps/site_info_all_FLUXNET2015.csv"
+    os.path.join(SCRATCH_PATH, "DATA/Fluxnet2015/Alps/site_info_all_FLUXNET2015.csv")
 )
 plot_data = True  # Set this to False if you don't want to plot the data
 save_data = True  # Set this to False if you don't want to save the data
@@ -351,8 +362,8 @@ for CO2_parametrization in ["old"]:  # "migli","old","new"
         )
         # base_path = "/home/madse/Downloads/Fluxnet_Data/all_tuned_params/" + run_ID
         # print(f"processing {run_ID}")
-        base_path = "/scratch/c7071034/DATA/Fluxnet2015/Alps/"
-        plot_path = "/home/c707/c7071034/Github/WRF_VPRM_post/plots"
+        base_path = os.path.join(SCRATCH_PATH, "DATA/Fluxnet2015/Alps/")
+        plot_path = OUTFOLDER
 
         if CO2_parametrization == "migli":
             print(f"for CO2_parametrization of Migliavacca")
