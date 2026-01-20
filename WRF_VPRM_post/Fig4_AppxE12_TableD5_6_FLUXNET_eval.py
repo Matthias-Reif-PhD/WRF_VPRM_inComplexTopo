@@ -17,9 +17,11 @@ import pytz
 import numpy as np
 import pandas as pd
 import matplotlib
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 # use non-interactive backend for headless environments
 matplotlib.use("Agg")

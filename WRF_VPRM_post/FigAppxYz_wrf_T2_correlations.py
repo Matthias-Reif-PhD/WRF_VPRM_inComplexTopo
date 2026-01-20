@@ -17,9 +17,11 @@ import pandas as pd
 from datetime import datetime
 from sklearn.metrics import r2_score, mean_squared_error
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 
 def haversine(lat1, lon1, lat2, lon2):

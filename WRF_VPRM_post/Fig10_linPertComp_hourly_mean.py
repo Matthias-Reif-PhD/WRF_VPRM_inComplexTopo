@@ -16,9 +16,11 @@ import glob
 from datetime import datetime, timedelta
 from collections import defaultdict
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 ############# INPUT ############
 save_plot_maps = False

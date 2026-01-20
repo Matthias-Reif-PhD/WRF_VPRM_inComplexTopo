@@ -21,16 +21,16 @@ import netCDF4 as nc
 import pandas as pd
 from scipy.interpolate import RegularGridInterpolator
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables from .env file
-load_dotenv()
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env")
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
-GITHUB_PATH = os.getenv(
-    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
-)
-OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
+OUTFOLDER = os.getenv("OUTFOLDER")
 
 ############# INPUT PARAMETERS FIG 2a ############
 dx = "_54km"
@@ -57,7 +57,7 @@ lon = ds["XLONG"].values
 
 # --- Load d02 domain and restrict data to that extent ---
 """Load d02 WRF domain extent and mask vegetation data accordingly."""
-d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WPS/geo_em.d02.nc"))
+d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "WPS/geo_em.d02.nc"))
 lat2 = (
     d2["XLAT_M"]
     .isel(Time=0, south_north=slice(10, -10), west_east=slice(10, -10))
