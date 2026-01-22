@@ -17,14 +17,6 @@ Github/
 └── WRF_VPRM_pre
 ```
 
-find all old path and replace them with yours
-
-```
-grep -ir /home/c707/c7071034
-grep -ir /scratch/c7071034
-```
-
-
 **Scratch folder:**
 Clone the WRF and WPS repos 
 ```
@@ -38,11 +30,17 @@ clone https://github.com/Matthias-Reif-PhD/WPS
 │   ├── CAMS/
 │   ├── CORINE_LC/
 │   ├── ECMWF/
+│   |   ├── pressure
+│   |   └── surface
+|   ├── Fluxnet2015
+|   │   └── Alps
 │   ├── MODIS/
 │   ├── pyVPRM/
+|   │   └── pyVPRM_examples
 │   ├── vprm_shapeshifter/
 │   ├── WPS_GEOG/
 │   └── VPRM_input/
+│   └── WRFOUT/
 ├── WPS/
 ├── WRF_54km/
 ├── WRF_27km/
