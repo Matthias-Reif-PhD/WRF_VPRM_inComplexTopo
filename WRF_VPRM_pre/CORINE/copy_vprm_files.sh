@@ -1,5 +1,21 @@
 #!/bin/bash
 
+set -euo pipefail
+
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
 # Define the start and end dates
 start_date="2012-07-01"
 end_date="2012-07-31"
@@ -16,7 +32,7 @@ while [[ "$current_date" < "$end_date" || "$current_date" == "$end_date" ]]; do
         file_name="vprm_input_${domain}_${current_date}_00:00:00.nc"
         
         # Define the target file name without the .nc extension
-        target_file="/scratch/c7071034/WRF/test/em_real/vprm_input_${domain}_${current_date}_00:00:00.nc"
+        target_file="$SCRATCH_PATH"/WRF/test/em_real/vprm_input_${domain}_${current_date}_00:00:00.nc
 
         # Copy the file to the target directory without the .nc ending
         cp ${file_name} ${target_file}

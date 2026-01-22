@@ -3,6 +3,23 @@ set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 # set -x  # Print commands and their arguments as they are executed
 
+set -euo pipefail
+
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
+
 ##### Settings ########
 START_DATE=$1
 END_DATE=$2
@@ -14,28 +31,28 @@ for res in "${resx[@]}"
 do
   # echo "Resolution is: $res" >&2
   # echo "Running WPS." >&2
-   cp /scratch/c7071034/WPS/namelist.wps_$res /scratch/c7071034/WPS/namelist.wps
-   namelist_wps="/scratch/c7071034/WPS/namelist.wps"
-   cd /scratch/c7071034/WPS || exit 1
+   cp "$SCRATCH_PATH"/WPS/namelist.wps_$res "$SCRATCH_PATH"/WPS/namelist.wps
+   namelist_wps=""$SCRATCH_PATH"/WPS/namelist.wps"
+   cd "$SCRATCH_PATH"/WPS || exit 1
    # Update namelist.wps
    sed -i "s/^ *start_date *=.*/ start_date = '${START_DATE}', '${START_DATE}',/" "$namelist_wps"
    sed -i "s/^ *end_date *=.*/ end_date   = '${END_DATE}', '${END_DATE}',/" "$namelist_wps"
    sed -i "s/^\s*prefix\s*=.*$/ prefix = 'FILE',/" "$namelist_wps"
    # Link and run WPS
-   ./link_grib.csh /scratch/c7071034/DATA/ECMWF/pressure/era5_data_2012
+   ./link_grib.csh "$SCRATCH_PATH"/DATA/ECMWF/pressure/era5_data_2012
    ln -sf ./ungrib/Variable_Tables/Vtable.ECMWF ./Vtable
    ./ungrib.exe
    rm -f GRIBFILE.*
    sed -i "s/^\s*prefix\s*=.*$/ prefix = 'SFILE',/" "$namelist_wps"
-   ./link_grib.csh /scratch/c7071034/DATA/ECMWF/surface/era5_surface_2012
+   ./link_grib.csh "$SCRATCH_PATH"/DATA/ECMWF/surface/era5_surface_2012
    ln -sf ./ungrib/Variable_Tables/Vtable.ECMWF ./Vtable
    ./ungrib.exe
    ./geogrid.exe
    ./metgrid.exe
   # echo "Finished WPS." >&2
    # Create symbolic links for met_em files
-   cd /scratch/c7071034/WRF_$res/test/em_real/ || exit 1
-   mv /scratch/c7071034/WPS/met_em.d0* .
+   cd "$SCRATCH_PATH"/WRF_$res/test/em_real/ || exit 1
+   mv "$SCRATCH_PATH"/WPS/met_em.d0* .
 
    # Extract components
    START=$(echo $START_DATE | cut -d'_' -f1) # e.g. 2012-07-02
@@ -52,13 +69,13 @@ do
 
      # echo "Copying VPRM files for $current_date..." >&2
 
-      cp "/scratch/c7071034/DATA/VPRM_input/vprm_corine_${res}/vprm_input_d01_${START_YEAR}-${START_MONTH}-${START_DAY}_00:00:00.nc" \
-         "/scratch/c7071034/WRF_$res/test/em_real/vprm_input_d01_${START_YEAR}-${START_MONTH}-${START_DAY}_${START_HOUR}:00:00.nc"
+      cp "$SCRATCH_PATH"/DATA/VPRM_input/vprm_corine_${res}/vprm_input_d01_${START_YEAR}-${START_MONTH}-${START_DAY}_00:00:00.nc \
+         "$SCRATCH_PATH"/WRF_$res/test/em_real/vprm_input_d01_${START_YEAR}-${START_MONTH}-${START_DAY}_${START_HOUR}:00:00.nc
 
       # if res == 3km do:
          if [[ "$res" == "3km" ]]; then
-            cp "/scratch/c7071034/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_${START_YEAR}-${START_MONTH}-${START_DAY}_00:00:00.nc" \
-            "/scratch/c7071034/WRF_$res/test/em_real/vprm_input_d02_${START_YEAR}-${START_MONTH}-${START_DAY}_${START_HOUR}:00:00.nc"
+            cp "$SCRATCH_PATH"/DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_${START_YEAR}-${START_MONTH}-${START_DAY}_00:00:00.nc \
+            "$SCRATCH_PATH"/WRF_$res/test/em_real/vprm_input_d02_${START_YEAR}-${START_MONTH}-${START_DAY}_${START_HOUR}:00:00.nc
          fi
       # Increment by one day
       current_date=$(date -I -d "$current_date + 1 day")
@@ -66,7 +83,7 @@ do
 
   # echo "Running real.exe and updating boundary conditions." >&2
    source ~/wrf_dev.sh 
-   namelist_input="/scratch/c7071034/WRF_$res/test/em_real/namelist.input"
+   namelist_input="$SCRATCH_PATH"/WRF_$res/test/em_real/namelist.input
 
    # Find and replace chem_in_opt in namelist.input with chem_in_opt = 0,
    sed -i 's/^chem_in_opt\s*=.*/chem_in_opt = 0,0,/' "$namelist_input"
@@ -95,7 +112,7 @@ do
    sed -i "s/^\s*end_hour\s*=.*/ end_hour                            = ${END_HOUR}, ${END_HOUR},/" "$namelist_input"
 
   # echo "Starting real.exe for $res" >&2
-   cd /scratch/c7071034/WRF_$res/test/em_real || exit 1
+   cd "$SCRATCH_PATH"/WRF_$res/test/em_real || exit 1
 
    # Running Real
 # if res == 9km or 3km then:

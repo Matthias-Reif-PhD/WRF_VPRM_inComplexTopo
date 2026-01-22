@@ -56,12 +56,10 @@ import netCDF4 as nc
 
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
-GITHUB_PATH = os.getenv(
-    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
-)
-OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
-CSVFOLDER = os.getenv("CSVFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/csv")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
+OUTFOLDER = os.getenv("OUTFOLDER")
+CSVFOLDER = os.getenv("CSVFOLDER")
 # ---- Helper functions (kept from original, lightly wrapped) ----
 
 

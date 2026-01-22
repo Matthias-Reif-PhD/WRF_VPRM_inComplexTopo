@@ -1,9 +1,22 @@
 #!/bin/bash
 
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
 # Define variables
-base_paths=(
-    "/scratch/c7071034/DATA/Fluxnet2015/Alps/"
-)   # "/scratch/c7071034/DATA/Fluxnet2015/Europe/"
+base_paths="$SCRATCH_PATH"/DATA/Fluxnet2015/Alps/
+ 
 maxiter=42
 opt_method="diff_evo_V23_SW_05"  # method and version
 VPRM_options=("old") # "migli" "new" "old"
@@ -29,12 +42,32 @@ for base_path in "${base_paths[@]}"; do
 #SBATCH --time=120
 
 
-module purge
-module load Anaconda3/2023.03/miniconda-base-2023.03
-eval "\$(/usr/site/hpc/x86_64/generic/Anaconda3/2023.03/bin/conda shell.bash hook)"
-conda activate /scratch/c7071034/conda_envs/pyrealm311
+set -euo pipefail
 
-srun python tune_VPRM.py -p "$base_path" -f "$folder_name" -i "$maxiter" -m "$opt_method" -v "$VPRM_old_or_new"
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
+# ------------------------------------------------------------------
+# Load modules and activate Conda environment
+# ------------------------------------------------------------------
+module purge
+module load $CONDA_MODULE
+
+eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
+conda activate "$CONDA_ENV"
+
+srun python main_tune_VPRM.py -p "$base_path" -f "$folder_name" -i "$maxiter" -m "$opt_method" -v "$VPRM_old_or_new"
 EOF
 
             # Submit the job to the cluster

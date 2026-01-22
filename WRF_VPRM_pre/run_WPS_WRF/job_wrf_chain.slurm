@@ -7,16 +7,38 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=5-00:00:00
 
-module purge
-module load Anaconda3/2023.03/miniconda-base-2023.03
-# eval "$(/bin/conda shell.bash hook)"
-eval "$(/usr/site/hpc/x86_64/generic/Anaconda3/2023.03/bin/conda shell.bash hook)"
-conda activate /scratch/c7071034/conda_envs/pyvprm4
 
-REAL_SCRIPT="/home/c707/c7071034/Github/WRF_VPRM_pre/run_WPS_and_REAL.sh"
-WRF_SCRIPT="/home/c707/c7071034/Github/WRF_VPRM_pre/run_WRF.sh"
-COPY_SCRIPT="/scratch/c7071034/DATA/WRFOUT/copy_wrf_output.sh"
+set -euo pipefail
+
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
+# ------------------------------------------------------------------
+# Load modules and activate Conda environment
+# ------------------------------------------------------------------
+module purge
+module load $CONDA_MODULE
+
+eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
+conda activate "$CONDA_ENV"
+
+# adjust your User ID
 USER_ID="c7071034" 
+
+REAL_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_and_REAL.sh
+WRF_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WRF.sh
+COPY_SCRIPT="$SCRATCH_PATH"/DATA/WRFOUT/copy_wrf_output.sh
 resx=("54km" "27km" "9km" "3km")
 
 # START/END dates (6h spinup, end = 0h next day)

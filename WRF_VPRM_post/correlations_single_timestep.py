@@ -23,9 +23,9 @@ ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
-GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo")
-OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
+OUTFOLDER = os.getenv("OUTFOLDER")
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -128,9 +128,9 @@ month = "07"
 
 #######################################################################################
 # load CAMS data
-CAMS_path = os.path.join(SCRATCH_PATH, "DATA/CAMS/ghg-reanalysis_surface_2012-07-01_2012-07-31.nc")
+CAMS_path = os.path.join(
+    SCRATCH_PATH, "DATA/CAMS/ghg-reanalysis_surface_2012-07-01_2012-07-31.nc"
 )
-
 CAMS_data = nc.Dataset(CAMS_path)
 times_CAMS = CAMS_data.variables["valid_time"]
 

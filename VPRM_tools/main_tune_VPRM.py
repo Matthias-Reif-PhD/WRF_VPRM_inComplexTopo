@@ -21,6 +21,13 @@ from pModel import pModel_subdaily
 import argparse
 import sys
 from permetrics import RegressionMetric
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# ==================== Configuration ====================
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 
 
 ############################## general functions #############################################
@@ -160,7 +167,7 @@ def main():
         single_year = False  # set true to run only one year. For 2012 there are specific Topt values for chosen sites.
         year_to_plot = 2012
     else:  # to run locally for single cases
-        base_path = "/scratch/c7071034/DATA/Fluxnet2015/Alps/"
+        base_path = f"{SCRATCH_PATH}/DATA/Fluxnet2015/Alps/"
         maxiter = 42  # (default=100 takes ages)
         opt_method = "diff_evo_V23"  # version of diff evo
         CO2_parametrization = "old"  # "old","new", "migli"

@@ -20,7 +20,7 @@ Rscript Modis_timeseries_FluxNet.r
 
 ```bash
 zip FLX_AT-Mie_files.zip FLX_AT-Mie_M*
-scp FLX_AT-Mie_files.zip c7071034@leo5.uibk.ac.at:/scratch/c7071034/DATA/Fluxnet2015/
+mv FLX_AT-Mie_files.zip "$SCRATCH_PATH"/DATA/Fluxnet2015/
 ```
 
 ### Step 3: Run Parameter Optimization
@@ -30,7 +30,7 @@ scp FLX_AT-Mie_files.zip c7071034@leo5.uibk.ac.at:/scratch/c7071034/DATA/Fluxnet
 ```
 Optimizes VPRM parameters for both old and new formulations using differential evolution (experimental pmodel option is available).
 
-### runs `tune_VPRM.py`
+### runs `main_tune_VPRM.py`
 Main optimization script that:
 - Reads FLUXNET half-hourly data and MODIS satellite data for each site
 - Preprocesses data (QC filtering, missing value handling, variable calculation)
@@ -40,13 +40,11 @@ Main optimization script that:
 - Evaluates results using regression metrics (RMSE, R², NNSE)
 - Generates diagnostic plots and saves optimized parameters to Excel files
 
-**Dependencies (codes used by `tune_VPRM.py`):**
+**Dependencies (codes used by `main_tune_VPRM.py`):**
 - `VPRM.py`: VPRM model implementations (old/new versions, RECO/GPP calculations)
 - `pModel.py`: P-model for sub-daily GPP predictions (alternative to VPRM)
 - `plots_for_VPRM.py`: Visualization functions for optimization results
 - `Modis_timeseries_FluxNet.r`: Pre-processing script to generate MODIS input files
-
-
 
 
 ### Step 4: Visualize Results
@@ -59,7 +57,7 @@ Main optimization script that:
 ### Other Key Scripts
 
 - `Modis_timeseries_FluxNet.r`: Extract MODIS time series for FLUXNET sites
-- `submit_jobs_tune_VPRM.sh`: Submit parameter optimization jobs to cluster (runs `tune_VPRM.py`)
+- `submit_jobs_tune_VPRM.sh`: Submit parameter optimization jobs to cluster (runs `main_tune_VPRM.py`)
 - `plots_for_VPRM_from_excel.ipynb`: Generate parameter distribution plots from optimization results
 
 

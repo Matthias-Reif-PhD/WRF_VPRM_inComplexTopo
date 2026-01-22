@@ -10,17 +10,11 @@ clone https://github.com/Matthias-Reif-PhD/WRF/tree/WRF-P
 clone https://github.com/Matthias-Reif-PhD/WPS/tree/WRF-VPRM-CLC
 ```
 
-find all old path and replace them with yours
-
-```
-grep -ir /home/c707/c7071034
-grep -ir /scratch/c7071034
-```
-
 ## Scripts
 
 ### `job_wrf_chain.slurm`
 Main SLURM job script that orchestrates the full WRF chain for multiple simulation dates. Submits parallel REAL and WRF jobs, monitors completion, and copies results.
+Edit the USER_ID, this will only work on similar architectures
 
 **Usage:**
 - Edit the `dates` array with desired date ranges (format: `"YYYY-MM-DD_HH:MM:SS YYYY-MM-DD_HH:MM:SS"`)

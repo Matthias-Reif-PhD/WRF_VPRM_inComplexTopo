@@ -12,7 +12,7 @@ resx=("$@")
 
 for res in "${resx[@]}"
 do
-   cd /scratch/c7071034/WRF_$res/test/em_real || exit 1
+   cd "$SCRATCH_PATH"/WRF_$res/test/em_real || exit 1
    # Extract components
    START_YEAR=$(echo "$START_DATE" | cut -d'-' -f1)
    START_MONTH=$(echo "$START_DATE" | cut -d'-' -f2)
@@ -26,16 +26,16 @@ do
 
    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    # !!! you have to adopt the path_CAMS_file  (and WRF_V2?)
-   conda run -n py_basic python /home/c707/c7071034/Github/WRF_VPRM_pre/prep_boundary_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00 
-   conda run -n py_basic python /home/c707/c7071034/Github/WRF_VPRM_pre/prep_initial_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00
+   "$CONDA_ENV/bin/python" "$GITHUB_PATH"WRF_VPRM_inComplexTopo/WRF_VPRM_pre/prep_boundary_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00 
+   "$CONDA_ENV/bin/python" "$GITHUB_PATH"WRF_VPRM_inComplexTopo/WRF_VPRM_pre/prep_initial_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00
 
-   mv /scratch/c7071034/WRF_$res/test/em_real/wrfbdy_d01_updated /scratch/c7071034/WRF_$res/test/em_real/wrfbdy_d01
-   mv /scratch/c7071034/WRF_$res/test/em_real/wrfinput_d01_updated /scratch/c7071034/WRF_$res/test/em_real/wrfinput_d01
+   mv "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfbdy_d01_updated "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfbdy_d01
+   mv "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d01_updated "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d01
    if [[ "$res" == "3km" ]]; then
-      mv /scratch/c7071034/WRF_$res/test/em_real/wrfinput_d02_updated /scratch/c7071034/WRF_$res/test/em_real/wrfinput_d02
+      mv "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d02_updated "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d02
    fi
    # Find and replace chem_in_opt in namelist.input with chem_in_opt = 1,
-   namelist_input="/scratch/c7071034/WRF_$res/test/em_real/namelist.input"
+   namelist_input="$SCRATCH_PATH"/WRF_$res/test/em_real/namelist.input
    sed -i 's/^chem_in_opt\s*=.*/chem_in_opt       = 1,1,/' "$namelist_input"
 
   # echo "Running real.exe and updating boundary conditions complete." >&2

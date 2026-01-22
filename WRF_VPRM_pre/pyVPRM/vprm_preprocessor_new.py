@@ -25,8 +25,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
-GITHUB_PATH = os.getenv("GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_inComplexTopo")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
 
 # Read command line arguments
 p = argparse.ArgumentParser(
