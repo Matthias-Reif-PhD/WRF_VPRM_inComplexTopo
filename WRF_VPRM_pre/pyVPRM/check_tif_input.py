@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 
 file = "E000N60_PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
 # file = "modified_for_VPRM_U2018_CLC2018_V2020_20u1.tif"

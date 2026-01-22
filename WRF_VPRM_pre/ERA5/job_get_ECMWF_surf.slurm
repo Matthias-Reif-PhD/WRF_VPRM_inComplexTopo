@@ -1,42 +1,62 @@
 #!/bin/bash
-#SBATCH --job-name=get_ECMWF2
+#SBATCH --job-name=get_ECMWF_surf2
 #SBATCH --mail-user=matthias.reif@student.uibk.ac.at
 #SBATCH --mail-type=END,FAIL
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=720
 
-# Load Anaconda module and activate the environment
-module purge
-module load Anaconda3/2023.03/miniconda-base-2023.03
-eval "$(/usr/site/hpc/x86_64/generic/Anaconda3/2023.03/bin/conda shell.bash hook)"
-conda activate /scratch/c7071034/conda_envs/py_basic
+set -euo pipefail
 
-cd /scratch/c7071034/DATA/ECMWF/pressure
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
+# ------------------------------------------------------------------
+# Load modules and activate Conda environment
+# ------------------------------------------------------------------
+module purge
+module load $CONDA_MODULE
+
+eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
+conda activate "$CONDA_ENV"
+
+PYTHON="$CONDA_ENV/bin/python"
+
+cd "$SCRATCH_PATH"/DATA/ECMWF/surface
 file_path="$HOME/.cdsapirc"
 # Replace the line starting with 'url:' using sed
 sed -i '/^url:/c\url: https://cds.climate.copernicus.eu/api' "$file_path"
 echo "Updated 'url:' line in $file_path."
 
+dates=(
+#clearsky 
 # "12.01."
 # "22.02."
-# "15.03."
 # "27.03."
 # "27.04."
-# "08.05."
 # "26.05."
-# "15.06."
 # "28.06."
 # "27.07."
-# "18.08."
 # "27.08."
-# "08.09."
 # "21.09."
 # "20.10."
 # "15.11."
 # "24.12."
-
 #cloudy 
+# "20.01."
+# "19.02."
+# "19.03."
 # "07.04."
 # "16.05."
 # "10.06."
@@ -47,13 +67,8 @@ echo "Updated 'url:' line in $file_path."
 # "19.09."
 # "15.10."
 # "11.11."
-# "07.12."
-dates=(
-"20.01."
-"19.02."
-"19.03."
+"07.12."
 )
-
 
 start_dates=()
 end_dates=()
@@ -83,12 +98,5 @@ done
 # Example: print all
 for i in "${!dates[@]}"; do
     echo "Start: ${start_dates[$i]}, End: ${end_dates[$i]}, Month: ${months[$i]}, Year: $year"
-    /scratch/c7071034/conda_envs/py_basic/bin/python /home/c707/c7071034/Github/WRF_VPRM_pre/get_ECMWF_pressure.py --start ${start_dates[$i]} --end "${end_dates[$i]}" --month "${months[$i]}"  --year $year
+    "$PYTHON" "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/get_ECMWF_surface.py --start ${start_dates[$i]} --end "${end_dates[$i]}" --month "${months[$i]}"  --year $year
 done
-
-
-# /scratch/c7071034/conda_envs/py_basic/bin/python /home/c707/c7071034/Github/WRF_VPRM_pre/get_ECMWF_pressure.py --start 16 --end 16 --month 3 --year 2012
-
-
-# for CAMS use
-# sed -i '/^url:/c\url: https://ads.atmosphere.copernicus.eu/api' "$file_path"

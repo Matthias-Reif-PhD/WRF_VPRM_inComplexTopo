@@ -1,7 +1,23 @@
 #!/bin/bash
+set -euo pipefail
+
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
 module load nco
 
-folder="/scratch/c7071034/DATA/CAMS"
+folder="$SCRATCH_PATH"/DATA/CAMS
 
 infile="$folder/ghg-reanalysis_surface_2012_full.nc"
 outfile="$folder/ghg-reanalysis_surface_2012_WRFVPRM_ready.nc"

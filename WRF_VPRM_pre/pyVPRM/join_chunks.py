@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 
 warnings.filterwarnings("ignore")
 

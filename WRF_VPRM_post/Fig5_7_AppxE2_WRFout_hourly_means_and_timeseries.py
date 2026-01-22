@@ -27,11 +27,9 @@ ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
-GITHUB_PATH = os.getenv(
-    "GITHUB_PATH", "/mnt/ssd2/WRF-VPRM_zenodo/WRF_VPRM_inComplexTopo"
-)
-OUTFOLDER = os.getenv("OUTFOLDER", f"{GITHUB_PATH}/WRF_VPRM_post/plots/")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
+GITHUB_PATH = os.getenv("GITHUB_PATH")
+OUTFOLDER = os.getenv("OUTFOLDER")
 
 # Variable labels for scientific LaTeX-style plotting
 var_labels = {

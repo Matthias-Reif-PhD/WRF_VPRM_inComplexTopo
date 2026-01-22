@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ==================== Configuration ====================
-SCRATCH_PATH = os.getenv("SCRATCH_PATH", "/mnt/ssd2/WRF-VPRM_zenodo")
+SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 
 parser = argparse.ArgumentParser(
     description="Download ERA5 pressure level data for a given date range."
