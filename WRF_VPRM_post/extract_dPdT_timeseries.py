@@ -1,3 +1,11 @@
+"""
+extract_dPdT_timeseries.py
+==============================================
+Extract dPdT timeseries from WRF-VPRM outputs across multiple resolutions
+and save to CSV files for further analysis.
+==============================================
+"""
+
 import numpy as np
 import pandas as pd
 import netCDF4 as nc

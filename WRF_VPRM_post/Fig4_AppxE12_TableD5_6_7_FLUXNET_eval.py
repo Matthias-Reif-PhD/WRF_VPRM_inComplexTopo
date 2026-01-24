@@ -1,10 +1,36 @@
 """
-Fig4_FLUXNET_eval.py
-
+Fig4_AppxE12_TableD5_6_FLUXNET_eval.py
+==============================================
 Refactored from `plot_FLX_ts_1km.py` with minimal changes to behaviour.
 - Organised into functions: main(), load_csvs(), load_cams(), process_location()
 - Removed stray tokens and small cleanup only.
 - Keeps plotting and metric calculations unchanged.
+
+you have to download the FLUXNET2015 data for the following sites to the folder:
+"$SCRATCH_PATH"/DATA/Fluxnet2015/Alps
+
+FLX_AT-Neu_FLUXNET2015_FULLSET_2002-2012_1-4
+FLX_CH-Cha_FLUXNET2015_FULLSET_2005-2014_2-4
+FLX_CH-Dav_FLUXNET2015_FULLSET_1997-2014_1-4
+FLX_CH-Fru_FLUXNET2015_FULLSET_2005-2014_2-4
+FLX_CH-Lae_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_CH-Oe1_FLUXNET2015_FULLSET_2002-2008_2-4
+FLX_CH-Oe2_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_DE-Hai_FLUXNET2015_FULLSET_2000-2012_1-4
+FLX_DE-Kli_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_DE-Lkb_FLUXNET2015_FULLSET_2009-2013_1-4
+FLX_FR-Fon_FLUXNET2015_FULLSET_2005-2014_1-4
+FLX_FR-Gri_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_IT-Isp_FLUXNET2015_FULLSET_2013-2014_1-4
+FLX_IT-La2_FLUXNET2015_FULLSET_2000-2002_1-4
+FLX_IT-Lav_FLUXNET2015_FULLSET_2003-2014_2-4
+FLX_IT-MBo_FLUXNET2015_FULLSET_2003-2013_1-4
+FLX_IT-PT1_FLUXNET2015_FULLSET_2002-2004_1-4
+FLX_IT-Ren_FLUXNET2015_FULLSET_1998-2013_1-4
+FLX_IT-Tor_FLUXNET2015_FULLSET_2008-2014_2-4
+
+if you set fluxnet_site_means = True in main() you can generate Table D7
+==============================================
 """
 
 from __future__ import annotations
@@ -29,31 +55,6 @@ import matplotlib.pyplot as plt
 from permetrics import RegressionMetric
 from scipy.interpolate import RegularGridInterpolator
 import netCDF4 as nc
-
-# ==================== Download ====================
-# to run this code download the following FLUXNET2015 sites data in the folder:
-# DATA/Fluxnet2015/Alps
-
-# FLX_AT-Neu_FLUXNET2015_FULLSET_2002-2012_1-4
-# FLX_CH-Cha_FLUXNET2015_FULLSET_2005-2014_2-4
-# FLX_CH-Dav_FLUXNET2015_FULLSET_1997-2014_1-4
-# FLX_CH-Fru_FLUXNET2015_FULLSET_2005-2014_2-4
-# FLX_CH-Lae_FLUXNET2015_FULLSET_2004-2014_1-4
-# FLX_CH-Oe1_FLUXNET2015_FULLSET_2002-2008_2-4
-# FLX_CH-Oe2_FLUXNET2015_FULLSET_2004-2014_1-4
-# FLX_DE-Hai_FLUXNET2015_FULLSET_2000-2012_1-4
-# FLX_DE-Kli_FLUXNET2015_FULLSET_2004-2014_1-4
-# FLX_DE-Lkb_FLUXNET2015_FULLSET_2009-2013_1-4
-# FLX_FR-Fon_FLUXNET2015_FULLSET_2005-2014_1-4
-# FLX_FR-Gri_FLUXNET2015_FULLSET_2004-2014_1-4
-# FLX_IT-Isp_FLUXNET2015_FULLSET_2013-2014_1-4
-# FLX_IT-La2_FLUXNET2015_FULLSET_2000-2002_1-4
-# FLX_IT-Lav_FLUXNET2015_FULLSET_2003-2014_2-4
-# FLX_IT-MBo_FLUXNET2015_FULLSET_2003-2013_1-4
-# FLX_IT-PT1_FLUXNET2015_FULLSET_2002-2004_1-4
-# FLX_IT-Ren_FLUXNET2015_FULLSET_1998-2013_1-4
-# FLX_IT-Tor_FLUXNET2015_FULLSET_2008-2014_2-4
-
 
 # ==================== Configuration ====================
 SCRATCH_PATH = os.getenv("SCRATCH_PATH")
@@ -933,6 +934,9 @@ def main():
     timespan = "2012-01-01 00:00:00_2012-12-31 00:00:00"
     sim_type = "_all"
     radius = 30
+    fluxnet_site_means = (
+        False  # set True to additionally generate Table D7 (takes a few minutes)
+    )
     outfolder = OUTFOLDER
     base_dir_FLX = os.path.join(SCRATCH_PATH, "DATA/Fluxnet2015/Alps")
     fluxtypes = ["T2_WRF", "NEE_WRF", "GPP_WRF", "RECO_WRF"]
@@ -1040,19 +1044,6 @@ def main():
         "FR-Fon",
         "FR-Gri",
     ]
-
-    # Get average values of each location for the entire year and WRF-matched timesteps
-    start_date_2012 = pd.Timestamp(timespan.split("_")[0]) - pd.Timedelta(hours=1)
-    end_date_2012 = pd.Timestamp(timespan.split("_")[1]) - pd.Timedelta(hours=1)
-
-    df_FLX_site_means = compute_fluxnet_site_means(
-        locations_d03, start_date_2012, end_date_2012, base_dir_FLX, df_example
-    )
-    # Write FLUXNET site means table
-    write_latex_table_fluxnet_means(
-        df_FLX_site_means,
-        outfile=f"{outfolder}fluxnet_site_means_r{radius}.tex",
-    )
 
     # pft_site_match loading (kept identical)
     if sim_type == "_all":
@@ -1171,6 +1162,20 @@ def main():
         model_lat_lon,
         outfile=f"{outfolder}/flux_evaluation_1km_bias_r{radius}.tex",
     )
+
+    if fluxnet_site_means:
+        # Get average values of each location for the entire year and WRF-matched timesteps
+        start_date_2012 = pd.Timestamp(timespan.split("_")[0]) - pd.Timedelta(hours=1)
+        end_date_2012 = pd.Timestamp(timespan.split("_")[1]) - pd.Timedelta(hours=1)
+
+        df_FLX_site_means = compute_fluxnet_site_means(
+            locations_d03, start_date_2012, end_date_2012, base_dir_FLX, df_example
+        )
+        # Write FLUXNET site means table
+        write_latex_table_fluxnet_means(
+            df_FLX_site_means,
+            outfile=f"{outfolder}fluxnet_site_means_r{radius}.tex",
+        )
 
     print("All done.")
 

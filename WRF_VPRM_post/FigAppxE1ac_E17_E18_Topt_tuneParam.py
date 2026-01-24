@@ -1,3 +1,43 @@
+"""
+FigAppxE1ac_E17_E18_Topt_tuneParam.py
+==============================================
+Analyze and plot optimized Topt values against mean and max temperatures.
+This script processes FLUXNET2015 data to determine the optimum temperature (Topt)
+for net ecosystem exchange (NEE) using both mirrored Gaussian and cubic polynomial fits.
+It visualizes the relationship between Topt and mean/max temperatures,
+highlighting real vs extrapolated Topt values.
+
+needs the file:
+"$SCRATCH_PATH"/DATA/Fluxnet2015/Alps/site_info_all_FLUXNET2015.csv
+
+and needs the FLUXNET2015 data for the following sites to the folder:
+"$SCRATCH_PATH"/DATA/Fluxnet2015/Alps
+including the results from the tuning procedure for Topt and files ending with e.g.:
+'old_diff_evo_V23_42.xlsx'
+
+FLX_AT-Neu_FLUXNET2015_FULLSET_2002-2012_1-4
+FLX_CH-Cha_FLUXNET2015_FULLSET_2005-2014_2-4
+FLX_CH-Dav_FLUXNET2015_FULLSET_1997-2014_1-4
+FLX_CH-Fru_FLUXNET2015_FULLSET_2005-2014_2-4
+FLX_CH-Lae_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_CH-Oe1_FLUXNET2015_FULLSET_2002-2008_2-4
+FLX_CH-Oe2_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_DE-Hai_FLUXNET2015_FULLSET_2000-2012_1-4
+FLX_DE-Kli_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_DE-Lkb_FLUXNET2015_FULLSET_2009-2013_1-4
+FLX_FR-Fon_FLUXNET2015_FULLSET_2005-2014_1-4
+FLX_FR-Gri_FLUXNET2015_FULLSET_2004-2014_1-4
+FLX_IT-Isp_FLUXNET2015_FULLSET_2013-2014_1-4
+FLX_IT-La2_FLUXNET2015_FULLSET_2000-2002_1-4
+FLX_IT-Lav_FLUXNET2015_FULLSET_2003-2014_2-4
+FLX_IT-MBo_FLUXNET2015_FULLSET_2003-2013_1-4
+FLX_IT-PT1_FLUXNET2015_FULLSET_2002-2004_1-4
+FLX_IT-Ren_FLUXNET2015_FULLSET_1998-2013_1-4
+FLX_IT-Tor_FLUXNET2015_FULLSET_2008-2014_2-4
+
+==============================================
+"""
+
 import matplotlib
 
 matplotlib.use("Agg")

@@ -8,7 +8,7 @@ Post-processing scripts for WRF-VPRM model output analysis and visualization.
 - **Extraction scripts** (`extract_*.py`): Extract time series data from WRF and FLUXNET outputs
 - **Analysis scripts**: Correlation analysis, parameter tuning, model evaluation
 - **pmodel/**: Includes post-processing capability to compute GPP from WRF output using the P-model
-  - Note: WRF post-processing with pmodel is not included in the publication and would require long-term simulations for validation
+  - Note: WRF post-processing with pmodel is not included in the publication and would require long-term simulations for validation, furthermore you need to adopt the paths
 - **plots/**: Output directory for generated figures
 
 ## Key Scripts
