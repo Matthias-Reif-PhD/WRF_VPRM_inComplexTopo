@@ -1,10 +1,12 @@
-"""Fig3: VPRM parameter visualisations.
-
+"""
+Fig3_VPRM_params_dFldT.py
+==============================================
 This module plots:
 - GPP and R_eco curves per PFT
 - derivatives dGPP/dT and dR_eco/dT per PFT
 
 Refactored into functions for clarity and reuse.
+==============================================
 """
 
 from __future__ import annotations

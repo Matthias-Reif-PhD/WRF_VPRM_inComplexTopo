@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Dec 26 11:36:35 2021
+noFig_wrf_T2_correlations.py
+==============================================
+! not in publication !
 
-@author: madse
+Analyzes correlations between WRF 2-meter temperature differences and topography differences
+at various spatial resolutions. Generates scatter plots and computes linear regression
+coefficients for different temperature bins.
+==============================================
 """
 
 import netCDF4 as nc

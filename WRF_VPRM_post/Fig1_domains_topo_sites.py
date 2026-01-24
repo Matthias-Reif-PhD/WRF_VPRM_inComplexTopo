@@ -1,10 +1,13 @@
 """
+Fig1_domains_topo_sites.py
+==============================================
 Plot WRF domains with topography and FLUXNET site locations.
 
-This module generates publication-quality maps showing:
+This module generates publication maps showing:
 - WRF model domains (single and nested configurations)
 - Topographic contours
 - FLUXNET site locations color-coded by plant functional type (PFT)
+==============================================
 """
 
 import matplotlib

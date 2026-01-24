@@ -1,3 +1,14 @@
+"""
+Fig6_8_areafluxes_per_timestep.py
+==============================================
+Plots area-averaged flux differences per timestep between WRF-VPRM 1km and 54km simulations.
+- Interpolates 54km data onto 1km grid
+- Calculates differences in GPP, RECO, SWDOWN, and RAD scaling
+- Applies coastal and topographic masks
+- Generates styled imshow plots for each variable
+==============================================
+"""
+
 import numpy as np
 import matplotlib
 import os

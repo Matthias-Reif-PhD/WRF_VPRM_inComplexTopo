@@ -1,3 +1,11 @@
+"""
+extract_SITE_timeseries.py
+==============================================
+Extract SITE timeseries of WRF-VPRM output variables over different WRF domains
+for specified date ranges and simulation types and save to CSV files for further analysis.
+==============================================
+"""
+
 import os
 import glob
 import numpy as np

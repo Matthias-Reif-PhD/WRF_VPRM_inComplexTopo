@@ -1,3 +1,18 @@
+"""
+WRF_VPRM_post.extract_wrf_domains_mean_timeseries
+==============================================
+Extract mean time series of WRF model domains at different resolutions
+and save to CSV files for further analysis.
+
+# NOTE: 3km and 27km resolutions have been deactivated (commented out) throughout this script.
+# You can switch between using:
+#   - 1km, 9km, and 54km resolutions (default configuration in wrf_paths)
+#   - 1km, 3km, and 27km resolutions (if using 3 and 27km outcomment the 9km and 54km resolutions in main())
+#   - 1km, 3km, 9km, 27km and 54km resolutions (uncomment the respective commented lines to use these instead)
+==============================================
+
+"""
+
 import netCDF4 as nc
 import glob
 import os
@@ -12,6 +27,7 @@ import argparse
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
+
 
 # Load environment variables from .env file
 ROOT = Path(__file__).resolve().parents[1]
@@ -175,39 +191,39 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
             for STD_TOPO_flag in STD_TOPO_flags:
 
                 # Initialize empty DataFrames with time as the index
-                df_out_3km = pd.DataFrame(index=time_index, columns=columns)
+                # df_out_3km = pd.DataFrame(index=time_index, columns=columns)
                 df_out_9km = pd.DataFrame(index=time_index, columns=columns)
-                df_out_27km = pd.DataFrame(index=time_index, columns=columns)
+                # df_out_27km = pd.DataFrame(index=time_index, columns=columns)
                 df_out_54km = pd.DataFrame(index=time_index, columns=columns)
                 df_out_1km = pd.DataFrame(index=time_index, columns=columns)
                 df_out_cams = pd.DataFrame(index=time_index, columns=columns)
-                data_row_3km = {col: 0 for col in df_out_1km.columns}
+                # data_row_3km = {col: 0 for col in df_out_1km.columns}
                 data_row_9km = {col: 0 for col in df_out_1km.columns}
-                data_row_27km = {col: 0 for col in df_out_1km.columns}
+                # data_row_27km = {col: 0 for col in df_out_1km.columns}
                 data_row_54km = {col: 0 for col in df_out_1km.columns}
                 data_row_1km = {col: 0 for col in df_out_1km.columns}
                 data_row_cams = {col: 0 for col in df_out_1km.columns}
                 # define col only for GPP
                 if run_Pmodel:
-                    df_out_P_3km = pd.DataFrame(index=time_index, columns=["GPP"])
+                    # df_out_P_3km = pd.DataFrame(index=time_index, columns=["GPP"])
                     df_out_P_9km = pd.DataFrame(index=time_index, columns=["GPP"])
-                    df_out_P_27km = pd.DataFrame(index=time_index, columns=["GPP"])
+                    # df_out_P_27km = pd.DataFrame(index=time_index, columns=["GPP"])
                     df_out_P_54km = pd.DataFrame(index=time_index, columns=["GPP"])
                     df_out_P_1km = pd.DataFrame(index=time_index, columns=["GPP"])
-                    data_row_P_3km = {col: 0 for col in df_out_P_1km.columns}
+                    # data_row_P_3km = {col: 0 for col in df_out_P_1km.columns}
                     data_row_P_9km = {col: 0 for col in df_out_P_1km.columns}
-                    data_row_P_27km = {col: 0 for col in df_out_P_1km.columns}
+                    # data_row_P_27km = {col: 0 for col in df_out_P_1km.columns}
                     data_row_P_54km = {col: 0 for col in df_out_P_1km.columns}
                     data_row_P_1km = {col: 0 for col in df_out_P_1km.columns}
                     # define col only for RECO
-                    df_out_M_3km = pd.DataFrame(index=time_index, columns=["RECO"])
+                    # df_out_M_3km = pd.DataFrame(index=time_index, columns=["RECO"])
                     df_out_M_9km = pd.DataFrame(index=time_index, columns=["RECO"])
-                    df_out_M_27km = pd.DataFrame(index=time_index, columns=["RECO"])
+                    # df_out_M_27km = pd.DataFrame(index=time_index, columns=["RECO"])
                     df_out_M_54km = pd.DataFrame(index=time_index, columns=["RECO"])
                     df_out_M_1km = pd.DataFrame(index=time_index, columns=["RECO"])
-                    data_row_M_3km = {col: 0 for col in df_out_M_1km.columns}
+                    # data_row_M_3km = {col: 0 for col in df_out_M_1km.columns}
                     data_row_M_9km = {col: 0 for col in df_out_M_1km.columns}
-                    data_row_M_27km = {col: 0 for col in df_out_M_1km.columns}
+                    # data_row_M_27km = {col: 0 for col in df_out_M_1km.columns}
                     data_row_M_54km = {col: 0 for col in df_out_M_1km.columns}
                     data_row_M_1km = {col: 0 for col in df_out_M_1km.columns}
 
@@ -233,16 +249,17 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                         i = 0
                         # Loop through the files for the timestep
                         # for nc_f1 in file_list_27km:
+
+                        # nc_fid27km = nc.Dataset(
+                        #     os.path.join(wrf_paths[4], wrf_file), "r"
+                        # )
+                        # nc_fid3km = nc.Dataset(
+                        #     os.path.join(wrf_paths[3], wrf_file), "r"
+                        # )
                         nc_fid54km = nc.Dataset(
-                            os.path.join(wrf_paths[4], wrf_file), "r"
-                        )
-                        nc_fid27km = nc.Dataset(
-                            os.path.join(wrf_paths[3], wrf_file), "r"
-                        )
-                        nc_fid9km = nc.Dataset(
                             os.path.join(wrf_paths[2], wrf_file), "r"
                         )
-                        nc_fid3km = nc.Dataset(
+                        nc_fid9km = nc.Dataset(
                             os.path.join(wrf_paths[1], wrf_file), "r"
                         )
                         # relace d01 by d02 in the string of wrf_file
@@ -264,15 +281,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 nc_fid1km.variables[WRF_var][0, 10:-10, 10:-10]
                                 - WRF_factor
                             )
-                            WRF_var_3km = (
-                                nc_fid3km.variables[WRF_var][0, :, :] - WRF_factor
-                            )
+                            # WRF_var_3km = (
+                            #     nc_fid3km.variables[WRF_var][0, :, :] - WRF_factor
+                            # )
                             WRF_var_9km = (
                                 nc_fid9km.variables[WRF_var][0, :, :] - WRF_factor
                             )
-                            WRF_var_27km = (
-                                nc_fid27km.variables[WRF_var][0, :, :] - WRF_factor
-                            )
+                            # WRF_var_27km = (
+                            #     nc_fid27km.variables[WRF_var][0, :, :] - WRF_factor
+                            # )
                             WRF_var_54km = (
                                 nc_fid54km.variables[WRF_var][0, :, :] - WRF_factor
                             )
@@ -280,40 +297,40 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                             WRF_var_1km = nc_fid1km.variables[WRF_var][
                                 0, 10:-10, 10:-10
                             ]
-                            WRF_var_3km = nc_fid3km.variables[WRF_var][0, :, :]
+                            # WRF_var_3km = nc_fid3km.variables[WRF_var][0, :, :]
                             WRF_var_9km = nc_fid9km.variables[WRF_var][0, :, :]
-                            WRF_var_27km = nc_fid27km.variables[WRF_var][0, :, :]
+                            # WRF_var_27km = nc_fid27km.variables[WRF_var][0, :, :]
                             WRF_var_54km = nc_fid54km.variables[WRF_var][0, :, :]
                         else:
                             WRF_var_1km = (
                                 nc_fid1km.variables[WRF_var][0, 0, 10:-10, 10:-10]
                                 * WRF_factor
                             )
-                            WRF_var_3km = (
-                                nc_fid3km.variables[WRF_var][0, 0, :, :] * WRF_factor
-                            )
+                            # WRF_var_3km = (
+                            #     nc_fid3km.variables[WRF_var][0, 0, :, :] * WRF_factor
+                            # )
                             WRF_var_9km = (
                                 nc_fid9km.variables[WRF_var][0, 0, :, :] * WRF_factor
                             )
-                            WRF_var_27km = (
-                                nc_fid27km.variables[WRF_var][0, 0, :, :] * WRF_factor
-                            )
+                            # WRF_var_27km = (
+                            #     nc_fid27km.variables[WRF_var][0, 0, :, :] * WRF_factor
+                            # )
                             WRF_var_54km = (
                                 nc_fid54km.variables[WRF_var][0, 0, :, :] * WRF_factor
                             )
 
-                        lats_3km = nc_fid3km.variables["XLAT"][0, :, :]
-                        lons_3km = nc_fid3km.variables["XLONG"][0, :, :]
-                        landmask_1 = nc_fid3km.variables["LANDMASK"][0, :, :]
-                        WRF_var_3km[landmask_1 == 0] = np.nan
-                        proj_WRF_var_3km = proj_on_finer_WRF_grid(
-                            lats_3km,
-                            lons_3km,
-                            WRF_var_3km,
-                            lats_fine,
-                            lons_fine,
-                            WRF_var_1km,
-                        )
+                        # lats_3km = nc_fid3km.variables["XLAT"][0, :, :]
+                        # lons_3km = nc_fid3km.variables["XLONG"][0, :, :]
+                        # landmask_1 = nc_fid3km.variables["LANDMASK"][0, :, :]
+                        # WRF_var_3km[landmask_1 == 0] = np.nan
+                        # proj_WRF_var_3km = proj_on_finer_WRF_grid(
+                        #     lats_3km,
+                        #     lons_3km,
+                        #     WRF_var_3km,
+                        #     lats_fine,
+                        #     lons_fine,
+                        #     WRF_var_1km,
+                        # )
 
                         lats_9km = nc_fid9km.variables["XLAT"][0, :, :]
                         lons_9km = nc_fid9km.variables["XLONG"][0, :, :]
@@ -328,18 +345,18 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                             WRF_var_1km,
                         )
 
-                        lats_27km = nc_fid27km.variables["XLAT"][0, :, :]
-                        lons_27km = nc_fid27km.variables["XLONG"][0, :, :]
-                        landmask_1 = nc_fid27km.variables["LANDMASK"][0, :, :]
-                        WRF_var_27km[landmask_1 == 0] = np.nan
-                        proj_WRF_var_27km = proj_on_finer_WRF_grid(
-                            lats_27km,
-                            lons_27km,
-                            WRF_var_27km,
-                            lats_fine,
-                            lons_fine,
-                            WRF_var_1km,
-                        )
+                        # lats_27km = nc_fid27km.variables["XLAT"][0, :, :]
+                        # lons_27km = nc_fid27km.variables["XLONG"][0, :, :]
+                        # landmask_1 = nc_fid27km.variables["LANDMASK"][0, :, :]
+                        # WRF_var_27km[landmask_1 == 0] = np.nan
+                        # proj_WRF_var_27km = proj_on_finer_WRF_grid(
+                        #     lats_27km,
+                        #     lons_27km,
+                        #     WRF_var_27km,
+                        #     lats_fine,
+                        #     lons_fine,
+                        #     WRF_var_1km,
+                        # )
 
                         lats_54km = nc_fid54km.variables["XLAT"][0, :, :]
                         lons_54km = nc_fid54km.variables["XLONG"][0, :, :]
@@ -365,9 +382,9 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                         masked_WRF_var_1km = WRF_var_1km.copy()
                         masked_WRF_var_1km[~(land_mask & stdh_mask)] = np.nan
                         WRF_var_1km_topo_m = np.nanmean(masked_WRF_var_1km)
-                        WRF_var_3km_topo = np.nanmean(proj_WRF_var_3km[mask])
+                        # WRF_var_3km_topo = np.nanmean(proj_WRF_var_3km[mask])
                         WRF_var_9km_topo = np.nanmean(proj_WRF_var_9km[mask])
-                        WRF_var_27km_topo = np.nanmean(proj_WRF_var_27km[mask])
+                        # WRF_var_27km_topo = np.nanmean(proj_WRF_var_27km[mask])
                         WRF_var_54km_topo = np.nanmean(proj_WRF_var_54km[mask])
                         # process CAMS data if times fit
                         start_date_nc_f1 = datetime.strptime(
@@ -408,9 +425,9 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 CAMS_topo = np.mean(CAMS_proj[mask])
 
                         data_row_1km[column] = WRF_var_1km_topo_m
-                        data_row_3km[column] = WRF_var_3km_topo
+                        # data_row_3km[column] = WRF_var_3km_topo
                         data_row_9km[column] = WRF_var_9km_topo
-                        data_row_27km[column] = WRF_var_27km_topo
+                        # data_row_27km[column] = WRF_var_27km_topo
                         data_row_54km[column] = WRF_var_54km_topo
                         data_row_cams[column] = CAMS_topo
 
@@ -426,15 +443,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 gpp_P_1km = nc_fid1km.variables["GPP_Pmodel"][
                                     :, :
                                 ].copy()
-                                nc_fid3km = nc.Dataset(
-                                    f"{gpp_folder}gpp_pmodel{subdaily}_3km_"
-                                    + time_str
-                                    + ".nc",
-                                    "r",
-                                )
-                                gpp_P_3km = nc_fid3km.variables["GPP_Pmodel"][
-                                    :, :
-                                ].copy()
+                                # nc_fid3km = nc.Dataset(
+                                #     f"{gpp_folder}gpp_pmodel{subdaily}_3km_"
+                                #     + time_str
+                                #     + ".nc",
+                                #     "r",
+                                # )
+                                # gpp_P_3km = nc_fid3km.variables["GPP_Pmodel"][
+                                #     :, :
+                                # ].copy()
                                 nc_fid9km = nc.Dataset(
                                     f"{gpp_folder}gpp_pmodel{subdaily}_9km_"
                                     + time_str
@@ -444,15 +461,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 gpp_P_9km = nc_fid9km.variables["GPP_Pmodel"][
                                     :, :
                                 ].copy()
-                                nc_fid27km = nc.Dataset(
-                                    f"{gpp_folder}gpp_pmodel{subdaily}_27km_"
-                                    + time_str
-                                    + ".nc",
-                                    "r",
-                                )
-                                gpp_P_27km = nc_fid27km.variables["GPP_Pmodel"][
-                                    :, :
-                                ].copy()
+                                # nc_fid27km = nc.Dataset(
+                                #     f"{gpp_folder}gpp_pmodel{subdaily}_27km_"
+                                #     + time_str
+                                #     + ".nc",
+                                #     "r",
+                                # )
+                                # gpp_P_27km = nc_fid27km.variables["GPP_Pmodel"][
+                                #     :, :
+                                # ].copy()
                                 nc_fid54km = nc.Dataset(
                                     f"{gpp_folder}gpp_pmodel{subdaily}_54km_"
                                     + time_str
@@ -463,14 +480,14 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                     :, :
                                 ].copy()
 
-                                proj_WRF_P_var_3km = proj_on_finer_WRF_grid(
-                                    lats_3km,
-                                    lons_3km,
-                                    gpp_P_3km,
-                                    lats_fine,
-                                    lons_fine,
-                                    WRF_var_1km,
-                                )
+                                # proj_WRF_P_var_3km = proj_on_finer_WRF_grid(
+                                #     lats_3km,
+                                #     lons_3km,
+                                #     gpp_P_3km,
+                                #     lats_fine,
+                                #     lons_fine,
+                                #     WRF_var_1km,
+                                # )
                                 proj_WRF_P_var_9km = proj_on_finer_WRF_grid(
                                     lats_9km,
                                     lons_9km,
@@ -479,14 +496,14 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                     lons_fine,
                                     WRF_var_1km,
                                 )
-                                proj_WRF_P_var_27km = proj_on_finer_WRF_grid(
-                                    lats_27km,
-                                    lons_27km,
-                                    gpp_P_27km,
-                                    lats_fine,
-                                    lons_fine,
-                                    WRF_var_1km,
-                                )
+                                # proj_WRF_P_var_27km = proj_on_finer_WRF_grid(
+                                #     lats_27km,
+                                #     lons_27km,
+                                #     gpp_P_27km,
+                                #     lats_fine,
+                                #     lons_fine,
+                                #     WRF_var_1km,
+                                # )
                                 proj_WRF_P_var_54km = proj_on_finer_WRF_grid(
                                     lats_54km,
                                     lons_54km,
@@ -503,15 +520,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                     np.nan if np.isnan(data).all() else np.nanmean(data)
                                 )
 
-                                data_row_P_3km[column] = np.nanmean(
-                                    proj_WRF_P_var_3km[mask]
-                                )
+                                # data_row_P_3km[column] = np.nanmean(
+                                #     proj_WRF_P_var_3km[mask]
+                                # )
                                 data_row_P_9km[column] = np.nanmean(
                                     proj_WRF_P_var_9km[mask]
                                 )
-                                data_row_P_27km[column] = np.nanmean(
-                                    proj_WRF_P_var_27km[mask]
-                                )
+                                # data_row_P_27km[column] = np.nanmean(
+                                #     proj_WRF_P_var_27km[mask]
+                                # )
                                 data_row_P_54km[column] = np.nanmean(
                                     proj_WRF_P_var_54km[mask]
                                 )
@@ -528,15 +545,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 reco_M_1km = nc_fid1km.variables["RECO_Migli"][
                                     :, :
                                 ].copy()
-                                nc_fid3km = nc.Dataset(
-                                    f"{migli_path}reco_migliavacca{subdaily}_3km_"
-                                    + time_str
-                                    + ".nc",
-                                    "r",
-                                )
-                                reco_M_3km = nc_fid3km.variables["RECO_Migli"][
-                                    :, :
-                                ].copy()
+                                # nc_fid3km = nc.Dataset(
+                                #     f"{migli_path}reco_migliavacca{subdaily}_3km_"
+                                #     + time_str
+                                #     + ".nc",
+                                #     "r",
+                                # )
+                                # reco_M_3km = nc_fid3km.variables["RECO_Migli"][
+                                #     :, :
+                                # ].copy()
                                 nc_fid9km = nc.Dataset(
                                     f"{migli_path}reco_migliavacca{subdaily}_9km_"
                                     + time_str
@@ -546,15 +563,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 reco_M_9km = nc_fid9km.variables["RECO_Migli"][
                                     :, :
                                 ].copy()
-                                nc_fid27km = nc.Dataset(
-                                    f"{migli_path}reco_migliavacca{subdaily}_27km_"
-                                    + time_str
-                                    + ".nc",
-                                    "r",
-                                )
-                                reco_M_27km = nc_fid27km.variables["RECO_Migli"][
-                                    :, :
-                                ].copy()
+                                # nc_fid27km = nc.Dataset(
+                                #     f"{migli_path}reco_migliavacca{subdaily}_27km_"
+                                #     + time_str
+                                #     + ".nc",
+                                #     "r",
+                                # )
+                                # reco_M_27km = nc_fid27km.variables["RECO_Migli"][
+                                #     :, :
+                                # ].copy()
                                 nc_fid54km = nc.Dataset(
                                     f"{migli_path}reco_migliavacca{subdaily}_54km_"
                                     + time_str
@@ -565,14 +582,14 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                     :, :
                                 ].copy()
 
-                                proj_WRF_M_var_3km = proj_on_finer_WRF_grid(
-                                    lats_3km,
-                                    lons_3km,
-                                    reco_M_3km,
-                                    lats_fine,
-                                    lons_fine,
-                                    WRF_var_1km,
-                                )
+                                # proj_WRF_M_var_3km = proj_on_finer_WRF_grid(
+                                #     lats_3km,
+                                #     lons_3km,
+                                #     reco_M_3km,
+                                #     lats_fine,
+                                #     lons_fine,
+                                #     WRF_var_1km,
+                                # )
                                 proj_WRF_M_var_9km = proj_on_finer_WRF_grid(
                                     lats_9km,
                                     lons_9km,
@@ -581,14 +598,14 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                     lons_fine,
                                     WRF_var_1km,
                                 )
-                                proj_WRF_M_var_27km = proj_on_finer_WRF_grid(
-                                    lats_27km,
-                                    lons_27km,
-                                    reco_M_27km,
-                                    lats_fine,
-                                    lons_fine,
-                                    WRF_var_1km,
-                                )
+                                # proj_WRF_M_var_27km = proj_on_finer_WRF_grid(
+                                #     lats_27km,
+                                #     lons_27km,
+                                #     reco_M_27km,
+                                #     lats_fine,
+                                #     lons_fine,
+                                #     WRF_var_1km,
+                                # )
                                 proj_WRF_M_var_54km = proj_on_finer_WRF_grid(
                                     lats_54km,
                                     lons_54km,
@@ -599,15 +616,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                                 )
 
                                 data_row_M_1km[column] = np.nanmean(reco_M_1km[mask])
-                                data_row_M_3km[column] = np.nanmean(
-                                    proj_WRF_M_var_3km[mask]
-                                )
+                                # data_row_M_3km[column] = np.nanmean(
+                                #     proj_WRF_M_var_3km[mask]
+                                # )
                                 data_row_M_9km[column] = np.nanmean(
                                     proj_WRF_M_var_9km[mask]
                                 )
-                                data_row_M_27km[column] = np.nanmean(
-                                    proj_WRF_M_var_27km[mask]
-                                )
+                                # data_row_M_27km[column] = np.nanmean(
+                                #     proj_WRF_M_var_27km[mask]
+                                # )
                                 data_row_M_54km[column] = np.nanmean(
                                     proj_WRF_M_var_54km[mask]
                                 )
@@ -615,40 +632,40 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                         i += 1
 
                     df_out_1km.loc[time, :] = data_row_1km
-                    df_out_3km.loc[time, :] = data_row_3km
+                    # df_out_3km.loc[time, :] = data_row_3km
                     df_out_9km.loc[time, :] = data_row_9km
-                    df_out_27km.loc[time, :] = data_row_27km
+                    # df_out_27km.loc[time, :] = data_row_27km
                     df_out_54km.loc[time, :] = data_row_54km
                     df_out_cams.loc[time, :] = data_row_cams
                     if run_Pmodel:
                         df_out_P_1km.loc[time, :] = data_row_P_1km
-                        df_out_P_3km.loc[time, :] = data_row_P_3km
+                        # df_out_P_3km.loc[time, :] = data_row_P_3km
                         df_out_P_9km.loc[time, :] = data_row_P_9km
-                        df_out_P_27km.loc[time, :] = data_row_P_27km
+                        # df_out_P_27km.loc[time, :] = data_row_P_27km
                         df_out_P_54km.loc[time, :] = data_row_P_54km
                         df_out_M_1km.loc[time, :] = data_row_M_1km
-                        df_out_M_3km.loc[time, :] = data_row_M_3km
+                        # df_out_M_3km.loc[time, :] = data_row_M_3km
                         df_out_M_9km.loc[time, :] = data_row_M_9km
-                        df_out_M_27km.loc[time, :] = data_row_M_27km
+                        # df_out_M_27km.loc[time, :] = data_row_M_27km
                         df_out_M_54km.loc[time, :] = data_row_M_54km
 
                 # Add suffixes to columns
                 df_out_1km = df_out_1km.add_suffix("_1km")
-                df_out_3km = df_out_3km.add_suffix("_3km")
+                # df_out_3km = df_out_3km.add_suffix("_3km")
                 df_out_9km = df_out_9km.add_suffix("_9km")
-                df_out_27km = df_out_27km.add_suffix("_27km")
+                # df_out_27km = df_out_27km.add_suffix("_27km")
                 df_out_54km = df_out_54km.add_suffix("_54km")
                 df_out_cams = df_out_cams.add_suffix("_CAMS")
                 if run_Pmodel:
                     df_out_P_1km = df_out_P_1km.add_suffix("_pmodel_1km")
-                    df_out_P_3km = df_out_P_3km.add_suffix("_pmodel_3km")
+                    # df_out_P_3km = df_out_P_3km.add_suffix("_pmodel_3km")
                     df_out_P_9km = df_out_P_9km.add_suffix("_pmodel_9km")
-                    df_out_P_27km = df_out_P_27km.add_suffix("_pmodel_27km")
+                    # df_out_P_27km = df_out_P_27km.add_suffix("_pmodel_27km")
                     df_out_P_54km = df_out_P_54km.add_suffix("_pmodel_54km")
                     df_out_M_1km = df_out_M_1km.add_suffix("_migli_1km")
-                    df_out_M_3km = df_out_M_3km.add_suffix("_migli_3km")
+                    # df_out_M_3km = df_out_M_3km.add_suffix("_migli_3km")
                     df_out_M_9km = df_out_M_9km.add_suffix("_migli_9km")
-                    df_out_M_27km = df_out_M_27km.add_suffix("_migli_27km")
+                    # df_out_M_27km = df_out_M_27km.add_suffix("_migli_27km")
                     df_out_M_54km = df_out_M_54km.add_suffix("_migli_54km")
 
                 # Merge all DataFrames horizontally
@@ -656,20 +673,20 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                     merged_df = pd.concat(
                         [
                             df_out_1km,
-                            df_out_3km,
+                            # df_out_3km,
                             df_out_9km,
-                            df_out_27km,
+                            # df_out_27km,
                             df_out_54km,
                             df_out_cams,
                             df_out_P_1km,
-                            df_out_P_3km,
+                            # df_out_P_3km,
                             df_out_P_9km,
-                            df_out_P_27km,
+                            # df_out_P_27km,
                             df_out_P_54km,
                             df_out_M_1km,
-                            df_out_M_3km,
+                            # df_out_M_3km,
                             df_out_M_9km,
-                            df_out_M_27km,
+                            # df_out_M_27km,
                             df_out_M_54km,
                         ],
                         axis=1,
@@ -678,9 +695,9 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                     merged_df = pd.concat(
                         [
                             df_out_1km,
-                            df_out_3km,
+                            # df_out_3km,
                             df_out_9km,
-                            df_out_27km,
+                            # df_out_27km,
                             df_out_54km,
                             df_out_cams,
                         ],
@@ -720,16 +737,16 @@ def main():
         end_date = args.end
         sim_type = args.type
     else:  # to run locally
-        start_date = "2012-01-01 00:00:00"
+        start_date = "2012-03-01 00:00:00"
         end_date = "2012-12-31 00:00:00"
         sim_type = ""  # "" or "_cloudy" or "_parm_err"
 
     wrf_paths = [
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",
-        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km{sim_type}",
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_9km{sim_type}",
-        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_27km{sim_type}",
-        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",  # all resolutions have to be used, otherwise code needs to be changed
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",
+        # f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_27km{sim_type}", # if using 3 and 27km outcomment the 9km and 54km resolutions
+        # f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km{sim_type}",
     ]
 
     exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_type)

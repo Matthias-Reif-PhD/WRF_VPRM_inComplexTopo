@@ -1,3 +1,12 @@
+"""
+Fig9_dFldT_hourly_mean.py
+==============================================
+Plots hourly mean diurnal cycles of dT, dGPP, and dRECO
+for different WRF resolutions and simulation types (OPT and REF).
+Utilizes combined data from both cloudy and clear-sky simulations if specified.
+==============================================
+"""
+
 import matplotlib
 
 # use non-interactive backend for headless environments

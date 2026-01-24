@@ -1,10 +1,11 @@
 """
-Fig5_WRFout_hourly_means_and_timeseries.py
-
-Refactored (minimal changes) from `plot_wrf_mean_timeseries_OPT_REF.py`.
-- Kept original functions and logic intact.
-- Removed duplicate imports and stray tokens.
-- Use non-interactive Matplotlib backend (`Agg`) for headless runs.
+Fig5_7_AppxE2_WRFout_hourly_means_and_timeseries.py
+==============================================
+Generate figures and tables for WRF-VPRM output analysis:
+- Time series plots of domain-averaged variables at different resolutions
+- Hourly mean diurnal cycles
+- Domain-averaged tables of means and differences
+==============================================
 """
 
 from __future__ import annotations

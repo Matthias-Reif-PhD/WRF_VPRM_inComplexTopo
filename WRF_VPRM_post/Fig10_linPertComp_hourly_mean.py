@@ -1,3 +1,14 @@
+"""
+Fig10_linPertComp_hourly_mean.py
+==============================================
+Plots linear perturbation analysis results:
+- Contribution maps of each driver to GPP differences
+- Residual map of unexplained differences
+- Hourly mean diurnal cycles of contributions and residuals
+- Comparison across WRF resolutions
+==============================================
+"""
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -23,9 +34,9 @@ ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
 ############# INPUT ############
-save_plot_maps = False
+save_plot_maps = True
 save_plot2 = True
-print_output = False
+print_output = True
 # use all dates within this range
 # start_date = "2012-01-01 00:00:00"
 # end_date = "2012-12-31 00:00:00"

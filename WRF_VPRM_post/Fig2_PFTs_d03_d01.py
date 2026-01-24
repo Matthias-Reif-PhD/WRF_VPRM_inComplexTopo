@@ -1,6 +1,9 @@
 """
+Fig2_PFTs_d03_d01.py
+==============================================
 Plot plant functional types (PFTs) for nested WRF domains (d01 and d03).
 Visualizes dominant vegetation types and overlays fractional PFT pie charts.
+==============================================
 """
 
 import matplotlib
@@ -57,7 +60,7 @@ lon = ds["XLONG"].values
 
 # --- Load d02 domain and restrict data to that extent ---
 """Load d02 WRF domain extent and mask vegetation data accordingly."""
-d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "WPS/geo_em.d02.nc"))
+d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WPS/geo_em.d02.nc"))
 lat2 = (
     d2["XLAT_M"]
     .isel(Time=0, south_north=slice(10, -10), west_east=slice(10, -10))
