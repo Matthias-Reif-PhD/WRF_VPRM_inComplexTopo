@@ -22,6 +22,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from matplotlib.lines import Line2D
 
 # Load environment variables from .env file
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,6 +58,99 @@ def preprocess_datetime(df: pd.DataFrame) -> pd.DataFrame:
 def group_hourly_average(df: pd.DataFrame) -> pd.DataFrame:
     numeric_columns = df.select_dtypes(include=["number"]).columns
     return df[numeric_columns].groupby("hour").mean()
+
+
+def get_legend_elements(resolutions, resolution_colors):
+    handles = []
+    labels = []
+
+    for res in resolutions:
+        color = resolution_colors[res]
+
+        if res == "CAMS":
+            # CAMS: solid only
+            handles.append(Line2D([0], [0], color=color, lw=2, linestyle="-"))
+            labels.append("CAMS")
+        else:
+            # ALPS (solid)
+            handles.append(Line2D([0], [0], color=color, lw=2, linestyle="-"))
+            labels.append(f"{res}, ALPS")
+
+            # DF (dashed)
+            handles.append(Line2D([0], [0], color=color, lw=2, linestyle="--"))
+            labels.append(f"{res}, DF")
+
+    return handles, labels
+
+
+def save_legend_only(
+    resolutions,
+    resolution_colors,
+    OUTFOLDER,
+    column,
+):
+
+    handles, labels = get_legend_elements(resolutions, resolution_colors)
+
+    fig = plt.figure(figsize=(12, 2))
+    fig.legend(
+        handles,
+        labels,
+        loc="center",
+        ncol=4,  # 4 columns
+        fontsize=20,
+        frameon=False,
+        handlelength=3,
+        columnspacing=1.8,
+    )
+
+    plt.axis("off")
+    plt.savefig(
+        f"{OUTFOLDER}legend_hourly.pdf",
+        bbox_inches="tight",
+    )
+    plt.close()
+
+
+def save_legend_only_diff(
+    resolutions_diff: list,
+    resolution_colors: dict,
+    OUTFOLDER: str,
+    column: str,
+):
+
+    handles = []
+    labels = []
+
+    for res in resolutions_diff:
+        color = resolution_colors[res]
+
+        # ALPS (solid)
+        handles.append(Line2D([0], [0], color=color, lw=2, linestyle="-"))
+        labels.append(f"{res}-1km, ALPS")
+
+        # DF (dashed)
+        handles.append(Line2D([0], [0], color=color, lw=2, linestyle="--"))
+        labels.append(f"{res}-1km, DF")
+
+    fig = plt.figure(figsize=(10, 2))
+    fig.legend(
+        handles,
+        labels,
+        loc="center",
+        ncol=2,
+        fontsize=20,
+        frameon=False,
+        handlelength=3,
+        columnspacing=2.0,
+    )
+
+    plt.axis("off")
+    plt.savefig(
+        f"{OUTFOLDER}legend_hourly_diff.pdf",
+        bbox_inches="tight",
+    )
+    plt.close()
 
 
 def plot_timeseries_differences(
@@ -116,7 +210,7 @@ def plot_timeseries_differences(
         plt.plot(
             [],
             [],
-            label=f"{var_labels[column]} ({res}-1km, ALPS)",
+            label=f"{res}-1km, ALPS",
             linestyle="-",
             color=color,
         )
@@ -142,7 +236,7 @@ def plot_timeseries_differences(
                 plt.plot(
                     [],
                     [],
-                    label=f"{var_labels[column]} ({res}-1km, REF)",
+                    label=f"{res}-1km, DF",
                     linestyle="--",
                     color=color,
                 )
@@ -187,9 +281,9 @@ def plot_timeseries_by_resolution(
 
         if res == "CAMS":
             df[series_col] = df[series_col].resample("h").interpolate("linear")
-            label_opt = f"{var_labels[column]} ({res})"
+            label_opt = f"{res}"
         else:
-            label_opt = f"{var_labels[column]} ({res}, ALPS)"
+            label_opt = f"{res}, ALPS"
 
         y = df[series_col].dropna()
         grouped = y.groupby(y.index.date)
@@ -213,14 +307,20 @@ def plot_timeseries_by_resolution(
                     alpha=0.5,
                 )
             current_x += len(group) + 1
-        plt.plot([], [], label=label_opt, linestyle="-", color=color)
+        plt.plot(
+            [],
+            [],
+            label=label_opt,
+            linestyle="-",
+            color=color,
+        )
 
         y_ref = df_ref[series_col].dropna() if ref_sim and res != "CAMS" else None
         if res == "CAMS":
             df[series_col] = df[series_col].resample("h").interpolate("linear")
-            label_opt = f"{var_labels[column]} ({res})"
+            label_opt = f"{res}"
         else:
-            label_opt = f"{var_labels[column]} ({res}, REF)"
+            label_opt = f"{res}, DF"
         if y_ref is not None:
             if column != "T2" and column != "SWDOWN":
                 label_ref = f"{label_opt}"
@@ -238,7 +338,13 @@ def plot_timeseries_by_resolution(
                         x, group.values, linestyle="--", linewidth=1.5, color=color
                     )
                     current_x += len(group) + 1
-                plt.plot([], [], label=label_ref, linestyle="--", color=color)
+                plt.plot(
+                    [],
+                    [],
+                    label=label_ref,
+                    linestyle="--",
+                    color=color,
+                )
 
     plt.xticks(xticks, xticklabels, ha="left")
     plt.xlabel("Date", fontsize=20)
@@ -273,13 +379,13 @@ def plot_hourly_averages(
     for res in resolutions:
         series = hourly_avg[f"{column}_{res}"].dropna()
         if res == "CAMS":
-            label_opt = f"{var_labels[column]} ({res})"
+            label_opt = f"{res}"
         else:
-            label_opt = f"{var_labels[column]} ({res}, ALPS)"
+            label_opt = f"{res}, ALPS"
         plt.plot(
             series.index,
             series,
-            label=label_opt,
+            # label=label_opt,
             linestyle="-",
             color=resolution_colors[res],
         )
@@ -290,7 +396,7 @@ def plot_hourly_averages(
                 plt.plot(
                     series_ref.index,
                     series_ref,
-                    label=f"{var_labels[column]} ({res}, REF)",
+                    # label=f"{res}, DF",
                     linestyle="--",
                     color=resolution_colors[res],
                 )
@@ -333,7 +439,7 @@ def plot_hourly_differences(
         plt.plot(
             diff_opt.index,
             diff_opt,
-            label=f"{var_labels[column]} ({res}-1km, ALPS)",
+            # label=f"{res}-1km, ALPS",
             linestyle="-",
             color=resolution_colors[res],
         )
@@ -345,7 +451,7 @@ def plot_hourly_differences(
             plt.plot(
                 diff_ref.index,
                 diff_ref,
-                label=f"{var_labels[column]} ({res}-1km, REF)",
+                # label=f"{res}-1km, DF",
                 linestyle="--",
                 color=resolution_colors[res],
             )
@@ -408,7 +514,7 @@ def compute_hourly_means_and_differences_reshaped(
                 records_means.append(
                     {
                         "variable": col,
-                        "type": "REF",
+                        "type": "DF",
                         "resolution": res,
                         "mean": mean_ref,
                     }
@@ -419,7 +525,7 @@ def compute_hourly_means_and_differences_reshaped(
                     records_diffs.append(
                         {
                             "variable": col,
-                            "type": "REF_DIFF",
+                            "type": "DF_DIFF",
                             "resolution": f"{res}-{baseline}",
                             "mean": diff_ref,
                         }
@@ -438,9 +544,9 @@ def compute_hourly_means_and_differences_reshaped(
         if diff_type == "ALPS_DIFF":
             base_res = diff_res.split("-")[1]
             ref_col = ("ALPS", base_res)
-        elif diff_type == "REF_DIFF":
+        elif diff_type == "DF_DIFF":
             base_res = diff_res.split("-")[1]
-            ref_col = ("REF", base_res)
+            ref_col = ("DF", base_res)
         else:
             continue
 
@@ -488,14 +594,14 @@ def write_domain_average_table(
             " & \\multicolumn{2}{c|}{9km}"
             " & \\multicolumn{2}{c|}{54km}"
             " & CAMS \\\\\n"
-            "& ALPS & REF & ALPS & REF & ALPS & REF & \\\\\n"
+            "& ALPS & DF & ALPS & DF & ALPS & DF & \\\\\n"
             "\\midrule\n"
         )
 
         for var, label in variables:
             # Get 1km values from means
             alps_1km = means.loc[var, ("ALPS", "1km")]
-            ref_1km = means.loc[var, ("REF", "1km")]
+            ref_1km = means.loc[var, ("DF", "1km")]
 
             row = f"{label} & {fmt(alps_1km)}"
 
@@ -509,7 +615,7 @@ def write_domain_average_table(
 
             # 9km and 54km columns
             for res in ["9km", "54km"]:
-                for sim in ["ALPS", "REF"]:
+                for sim in ["ALPS", "DF"]:
                     val = means.loc[var, (sim, res)]
 
                     # Access using the tuple column directly
@@ -547,11 +653,11 @@ def write_domain_average_table(
 
 
 def main():
-    csv_folder = os.path.join(GITHUB_PATH, "WRF_VPRM_post/csv/")
+    csv_folder = os.path.join(GITHUB_PATH, "WRF_VPRM_inComplexTopo/WRF_VPRM_post/csv/")
     start_date, end_date = "2012-01-01 00:00:00", "2012-12-31 00:00:00"
     STD_TOPO = 200
     ref_sim = True
-    sim_type = ""  # "" or "_cloudy"
+    sim_type = "_cloudy"  # "" or "_cloudy"
 
     columns = ["GPP", "RECO", "NEE", "T2", "SWDOWN"]
     units = [
@@ -617,6 +723,7 @@ def main():
             end_date,
             sim_type,
         )
+
         plot_timeseries_differences(
             merged_df_gt,
             merged_df_gt_ref,
@@ -631,6 +738,7 @@ def main():
             end_date,
             sim_type,
         )
+
         plot_hourly_averages(
             hourly_avg,
             hourly_avg_ref,
@@ -645,6 +753,14 @@ def main():
             end_date,
             sim_type,
         )
+        if column == "NEE":
+            save_legend_only(
+                resolutions,
+                resolution_colors,
+                OUTFOLDER,
+                column,
+            )
+
         plot_hourly_differences(
             hourly_avg,
             hourly_avg_ref,
@@ -659,6 +775,14 @@ def main():
             end_date,
             sim_type,
         )
+        if column == "NEE":
+            save_legend_only_diff(
+                resolutions_diff,
+                resolution_colors,
+                OUTFOLDER,
+                column,
+            )
+        print(f"Completed plots for {column}")
 
 
 if __name__ == "__main__":

@@ -203,9 +203,9 @@ def process_location(
             f"REF_{fluxtype}": "dashed",
         }
         WRF_plot_labels = {
-            f"SITE_{fluxtype}": plot_label + " SITE",
-            f"ALPS_{fluxtype}": plot_label + " ALPS",
-            f"REF_{fluxtype}": plot_label + " REF",
+            f"SITE_{fluxtype}": "SITE",
+            f"ALPS_{fluxtype}": "ALPS",
+            f"REF_{fluxtype}": "DF",
         }
 
         # choose var_flx and CAMS var
@@ -365,12 +365,19 @@ def process_location(
                     ):
                         color_i = "purple"
 
-                    plt.plot(
-                        hourly_avg,
-                        label=rf"WRF {par_plot_label} - MB={metrics['MB']:.2f} MAE={metrics['MAE']:.2f}",
-                        linestyle=linestyle,
-                        color=color_i,
-                    )
+                    if "NEE" in variable:
+                        plt.plot(
+                            hourly_avg,
+                            label=rf"{par_plot_label}",
+                            linestyle=linestyle,
+                            color=color_i,
+                        )
+                    else:
+                        plt.plot(
+                            hourly_avg,
+                            linestyle=linestyle,
+                            color=color_i,
+                        )
 
         # CAMS plotting and metrics
         if location in df_CAMS_hourly_all:
@@ -430,23 +437,24 @@ def process_location(
                 r_text = r"T$_\text{2m}$"
                 plt.plot(
                     hourly_avg_CAMS,
-                    label=rf"CAMS {r_text} - MB={metrics['MB']:.2f} MAE={metrics['MAE']:.2f} ",
+                    label=rf"CAMS",
                     color="orange",
                 )
             else:
                 hourly_avg_CAMS = df_CAMS_hourly.groupby("hour")[var_CAMS_plot].mean()
-                if var_CAMS_plot == "fco2gpp":
-                    r_text = "GPP"
-                elif var_CAMS_plot == "fco2rec":
-                    r_text = r"R$_\text{eco}$"
-                elif var_CAMS_plot == "fco2nee":
-                    r_text = "NEE"
-                plt.plot(
-                    hourly_avg_CAMS,
-                    label=rf"CAMS {r_text} - MB={metrics['MB']:.2f} MAE={metrics['MAE']:.2f}",
-                    color="orange",
-                    linestyle="dashed",
-                )
+                if var_CAMS_plot == "fco2nee":
+                    plt.plot(
+                        hourly_avg_CAMS,
+                        label=rf"CAMS",
+                        color="orange",
+                        linestyle="dashed",
+                    )
+                else:
+                    plt.plot(
+                        hourly_avg_CAMS,
+                        color="orange",
+                        linestyle="dashed",
+                    )
 
                 cams_bfas = df_merged[var_CAMS_plot + "_bfas"]
                 obs_bfas = df_FLX_site[var_flx].to_numpy()
@@ -468,11 +476,18 @@ def process_location(
                 hourly_avg_CAMS_bfas = df_CAMS_hourly.groupby("hour")[
                     var_CAMS_plot + "_bfas"
                 ].mean()
-                plt.plot(
-                    hourly_avg_CAMS_bfas,
-                    label=rf"CAMS  {r_text} (BFAS) - MB={metrics_bfas['MB']:.2f} MAE={metrics_bfas['MAE']:.2f}",
-                    color="orange",
-                )
+
+                if var_CAMS_plot == "fco2nee":
+                    plt.plot(
+                        hourly_avg_CAMS_bfas,
+                        label=rf"CAMS (BFAS)",
+                        color="orange",
+                    )
+                else:
+                    plt.plot(
+                        hourly_avg_CAMS_bfas,
+                        color="orange",
+                    )
 
         # FLUXNET hourly average plotting
         df_FLX_site["hour"] = df_FLX_site.index.hour
@@ -485,6 +500,18 @@ def process_location(
             r_text = r"R$_\text{eco}$"
         elif var_flx == "NEE_VUT_USTAR50":
             r_text = "NEE"
+            plt.plot(
+                hourly_avg_FLX,
+                label=rf"FLUXNET",
+                linestyle="solid",
+                color="black",
+            )
+        else:
+            plt.plot(
+                hourly_avg_FLX,
+                linestyle="solid",
+                color="black",
+            )
         plt.plot(
             hourly_avg_FLX,
             label=rf"FLUXNET {r_text}",
