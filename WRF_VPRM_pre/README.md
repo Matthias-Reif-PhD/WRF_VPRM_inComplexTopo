@@ -20,8 +20,8 @@ Github/
 **Scratch folder:**
 Clone the WRF and WPS repos 
 ```
-clone https://github.com/Matthias-Reif-PhD/WRF
-clone https://github.com/Matthias-Reif-PhD/WPS
+git clone https://github.com/Matthias-Reif-PhD/WRF
+git clone https://github.com/Matthias-Reif-PhD/WPS
 ```
 
 ```
