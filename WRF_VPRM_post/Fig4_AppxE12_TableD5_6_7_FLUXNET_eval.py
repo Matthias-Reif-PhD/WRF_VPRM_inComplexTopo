@@ -365,10 +365,17 @@ def process_location(
                     ):
                         color_i = "purple"
 
-                    if "NEE" in variable:
+                    if "GPP" in variable:
                         plt.plot(
                             hourly_avg,
                             label=rf"{par_plot_label}",
+                            linestyle=linestyle,
+                            color=color_i,
+                        )
+                    elif "T2" in variable:
+                        plt.plot(
+                            hourly_avg,
+                            label="WRF",
                             linestyle=linestyle,
                             color=color_i,
                         )
@@ -437,12 +444,13 @@ def process_location(
                 r_text = r"T$_\text{2m}$"
                 plt.plot(
                     hourly_avg_CAMS,
-                    label=rf"CAMS",
+                    label="CAMS",
                     color="orange",
+                    linestyle="dashed",
                 )
             else:
                 hourly_avg_CAMS = df_CAMS_hourly.groupby("hour")[var_CAMS_plot].mean()
-                if var_CAMS_plot == "fco2nee":
+                if var_CAMS_plot == "fco2gpp":
                     plt.plot(
                         hourly_avg_CAMS,
                         label=rf"CAMS",
@@ -477,7 +485,7 @@ def process_location(
                     var_CAMS_plot + "_bfas"
                 ].mean()
 
-                if var_CAMS_plot == "fco2nee":
+                if var_CAMS_plot == "fco2gpp":
                     plt.plot(
                         hourly_avg_CAMS_bfas,
                         label=rf"CAMS (BFAS)",
@@ -492,32 +500,37 @@ def process_location(
         # FLUXNET hourly average plotting
         df_FLX_site["hour"] = df_FLX_site.index.hour
         hourly_avg_FLX = df_FLX_site.groupby("hour")[var_flx].mean()
+
         if var_flx == "TA_F":
             r_text = r"T$_\text{2m}$"
-        elif var_flx == "GPP_NT_VUT_USTAR50":
-            r_text = "GPP"
-        elif var_flx == "RECO_NT_VUT_USTAR50":
-            r_text = r"R$_\text{eco}$"
-        elif var_flx == "NEE_VUT_USTAR50":
-            r_text = "NEE"
             plt.plot(
                 hourly_avg_FLX,
                 label=rf"FLUXNET",
                 linestyle="solid",
                 color="black",
             )
-        else:
+        elif var_flx == "RECO_NT_VUT_USTAR50":
+            r_text = r"R$_\text{eco}$"
             plt.plot(
                 hourly_avg_FLX,
                 linestyle="solid",
                 color="black",
             )
-        plt.plot(
-            hourly_avg_FLX,
-            label=rf"FLUXNET {r_text}",
-            linestyle="solid",
-            color="black",
-        )
+        elif var_flx == "NEE_VUT_USTAR50":
+            r_text = "NEE"
+            plt.plot(
+                hourly_avg_FLX,
+                linestyle="solid",
+                color="black",
+            )
+        elif var_flx == "GPP_NT_VUT_USTAR50":
+            r_text = "GPP"
+            plt.plot(
+                hourly_avg_FLX,
+                label=rf"FLUXNET",
+                linestyle="solid",
+                color="black",
+            )
 
         plt.xlabel("UTC [h]", fontsize=20)
         if unit == "[°C]":
@@ -525,7 +538,10 @@ def process_location(
         else:
             plt.ylabel(rf"{r_text} [$\mu$mol m⁻² s⁻¹]", fontsize=20)
         plt.tick_params(labelsize=20)
-        plt.legend(loc="upper left", fontsize=17, frameon=True, framealpha=0.6)
+        if var_flx == "TA_F":
+            plt.legend(loc="upper right", fontsize=20, frameon=True, framealpha=0.6)
+        else:
+            plt.legend(loc="upper right", fontsize=20, frameon=True, framealpha=0.6)
 
         plt.xticks([0, 6, 12, 18, 24])
         plt.grid()
