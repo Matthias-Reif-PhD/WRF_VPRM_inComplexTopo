@@ -602,9 +602,9 @@ def write_latex_table_from_metrics(
     ]
 
     fluxes = {
-        "NEE_WRF": "NEE",
         "GPP_WRF": "GPP",
         "RECO_WRF": r"R$_{eco}$",
+        "NEE_WRF": "NEE",
     }
 
     params = ["SITE", "ALPS", "REF"]
@@ -631,10 +631,11 @@ def write_latex_table_from_metrics(
         f.write(
             "\\begin{tabular}{ll|c|ccc|ccc|ccc}\n"
             "\\hline\n"
-            "Site & PFT fraction & $T_\\text{2m}$ "
-            "& NEE SITE & NEE ALPS & NEE REF "
-            "& GPP SITE & GPP ALPS & GPP REF "
-            "& RECO SITE & RECO ALPS & RECO REF \\\\\n"
+            " & & $T_\\text{2m}$ & \\multicolumn{3}{c|}{GPP} & \\multicolumn{3}{c|}{$R_\\text{eco}$} & \\multicolumn{3}{c}{NEE} \\\\\n"
+            "Site & PFT & WRF "
+            "& SITE & ALPS & DF "
+            "& SITE & ALPS & DF "
+            "& SITE & ALPS & DF \\\\\n"
             "\\hline\\hline\n"
         )
 
@@ -863,9 +864,9 @@ def write_latex_table_from_metrics_bias(
     ]
 
     fluxes = {
-        "NEE_WRF": "NEE",
         "GPP_WRF": "GPP",
         "RECO_WRF": r"R$_{eco}$",
+        "NEE_WRF": "NEE",
     }
 
     params = ["SITE", "ALPS", "REF"]
@@ -874,41 +875,53 @@ def write_latex_table_from_metrics_bias(
         s = f"{val:.2f}"
         return f"\\textbf{{{s}}}" if bold else s
 
-    # Build bias table: show NMB (STD_RATIO). Also compute mean row and bold best values
+    # Build bias table: show MB (MAE). Also compute mean row and bold best values
     with open(outfile, "w") as f:
         f.write(
-            "\\begin{tabular}{ll|c|ccc|ccc|ccc}\n"
+            "\\begin{tabular}{ll|cc|cccc|cccc|cccc}\n"
             "\\hline\n"
-            "Site & PFT fraction & $T_\\text{2m}$ "
-            "& NEE SITE & NEE ALPS & NEE REF "
-            "& GPP SITE & GPP ALPS & GPP REF "
-            "& RECO SITE & RECO ALPS & RECO REF \\\\\n"
+            " & & \\multicolumn{2}{c|}{$T_\\text{2m}$} & \\multicolumn{4}{c|}{GPP} & \\multicolumn{4}{c|}{$R_\\text{eco}$} & \\multicolumn{4}{c}{NEE} \\\\\n"
+            "Site & PFT & $\\overline{\\text{FLX}}$ & WRF "
+            "& $\\overline{\\text{FLX}}$ & SITE & ALPS & DF "
+            "& $\\overline{\\text{FLX}}$ & SITE & ALPS & DF "
+            "& $\\overline{\\text{FLX}}$ & SITE & ALPS & DF \\\\\n"
             "\\hline\\hline\n"
         )
 
-        # accumulators to compute mean across sites (store MB, NMB, STD)
-        mean_vals = {"T2": {"MB": [], "MAE": []}}
+        # accumulators to compute mean across sites
+        mean_vals = {"T2": {"mean_fluxnet": [], "MB": [], "MAE": []}}
         for flux in fluxes:
-            mean_vals[flux] = {p: {"MB": [], "MAE": []} for p in params}
+            mean_vals[flux] = {
+                p: {"mean_fluxnet": [], "MB": [], "MAE": []} for p in params
+            }
 
         # per-site rows
         for site, pft_type in sites:
             veg_pct = vegfrac_lookup[site]
             pft_str = f"{veg_pct}\\% {pft_type}"
 
-            # T2m: include MB, NMB and STD_RATIO
+            # T2m: include mean_fluxnet, MB and MAE
             col_t2m = f"{site}_REF_T2_WRF_1km"
+            mean_t2m = consolidated_metrics_total.loc["mean_fluxnet", col_t2m]
             mb_t2m = consolidated_metrics_total.loc["MB", col_t2m]
-            nmb_t2m = consolidated_metrics_total.loc["MAE", col_t2m]
+            mae_t2m = consolidated_metrics_total.loc["MAE", col_t2m]
+            mean_vals["T2"]["mean_fluxnet"].append(mean_t2m)
             mean_vals["T2"]["MB"].append(mb_t2m)
-            mean_vals["T2"]["MAE"].append(nmb_t2m)
+            mean_vals["T2"]["MAE"].append(mae_t2m)
 
-            row = f"{site} & {pft_str} & {mb_t2m:.2f} ({nmb_t2m:.2f})"
+            row = f"{site} & {pft_str} & {mean_t2m:.2f} & {mb_t2m:.2f} ({mae_t2m:.2f})"
 
             # For each flux, collect values for this site, determine best among params and format
             for flux in fluxes:
+                mean_list = []
                 mb_list = []
                 mae_list = []
+
+                # First get FLUXNET mean (using SITE param as reference)
+                col_fl = f"{site}_SITE_{flux}_1km"
+                mean_fl = consolidated_metrics_total.loc["mean_fluxnet", col_fl]
+
+                # Now loop through all params to get MB and MAE
                 for p in params:
                     col = f"{site}_{p}_{flux}_1km"
                     mb = consolidated_metrics_total.loc["MB", col]
@@ -916,10 +929,11 @@ def write_latex_table_from_metrics_bias(
                     mb_list.append(mb)
                     mae_list.append(mae)
                     # store for mean computation
+                    mean_vals[flux][p]["mean_fluxnet"].append(mean_fl)
                     mean_vals[flux][p]["MB"].append(mb)
                     mean_vals[flux][p]["MAE"].append(mae)
 
-                # determine best indices: MAE closest to zero
+                # determine best indices: closest to zero
                 mb_best_idx = (
                     int(np.nanargmin(np.abs(np.array(mb_list))))
                     if len(mb_list) > 0
@@ -931,7 +945,10 @@ def write_latex_table_from_metrics_bias(
                     else 0
                 )
 
-                # format each param value: MB (NMB) [STD], bold NMB/STD if best
+                # Add FLUXNET mean first
+                row += f" & {mean_fl:.2f}"
+
+                # format each param value: MB (MAE)
                 for i, (mb_val, mae_val) in enumerate(zip(mb_list, mae_list)):
                     mb_s = fmt(mb_val, bold=(i == mb_best_idx))
                     mae_s = fmt(mae_val, bold=(i == mae_best_idx))
@@ -942,7 +959,13 @@ def write_latex_table_from_metrics_bias(
         # Mean row across sites
         f.write("\\hline\n")
         mean_row = "Mean & -- "
-        # mean for T2m (MB (MAE))
+
+        # mean for T2m
+        mean_mean_t2 = (
+            np.mean(mean_vals["T2"]["mean_fluxnet"])
+            if len(mean_vals["T2"]["mean_fluxnet"]) > 0
+            else np.nan
+        )
         mean_mb_t2 = (
             np.mean(mean_vals["T2"]["MB"]) if len(mean_vals["T2"]["MB"]) > 0 else np.nan
         )
@@ -952,17 +975,23 @@ def write_latex_table_from_metrics_bias(
             else np.nan
         )
 
-        mean_row += f"& {mean_mb_t2:.2f} ({mean_mae_t2:.2f})"
+        mean_row += f"& {mean_mean_t2:.2f} & {mean_mb_t2:.2f} ({mean_mae_t2:.2f})"
 
-        # for each flux compute mean per param and bold best among params (NMB closest to zero, STD closest to 1)
+        # for each flux compute mean per param and bold best among params
         for flux in fluxes:
             # compute mean arrays per param
+            mean_means = [np.mean(mean_vals[flux][p]["mean_fluxnet"]) for p in params]
             mb_means = [np.mean(mean_vals[flux][p]["MB"]) for p in params]
             mae_means = [np.mean(mean_vals[flux][p]["MAE"]) for p in params]
+
             # best indices
             mb_best_idx = int(np.nanargmin(np.abs(np.array(mb_means))))
             mae_best_idx = int(np.nanargmin(np.abs(np.array(mae_means))))
-            # format
+
+            # Add FLUXNET mean (use first param's mean as they should all be the same)
+            mean_row += f" & {mean_means[0]:.2f}"
+
+            # format each param
             for i, p in enumerate(params):
                 mb_s = fmt(mb_means[i], bold=(i == mb_best_idx))
                 mae_s = fmt(mae_means[i], bold=(i == mae_best_idx))
