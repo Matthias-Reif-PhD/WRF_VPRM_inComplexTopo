@@ -345,6 +345,8 @@ def process_location(
                         if np.nanstd(obs) != 0
                         else np.nan
                     )
+                    # add mean fluxnet values
+                    metrics[f"mean_fluxnet"] = obs.mean()
 
                     for metric, value in metrics.items():
                         consolidated_metrics_df.loc[
@@ -1066,7 +1068,7 @@ def main():
             "IT-Tor": 2160,
         }
 
-    locations_d03 = [
+    locations_d01 = [
         "IT-Tor",
         "IT-Lav",
         "AT-Neu",
@@ -1199,7 +1201,7 @@ def main():
         model_lat_lon,
         outfile=f"{outfolder}/flux_evaluation_1km_r{radius}.tex",
     )
-    # Also write bias table (MB (NMB) [STD_RATIO])
+    # Also write bias table (MB (MAE))
     write_latex_table_from_metrics_bias(
         consolidated_metrics_total,
         model_lat_lon,
@@ -1212,7 +1214,7 @@ def main():
         end_date_2012 = pd.Timestamp(timespan.split("_")[1]) - pd.Timedelta(hours=1)
 
         df_FLX_site_means = compute_fluxnet_site_means(
-            locations_d03, start_date_2012, end_date_2012, base_dir_FLX, df_example
+            locations_d01, start_date_2012, end_date_2012, base_dir_FLX, df_example
         )
         # Write FLUXNET site means table
         write_latex_table_fluxnet_means(
