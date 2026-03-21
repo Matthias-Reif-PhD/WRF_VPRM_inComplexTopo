@@ -9,19 +9,8 @@
 
 set -euo pipefail
 
-# ------------------------------------------------------------------
-# Load environment variables from project root .env
-# ------------------------------------------------------------------
-ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
-
-if [ ! -f "$ENV_FILE" ]; then
-  echo "ERROR: .env file not found at $ENV_FILE" >&2
-  exit 1
-fi
-
-set -a
-source "$ENV_FILE"
-set +a
+# Environment variables are passed via sbatch --export=ALL from parent script
+# No need to reload .env here
 
 # ------------------------------------------------------------------
 # Load modules and activate Conda environment
@@ -38,6 +27,7 @@ conda activate "$CONDA_ENV"
 source ~/wrf_dev.sh
 
 # ------------------------------------------------------------------
-# Run REAL
+# Run REAL (from the directory where sbatch was called)
 # ------------------------------------------------------------------
+cd "$SLURM_SUBMIT_DIR" || exit 1
 ./real.exe
