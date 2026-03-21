@@ -177,8 +177,6 @@ def main():
 
     VEGFRA = 1  # not applied for EC measurements, set to 1
     site_info = pd.read_csv(base_path + "site_info_all_FLUXNET2015.csv")
-    # Reco is optomized against NEE at night as it is measured directly
-    # in FLUXNET Reco and GPP are seperated by a model
 
     ###########################################################################################
 
