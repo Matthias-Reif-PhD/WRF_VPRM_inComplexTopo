@@ -115,20 +115,19 @@ do
   # echo "Starting real.exe for $res" >&2
    cd "$SCRATCH_PATH"/WRF_$res/test/em_real || exit 1
 
+   # Copy job scripts to current directory
+   cp "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/job_real.slurm .
+   cp "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/job_real_small.slurm .
+
    # Running Real
    # if res == 9km or 3km then:
    if [[ "$res" == "9km" || "$res" == "3km" ]]; then
-      # Additional commands for 9km and 3km resolutions
-        # echo "Starting Real" >&2
-      # Submit WRF job and capture JobID
-      sbatch_out=$(sbatch job_real.slurm)
+      sbatch_out=$(sbatch --export=ALL job_real.slurm)
       jobid=$(echo "$sbatch_out" | awk '{print $4}')
-      # echo "Submitted job $jobid for resolution $res" >&2
       jobids+=($jobid)
    else
-      sbatch_out=$(sbatch job_real_small.slurm)
+      sbatch_out=$(sbatch --export=ALL job_real_small.slurm)
       jobid=$(echo "$sbatch_out" | awk '{print $4}')
-      # echo "Submitted job $jobid for resolution $res" >&2
       jobids+=($jobid)
    fi
 
