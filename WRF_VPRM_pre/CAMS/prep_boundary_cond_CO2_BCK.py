@@ -42,9 +42,11 @@ else:
 wrfbdy_dir_path = f"{SCRATCH_PATH}/WRF_{res}/test/em_real"
 CAMS_data_dir_path = os.path.join(SCRATCH_PATH, "DATA/CAMS/")
 CAMS_interpolation_indices_file_path = os.path.join(
-    GITHUB_PATH, "WRF_VPRM_pre/ERA5/interp_indices.txt.npz"
+    GITHUB_PATH, "WRF_VPRM_inComplexTopo/WRF_VPRM_pre/ERA5/interp_indices.txt.npz"
 )
-IFS_L60_ab_file = os.path.join(GITHUB_PATH, "WRF_VPRM_pre/ERA5/ecmwf_coeffs_L60.csv")
+IFS_L60_ab_file = os.path.join(
+    GITHUB_PATH, "WRF_VPRM_inComplexTopo/WRF_VPRM_pre/ERA5/ecmwf_coeffs_L60.csv"
+)
 
 dates = pd.to_datetime(sim_time[0]).strftime("%Y-%m-%d")
 year = pd.to_datetime(sim_time[0]).strftime("%Y")

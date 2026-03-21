@@ -25,6 +25,7 @@ START_DATE=$1
 END_DATE=$2
 shift 2
 resx=("$@")
+jobids=()
 #######################
 
 for res in "${resx[@]}"
@@ -115,7 +116,7 @@ do
    cd "$SCRATCH_PATH"/WRF_$res/test/em_real || exit 1
 
    # Running Real
-# if res == 9km or 3km then:
+   # if res == 9km or 3km then:
    if [[ "$res" == "9km" || "$res" == "3km" ]]; then
       # Additional commands for 9km and 3km resolutions
         # echo "Starting Real" >&2
@@ -125,7 +126,10 @@ do
       # echo "Submitted job $jobid for resolution $res" >&2
       jobids+=($jobid)
    else
-     ./real.exe
+      sbatch_out=$(sbatch job_real_small.slurm)
+      jobid=$(echo "$sbatch_out" | awk '{print $4}')
+      # echo "Submitted job $jobid for resolution $res" >&2
+      jobids+=($jobid)
    fi
 
 done
