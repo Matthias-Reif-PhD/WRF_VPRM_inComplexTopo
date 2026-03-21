@@ -50,6 +50,8 @@ git clone https://github.com/Matthias-Reif-PhD/WPS
 
 Install WRF/WPS: https://www2.mmm.ucar.edu/wrf/OnLineTutorial/
 
+move namelists from WRF_VPRM_pre/namelists into the respective folders WPS and WRF_XXkm/test/em_real/.
+
 ## Step 1: CAMS Data (CO₂)
 
 Setup API credentials (`$HOME/.cdsapirc`):

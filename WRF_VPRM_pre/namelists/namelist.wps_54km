@@ -1,0 +1,35 @@
+&share
+ wrf_core = 'ARW',
+ max_dom = 1,
+ start_date = '2012-07-01_00:00:00', '2012-07-01_00:00:00', '2012-07-01_00:00:00', 
+ end_date   = '2012-07-07_00:00:00', '2012-07-07_00:00:00', '2012-07-07_00:00:00', 
+ interval_seconds = 21600,
+/
+
+&geogrid
+ parent_id            = 1
+ parent_grid_ratio    = 1
+ i_parent_start       = 1
+ j_parent_start       = 1
+ e_we                 = 20
+ e_sn                 = 17
+ geog_data_res        = 'default'
+ dx                   = 54000
+ dy                   = 54000
+ map_proj             = 'mercator'
+ ref_lat              = 46.189
+ ref_lon              = 10.931
+ truelat1             = 46.189
+ stand_lon = 10.0,
+ geog_data_path = '../DATA/WPS_GEOG/'
+/
+
+&ungrib
+ out_format = 'WPS',
+ prefix = 'SFILE',
+/
+
+&metgrid
+ fg_name = 'SFILE','FILE',
+ io_form_metgrid = 2,
+/
