@@ -1,1 +1,2 @@
 .env
+WRF_VPRM_pre/run_WPS_WRF/job_wrf_chain_old.slurm

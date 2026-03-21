@@ -96,9 +96,11 @@ if month == "12":
     )
 
 CAMS_interpolation_indices_file_path = os.path.join(
-    GITHUB_PATH, "WRF_VPRM_pre/ERA5/interp_indices.txt.npz"
+    GITHUB_PATH, "WRF_VPRM_inComplexTopo/WRF_VPRM_pre/ERA5/interp_indices.txt.npz"
 )
-IFS_L60_ab_file = os.path.join(GITHUB_PATH, "WRF_VPRM_pre/ERA5/ecmwf_coeffs_L60.csv")
+IFS_L60_ab_file = os.path.join(
+    GITHUB_PATH, "WRF_VPRM_inComplexTopo/WRF_VPRM_pre/ERA5/ecmwf_coeffs_L60.csv"
+)
 
 wrfinput_path = os.path.join(wrfinput_dir_path, "wrfinput_d01")
 wrfinput = xr.open_dataset(wrfinput_path)

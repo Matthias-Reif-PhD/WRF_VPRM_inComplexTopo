@@ -1,13 +1,27 @@
 #!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status
-set -u  # Treat unset variables as an error
+set -euo pipefail 
 set -x  # Print commands and their arguments as they are executed
+
+# ------------------------------------------------------------------
+# Load environment variables from project root .env
+# ------------------------------------------------------------------
+ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+  echo "ERROR: .env file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+set -a
+source "$ENV_FILE"
+set +a
+
 
 ##### Settings ########
 # resx=("54km" "27km" "9km" "3km")
-resx=("54km" "27km" "9km" "3km")
-START_DATE="2012-12-23_18:00:00"
-END_DATE="2012-12-25_00:00:00"
+resx=("54km")
+START_DATE="2012-07-26_18:00:00"
+END_DATE="2012-07-28_00:00:00"
 #######################
 
 for res in "${resx[@]}"
@@ -100,8 +114,8 @@ do
 
    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    # !!! you have to adopt the path_CAMS_file  (and WRF_V2?)
-   "$CONDA_ENV/bin/python" "$GITHUB_PATH"WRF_VPRM_inComplexTopo/WRF_VPRM_pre/prep_boundary_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00 
-   "$CONDA_ENV/bin/python" "$GITHUB_PATH"WRF_VPRM_inComplexTopo/WRF_VPRM_pre/prep_initial_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00
+   "$CONDA_ENV/bin/python" "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/CAMS/prep_boundary_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00 
+   "$CONDA_ENV/bin/python" "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/CAMS/prep_initial_cond_CO2_BCK.py $res $START_YEAR-$START_MONTH-$START_DAY $START_HOUR:00:00 $END_YEAR-$END_MONTH-$END_DAY $END_HOUR:00:00
 
    mv "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfbdy_d01_updated "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfbdy_d01
    mv "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d01_updated "$SCRATCH_PATH"/WRF_$res/test/em_real/wrfinput_d01
