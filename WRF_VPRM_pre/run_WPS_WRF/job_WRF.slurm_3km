@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --mail-user=matthias.reif@student.uibk.ac.at
+#SBATCH --mail-type=END,FAIL
+#SBATCH --job-name=WRF_VPRM_CLC_1km_07_02
+#SBATCH --ntasks=256
+#SBATCH --cpus-per-task=1
+#SBATCH --time=08:00:00
+
+# Load modules and set environment variables
+module purge
+source ~/wrf_dev.sh
+# run WRF
+srun ./wrf.exe
+echo "WRF done" 

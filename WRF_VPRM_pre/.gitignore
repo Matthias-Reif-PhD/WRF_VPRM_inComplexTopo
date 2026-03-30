@@ -37,3 +37,6 @@ metgrid.log
 ungrib.log
 slurm-*
 
+**/*.csv
+**/*.pdf
+**/*.tex

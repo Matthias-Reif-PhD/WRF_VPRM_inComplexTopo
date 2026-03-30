@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH --job-name=WRF_VPRM_CLC_54km
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=01:00:00
+
+# Load modules and set environment variables
+module purge
+source ~/wrf_dev.sh
+# run WRF
+srun ./wrf.exe
+echo "WRF done" 

@@ -85,6 +85,8 @@ do
   # echo "Running real.exe and updating boundary conditions." >&2
    source ~/wrf_dev.sh 
    namelist_input="$SCRATCH_PATH"/WRF_$res/test/em_real/namelist.input
+   # copy namelist.input_XXkm from /WRF_VPRM_pre/namelists to namelist_input
+   cp "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/namelists/namelist.input_$res $namelist_input
 
    # Find and replace chem_in_opt in namelist.input with chem_in_opt = 0,
    sed -i 's/^chem_in_opt\s*=.*/chem_in_opt = 0,0,/' "$namelist_input"
@@ -126,9 +128,12 @@ do
       jobid=$(echo "$sbatch_out" | awk '{print $4}')
       jobids+=($jobid)
    else
+      # # for radt=1 it was out of memory: 
       sbatch_out=$(sbatch --export=ALL job_real_small.slurm)
       jobid=$(echo "$sbatch_out" | awk '{print $4}')
       jobids+=($jobid)
+      # # for radt=54:
+      # ./real.exe
    fi
 
 done

@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH --mail-user=matthias.reif@student.uibk.ac.at
 #SBATCH --mail-type=END,FAIL
 #SBATCH --job-name=real
 #SBATCH --ntasks=4

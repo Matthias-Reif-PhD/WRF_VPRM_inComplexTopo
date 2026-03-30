@@ -65,8 +65,9 @@ do
    namelist_input="$SCRATCH_PATH"/WRF_$res/test/em_real/namelist.input
    sed -i 's/^chem_in_opt\s*=.*/chem_in_opt       = 1,1,/' "$namelist_input"
 
-  # echo "Running real.exe and updating boundary conditions complete." >&2
 
+   # Copy job scripts to current directory
+   cp "$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/job_WRF.slurm_$res .
    # Submit WRF job and capture JobID
    sbatch_out=$(sbatch job_WRF.slurm_$res)
    jobid=$(echo "$sbatch_out" | awk '{print $4}')
