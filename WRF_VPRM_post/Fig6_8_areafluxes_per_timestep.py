@@ -47,6 +47,7 @@ subfolder = ""  # "" or "_cloudy"
 wrfinput_path_1km = os.path.join(
     SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}/wrfout_d02_{dateime}:00:00"
 )
+subfolder = subfolder+"_radt54_swint1"  # "" or "_cloudy", for 54km plus "_radt1", "_radt54" and "_radt54_swint1"
 wrfinput_path_54km = os.path.join(
     SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS{dx}{subfolder}/wrfout_d01_{dateime}:00:00"
 )
@@ -395,48 +396,12 @@ def styled_imshow_plot(data, vmin, vmax, cmap, label, filename):
 
 
 styled_imshow_plot(
-    dT_model,
-    -15,
-    15,
-    "coolwarm_r",
-    r"$\Delta_\text{res}$T$_\text{2m}$ [°C]",
-    "dT_model",
-)
-
-styled_imshow_plot(
-    dRAD_scale,
-    np.nanmin(dRAD_scale),
-    np.nanmax(dRAD_scale),
-    "RdBu",
-    r"$\Delta_\text{res}$RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "RAD_scale_54-1km",
-)
-
-styled_imshow_plot(
-    proj_RAD_scale_54km,
-    np.nanmin(0),
-    np.nanmax(RAD_scale_1km),
-    "YlOrRd",
-    r"RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "RAD_scale_54km",
-)
-
-styled_imshow_plot(
-    RAD_scale_1km,
-    np.nanmin(0),
-    np.nanmax(RAD_scale_1km),
-    "YlOrRd",
-    r"RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "RAD_scale_1km",
-)
-
-styled_imshow_plot(
     proj_SWDOWN_54km,
     np.nanmin(SWDOWN_1km),
     np.nanmax(SWDOWN_1km),
     "YlOrRd",
     r"S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_54km",
+    "SWDOWN_54km"+subfolder,
 )
 
 styled_imshow_plot(
@@ -445,7 +410,7 @@ styled_imshow_plot(
     np.nanmax(SWDOWN_1km),
     "YlOrRd",
     r"S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_1km",
+    "SWDOWN_1km"+subfolder,
 )
 
 styled_imshow_plot(
@@ -454,8 +419,45 @@ styled_imshow_plot(
     np.nanmax(dSWDOWN),
     "RdBu",
     r"$\Delta_\text{res}$ S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_54-1km",
+    "SWDOWN_54-1km"+subfolder,
 )
+
+# styled_imshow_plot(
+#     dT_model,
+#     -15,
+#     15,
+#     "coolwarm_r",
+#     r"$\Delta_\text{res}$T$_\text{2m}$ [°C]",
+#     "dT_model"+subfolder,
+# )
+
+styled_imshow_plot(
+    dRAD_scale,
+    np.nanmin(dRAD_scale),
+    np.nanmax(dRAD_scale),
+    "RdBu",
+    r"$\Delta_\text{res}$RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
+    "RAD_scale_54-1km"+subfolder,
+)
+
+styled_imshow_plot(
+    proj_RAD_scale_54km,
+    np.nanmin(0),
+    np.nanmax(RAD_scale_1km),
+    "YlOrRd",
+    r"RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
+    "RAD_scale_54km"+subfolder,
+)
+
+# styled_imshow_plot(
+#     RAD_scale_1km,
+#     np.nanmin(0),
+#     np.nanmax(RAD_scale_1km),
+#     "YlOrRd",
+#     r"RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "RAD_scale_1km"+subfolder,
+# )
+
 
 styled_imshow_plot(
     dGPP_calc,
@@ -463,9 +465,9 @@ styled_imshow_plot(
     15,
     "PiYG",
     r"$\Delta_{\partial \text{T}}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dGPP_model_02",
+    "dGPP_model_02"+subfolder,
 )
-# GPP calc again (duplicated in earlier batch, but now renamed to not overwrite)
+# # GPP calc again (duplicated in earlier batch, but now renamed to not overwrite)
 
 
 # dGPP/dT sensitivity
@@ -475,116 +477,116 @@ styled_imshow_plot(
     2,
     "PiYG",
     r"$\frac{\partial \text{GPP}}{\partial \text{T}}$ ([$\mu$mol m$^{-2}$ s$^{-1}$ °C$^{-1}$]",
-    "dGPPdT_1km",
+    "dGPPdT_1km"+subfolder,
 )
 
 
-# CLDFRC_max
-styled_imshow_plot(
-    CLDFRC_1km_max,
-    np.nanmin(CLDFRC_1km_max),
-    np.nanmax(CLDFRC_1km_max),
-    "Blues",
-    "cloud fraction [%]",
-    "CLDFRC_1km",
-)
-styled_imshow_plot(
-    CLDFRC_54km_max,
-    np.nanmin(CLDFRC_54km_max),
-    np.nanmax(CLDFRC_54km_max),
-    "Blues",
-    "cloud fraction [%]",
-    "CLDFRC_54km",
-)
+# # CLDFRC_max
+# styled_imshow_plot(
+#     CLDFRC_1km_max,
+#     np.nanmin(CLDFRC_1km_max),
+#     np.nanmax(CLDFRC_1km_max),
+#     "Blues",
+#     "cloud fraction [%]",
+#     "CLDFRC_1km"+subfolder,
+# )
+# styled_imshow_plot(
+#     CLDFRC_54km_max,
+#     np.nanmin(CLDFRC_54km_max),
+#     np.nanmax(CLDFRC_54km_max),
+#     "Blues",
+#     "cloud fraction [%]",
+#     "CLDFRC_54km"+subfolder,
+# )
 
-# Temperature
-styled_imshow_plot(T2_1km, 0, 35, "coolwarm_r", "[°C]", "T2_1km")
-styled_imshow_plot(proj_T2_54km, 0, 35, "coolwarm_r", "[°C]", "T2_54km")
-
-
-# GPP 1km
-styled_imshow_plot(
-    GPP_1km * conv_factor,
-    0,
-    30,
-    "PiYG",
-    r"GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "GPP_1km",
-)
-
-# GPP 54km (reprojected)
-styled_imshow_plot(
-    proj_GPP_54km * conv_factor,
-    0,
-    30,
-    "PiYG",
-    r"GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "GPP_54",
-)
-
-# GPP model diff (54km - 1km)
-styled_imshow_plot(
-    dGPP_real,
-    -15,
-    15,
-    "PiYG",
-    r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "GPP_54-1km",
-)
+# # Temperature
+# styled_imshow_plot(T2_1km, 0, 35, "coolwarm_r", "[°C]", "T2_1km"+subfolder)
+# styled_imshow_plot(proj_T2_54km, 0, 35, "coolwarm_r", "[°C]", "T2_54km"+subfolder)
 
 
-styled_imshow_plot(
-    proj_dGPPdT_54km * conv_factor,
-    -2,
-    2,
-    "PiYG",
-    r"dGPP/dT ([$\mu$mol m$^{-2}$ s$^{-1}$ °C$^{-1}$]",
-    "dGPPdT_54km",
-)
+# # GPP 1km
+# styled_imshow_plot(
+#     GPP_1km * conv_factor,
+#     0,
+#     30,
+#     "PiYG",
+#     r"GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "GPP_1km"+subfolder,
+# )
 
-# Temperature differences
-styled_imshow_plot(
-    dT_model - dT_calc,
-    -15,
-    15,
-    "coolwarm_r",
-    "$\Delta_\text{res}$T [C]",
-    "dT_model-calc",
-)
+# # GPP 54km (reprojected)
+# styled_imshow_plot(
+#     proj_GPP_54km * conv_factor,
+#     0,
+#     30,
+#     "PiYG",
+#     r"GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "GPP_54"+subfolder,
+# )
 
-# GPP differences
-styled_imshow_plot(
-    dGPP_calc,
-    -15,
-    15,
-    "PiYG",
-    r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dGPP_calc",
-)
-styled_imshow_plot(
-    dGPP_model,
-    -15,
-    15,
-    "PiYG",
-    r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dGPP_model",
-)
-styled_imshow_plot(
-    dGPP_model - dGPP_calc,
-    -15,
-    15,
-    "PiYG",
-    r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dGPP_model-calc",
-)
+# # GPP model diff (54km - 1km)
+# styled_imshow_plot(
+#     dGPP_real,
+#     -15,
+#     15,
+#     "PiYG",
+#     r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "GPP_54-1km"+subfolder,
+# )
 
-# RECO difference
-styled_imshow_plot(
-    dRECO_model,
-    -15,
-    15,
-    "PiYG",
-    r"$\Delta_\text{res}$RECO [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dRECO_model",
-)
-print("Plots done.")
+
+# styled_imshow_plot(
+#     proj_dGPPdT_54km * conv_factor,
+#     -2,
+#     2,
+#     "PiYG",
+#     r"dGPP/dT ([$\mu$mol m$^{-2}$ s$^{-1}$ °C$^{-1}$]",
+#     "dGPPdT_54km"+subfolder,
+# )
+
+# # Temperature differences
+# styled_imshow_plot(
+#     dT_model - dT_calc,
+#     -15,
+#     15,
+#     "coolwarm_r",
+#     "$\Delta_\text{res}$T [C]",
+#     "dT_model-calc"+subfolder,
+# )
+
+# # GPP differences
+# styled_imshow_plot(
+#     dGPP_calc,
+#     -15,
+#     15,
+#     "PiYG",
+#     r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "dGPP_calc"+subfolder,
+# )
+# styled_imshow_plot(
+#     dGPP_model,
+#     -15,
+#     15,
+#     "PiYG",
+#     r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "dGPP_model"+subfolder,
+# )
+# styled_imshow_plot(
+#     dGPP_model - dGPP_calc,
+#     -15,
+#     15,
+#     "PiYG",
+#     r"$\Delta_\text{res}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "dGPP_model-calc"+subfolder,
+# )
+
+# # RECO difference
+# styled_imshow_plot(
+#     dRECO_model,
+#     -15,
+#     15,
+#     "PiYG",
+#     r"$\Delta_\text{res}$RECO [$\mu$mol m$^{-2}$ s$^{-1}$]",
+#     "dRECO_model"+subfolder,
+# )
+# print("Plots done.")
