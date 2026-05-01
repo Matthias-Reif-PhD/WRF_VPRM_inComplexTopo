@@ -657,7 +657,7 @@ def main():
     start_date, end_date = "2012-01-01 00:00:00", "2012-12-31 00:00:00"
     STD_TOPO = 200
     ref_sim = True
-    sim_type = "_cloudy"  # "" or "_cloudy"
+    sim_type = ""  # "" or "_cloudy"
 
     columns = ["GPP", "RECO", "NEE", "T2", "SWDOWN"]
     units = [

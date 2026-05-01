@@ -34,7 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
 ############# INPUT ############
-save_plot_maps = True
+save_plot_maps = False
 save_plot2 = True
 print_output = True
 # use all dates within this range
@@ -42,9 +42,9 @@ print_output = True
 # end_date = "2012-12-31 00:00:00"
 
 # for zenodo data there is only available 2012-07-27
-start_date = "2012-07-27 00:00:00"
-end_date = "2012-07-28 00:00:00"
-sim_type = ""  # "", "_cloudy"
+start_date = "2012-01-01 00:00:00"
+end_date = "2012-12-31 00:00:00"
+sim_type = "_cloudy"  # "", "_cloudy"
 # for Fig. 10 you need the full wrf output, there is no extraction into csv files
 SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 wrf_basepath = f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS"  # without resolution suffix

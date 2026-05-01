@@ -739,7 +739,7 @@ def main():
     else:  # to run locally
         start_date = "2012-01-01 00:00:00"
         end_date = "2012-12-31 00:00:00"
-        sim_type = "_cloudy"  # "" or "_cloudy" or "_parm_err"
+        sim_type = ""  # "" or "_cloudy" or "_parm_err"
 
     wrf_paths = [
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",

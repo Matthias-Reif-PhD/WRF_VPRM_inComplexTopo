@@ -30,21 +30,18 @@ set +a
 # ------------------------------------------------------------------
 module purge
 module load $CONDA_MODULE
-
 eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
 conda activate "$CONDA_ENV"
-
-# adjust your User ID
-USER_ID="c7071034" 
-
-REAL_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WPS_and_REAL.sh
-WRF_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WRF.sh
-COPY_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/copy_wrf_output.sh
-resx=("54km")
 
 # ------------------------------------------------------------------
 # CONFIGURATION: Choose simulation type
 # ------------------------------------------------------------------
+
+USER_ID="c7071034" # adjust your User ID
+REAL_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WPS_and_REAL.sh
+WRF_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WRF.sh
+COPY_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/copy_wrf_output.sh
+resx=("54km")
 # Options: "" (clear sky) or "_cloudy" (cloudy and rainy)
 type="_cloudy"
 
