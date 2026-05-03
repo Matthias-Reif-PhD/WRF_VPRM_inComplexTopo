@@ -47,7 +47,6 @@ subfolder = ""  # "" or "_cloudy"
 wrfinput_path_1km = os.path.join(
     SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS_1km{subfolder}/wrfout_d02_{dateime}:00:00"
 )
-subfolder = subfolder+"_radt54_swint1"  # "" or "_cloudy", for 54km plus "_radt1", "_radt54" and "_radt54_swint1"
 wrfinput_path_54km = os.path.join(
     SCRATCH_PATH, f"DATA/WRFOUT/WRFOUT_ALPS{dx}{subfolder}/wrfout_d01_{dateime}:00:00"
 )
@@ -401,7 +400,7 @@ styled_imshow_plot(
     np.nanmax(SWDOWN_1km),
     "YlOrRd",
     r"S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_54km"+subfolder,
+    "SWDOWN_54km" + subfolder,
 )
 
 styled_imshow_plot(
@@ -410,7 +409,7 @@ styled_imshow_plot(
     np.nanmax(SWDOWN_1km),
     "YlOrRd",
     r"S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_1km"+subfolder,
+    "SWDOWN_1km" + subfolder,
 )
 
 styled_imshow_plot(
@@ -419,7 +418,7 @@ styled_imshow_plot(
     np.nanmax(dSWDOWN),
     "RdBu",
     r"$\Delta_\text{res}$ S$_\downarrow$ [W m$^{-2}$]",
-    "SWDOWN_54-1km"+subfolder,
+    "SWDOWN_54-1km" + subfolder,
 )
 
 # styled_imshow_plot(
@@ -437,7 +436,7 @@ styled_imshow_plot(
     np.nanmax(dRAD_scale),
     "RdBu",
     r"$\Delta_\text{res}$RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "RAD_scale_54-1km"+subfolder,
+    "RAD_scale_54-1km" + subfolder,
 )
 
 styled_imshow_plot(
@@ -446,7 +445,7 @@ styled_imshow_plot(
     np.nanmax(RAD_scale_1km),
     "YlOrRd",
     r"RAD [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "RAD_scale_54km"+subfolder,
+    "RAD_scale_54km" + subfolder,
 )
 
 # styled_imshow_plot(
@@ -465,7 +464,7 @@ styled_imshow_plot(
     15,
     "PiYG",
     r"$\Delta_{\partial \text{T}}$GPP [$\mu$mol m$^{-2}$ s$^{-1}$]",
-    "dGPP_model_02"+subfolder,
+    "dGPP_model_02" + subfolder,
 )
 # # GPP calc again (duplicated in earlier batch, but now renamed to not overwrite)
 
@@ -477,7 +476,7 @@ styled_imshow_plot(
     2,
     "PiYG",
     r"$\frac{\partial \text{GPP}}{\partial \text{T}}$ ([$\mu$mol m$^{-2}$ s$^{-1}$ °C$^{-1}$]",
-    "dGPPdT_1km"+subfolder,
+    "dGPPdT_1km" + subfolder,
 )
 
 

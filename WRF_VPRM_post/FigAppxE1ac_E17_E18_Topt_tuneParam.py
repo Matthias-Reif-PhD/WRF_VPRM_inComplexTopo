@@ -1,6 +1,8 @@
 """
 FigAppxE1ac_E17_E18_Topt_tuneParam.py
 ==============================================
+    ==== run after main_tune_VPRM.py =====
+==============================================
 Analyze and plot optimized Topt values against mean and max temperatures.
 This script processes FLUXNET2015 data to determine the optimum temperature (Topt)
 for net ecosystem exchange (NEE) using both mirrored Gaussian and cubic polynomial fits.
