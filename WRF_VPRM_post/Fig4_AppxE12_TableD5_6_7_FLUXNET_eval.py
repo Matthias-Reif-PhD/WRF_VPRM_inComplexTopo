@@ -1007,7 +1007,7 @@ def main():
     # Parameters copied from original script
     timespan = "2012-01-01 00:00:00_2012-12-31 00:00:00"
     sim_type = "_all"
-    radius = 30
+    radius = 10
     fluxnet_site_means = (
         False  # set True to additionally generate Table D7 (takes a few minutes)
     )
