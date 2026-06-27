@@ -973,14 +973,14 @@ def main():
     end_year = df_site_and_modis[timestamp].dt.year.max() + 1
 
     T_opt = {
-        "ENF": 14.25,
-        "DBF": 23.58,
-        "MF": 18.41,
+        "ENF": 16.42,
+        "DBF": 23.94,
+        "MF": 19.60,
         "SHB": 20.0,
-        "WET": 17.64,
+        "WET": 20.23,
         "CRO": 22.0,
-        "GRA": 15.88,
-    }  # T_opt constant again to reduce variation of parameters in V18
+        "GRA": 18.56,
+    }  # GPP-based Topt (GPP_NT_VUT_USTAR50) for the GMD revision; SHB/CRO kept as defaults (no Alpine SHB; crop cut). Previous NEE-based: ENF 14.25, DBF 23.58, MF 18.41, WET 17.64, GRA 15.88
     if single_year and year_to_plot == 2012:
         print("Custom Topt for 2012 and chosen sites.")
         T_opt_site = {
@@ -1402,7 +1402,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [df_year.set_index(timestamp)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
@@ -1450,7 +1450,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [df_year.set_index(timestamp)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
@@ -1496,7 +1496,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [df_year.set_index(timestamp)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
