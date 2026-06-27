@@ -110,6 +110,26 @@ def find_minimum_of_cubic_poly(coeffs, x_range):
 
 
 # Define paths and parameters
+# --- GPP additions for the GMD revision: upward Gaussian (peak = maximum) ---
+def gaussian(x, a, b, c):
+    """Upward Gaussian -> models the GPP maximum (Topt)."""
+    return a * np.exp(-((x - b) ** 2) / (2 * c**2))
+
+
+def find_maximum_of_cubic_poly(coeffs, x_range):
+    """x that maximises the cubic polynomial within the observed range (GPP)."""
+    a, b, c, d = coeffs
+
+    def neg_poly_func(x):
+        return -(a * x**3 + b * x**2 + c * x + d)
+
+    x_range = np.asarray(x_range)
+    res = minimize(
+        neg_poly_func, np.mean(x_range), bounds=[(x_range.min(), x_range.max())]
+    )
+    return res.x[0]
+
+
 base_path = os.path.join(SCRATCH_PATH, "DATA/Fluxnet2015/Alps/")
 plot_path = OUTFOLDER
 font_size = 20
@@ -143,6 +163,7 @@ for folder in os.listdir(base_path):
         # Extract site name
         site_name = folder.split("_")[1]
         # get PFT of site
+        target_pft = None
         i = 0
         for site_i in site_info["site"]:
             if site_name == site_i:
@@ -154,13 +175,16 @@ for folder in os.listdir(base_path):
                 if site_name == "AT-Mie":
                     target_pft = "ENF"
             i += 1
+        if target_pft is None:
+            print(f"No PFT found for {site_name}, skipping.")
+            continue
         site_name = target_pft + "_" + site_name
 
         # Columns to read and converters
         columns_to_copy = [
             "TIMESTAMP_START",
             "TA_F",
-            "NEE_VUT_REF",
+            "GPP_NT_VUT_USTAR50",
             "NIGHT",
         ]
         converters = {k: lambda x: float(x) for k in columns_to_copy}
@@ -174,12 +198,12 @@ for folder in os.listdir(base_path):
         # Clean the data
         df_site["TA_F"] = df_site["TA_F"].replace(-9999.0, np.nan)
         df_site = df_site.dropna(subset=["TA_F"])
-        df_site["NEE_VUT_REF"] = df_site["NEE_VUT_REF"].replace(-9999.0, np.nan)
-        # check how many nan values are in NEE_VUT_REF
-        nan_values = df_site["NEE_VUT_REF"].isna()
+        df_site["GPP_NT_VUT_USTAR50"] = df_site["GPP_NT_VUT_USTAR50"].replace(-9999.0, np.nan)
+        # check how many nan values are in GPP_NT_VUT_USTAR50
+        nan_values = df_site["GPP_NT_VUT_USTAR50"].isna()
         nan_sum = nan_values.sum()
-        full_year = len(df_site["NEE_VUT_REF"])
-        df_site = df_site.dropna(subset=["NEE_VUT_REF"])
+        full_year = len(df_site["GPP_NT_VUT_USTAR50"])
+        df_site = df_site.dropna(subset=["GPP_NT_VUT_USTAR50"])
         percent_nan = nan_sum.max() / full_year * 100
 
         #  find the name of the column with the most missing values
@@ -190,17 +214,21 @@ for folder in os.listdir(base_path):
             continue
 
         # Set the values to np.nan during nighttime
-        night_columns = ["NEE_VUT_REF"]
+        night_columns = ["GPP_NT_VUT_USTAR50"]
         df_site.loc[df_site["NIGHT"] == 1, night_columns] = np.nan
+
+        # GPP_NT_VUT_USTAR50 can be slightly negative (night-time partitioning
+        # artefact); clip at zero (GPP >= 0) before fitting the upward Gaussian.
+        df_site["GPP_NT_VUT_USTAR50"] = df_site["GPP_NT_VUT_USTAR50"].clip(lower=0)
 
         # Convert units from micromol per m² per second to grams of Carbon per day
         # conversion_factor = 12 * 1e-6 * 60 * 60 * 24  # 12 g C per mol, micromol to mol, per second to per day
-        # df_site['NEE_VUT_REF'] *= conversion_factor
+        # df_site['GPP_NT_VUT_USTAR50'] *= conversion_factor
 
         # Resample to daily frequency
         df_site.set_index("TIMESTAMP_START", inplace=True)
         df_daily = (
-            df_site.resample("D").agg({"TA_F": "mean", "NEE_VUT_REF": "mean"}).dropna()
+            df_site.resample("D").agg({"TA_F": "mean", "GPP_NT_VUT_USTAR50": "mean"}).dropna()
         )
 
         # Extract the year from the timestamp
@@ -237,9 +265,16 @@ for folder in os.listdir(base_path):
             try:
                 # Perform Gaussian fit with mirrored curve (negating amplitude)
                 popt, _ = curve_fit(
-                    mirrored_gaussian,
+                    gaussian,
                     mean_values.index,
-                    mean_values["NEE_VUT_REF"],
+                    mean_values["GPP_NT_VUT_USTAR50"],
+                    p0=[
+                        mean_values["GPP_NT_VUT_USTAR50"].max(),
+                        mean_values.index[
+                            np.argmax(mean_values["GPP_NT_VUT_USTAR50"].values)
+                        ],
+                        8.0,
+                    ],
                     maxfev=10000,
                 )
                 Topt = popt[
@@ -247,10 +282,10 @@ for folder in os.listdir(base_path):
                 ]  # Extract the temperature at the peak of the Gaussian (mean)
 
                 # Generate the fitted curve for plotting or evaluation
-                fitted_curve = mirrored_gaussian(mean_values.index, *popt)
+                fitted_curve = gaussian(mean_values.index, *popt)
 
                 # Calculate RMSE for the Gaussian fit
-                rmse = calculate_rmse(mean_values["NEE_VUT_REF"], fitted_curve)
+                rmse = calculate_rmse(mean_values["GPP_NT_VUT_USTAR50"], fitted_curve)
                 print(f"RMSE for Gaussian fit: {rmse}")
 
                 if site_name == "ENF_DE-Lbk" and year == 2012:
@@ -287,12 +322,12 @@ for folder in os.listdir(base_path):
                     popt_poly, _ = curve_fit(
                         cubic_polynomial,
                         mean_values.index,
-                        mean_values["NEE_VUT_REF"],
+                        mean_values["GPP_NT_VUT_USTAR50"],
                         maxfev=10000,
                     )
 
                     # Find the minimum of the cubic polynomial curve (Topt) using optimization
-                    Topt = find_minimum_of_cubic_poly(popt_poly, mean_values.index)
+                    Topt = find_maximum_of_cubic_poly(popt_poly, mean_values.index)
 
                     # Generate the fitted curve for the cubic polynomial
                     fitted_curve = cubic_polynomial(mean_values.index, *popt_poly)
@@ -336,8 +371,8 @@ for folder in os.listdir(base_path):
                 plt.figure(figsize=(8, 8))
                 plt.scatter(
                     mean_values.index,
-                    mean_values["NEE_VUT_REF"],
-                    label=r"grouped NEE per T$_\text{2m}$",
+                    mean_values["GPP_NT_VUT_USTAR50"],
+                    label=r"grouped GPP per T$_\text{2m}$",
                     color="blue",
                 )
                 if fitted_curve is not None:
@@ -355,7 +390,7 @@ for folder in os.listdir(base_path):
                         label=f"Topt = {Topt:.2f}",
                     )
                 plt.xlabel(r"T$_\text{2m}$ [°C]", fontsize=font_size)
-                plt.ylabel(r"NEE [$\mu$mol m$^{-2}$ s$^{-1}$]", fontsize=font_size)
+                plt.ylabel(r"GPP [$\mu$mol m$^{-2}$ s$^{-1}$]", fontsize=font_size)
                 plt.xticks(fontsize=font_size - 2)
                 plt.yticks(fontsize=font_size - 2)
                 plt.legend(
