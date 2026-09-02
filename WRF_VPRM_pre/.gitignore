@@ -1,7 +1,3 @@
-CAMS/slurm-2806640.out
-CAMS/slurm-2806705.out
-CAMS/slurm-2806707.out
-geogrid.log
 GRIBFILE.AAA
 GRIBFILE.AAB
 GRIBFILE.AAC
@@ -33,10 +29,3 @@ GRIBFILE.ABB
 GRIBFILE.ABC
 GRIBFILE.ABD
 GRIBFILE.ABE
-metgrid.log
-ungrib.log
-slurm-*
-
-**/*.csv
-**/*.pdf
-**/*.tex

@@ -25,11 +25,56 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
+# Reuse the offline VPRM-old flux engine for the per-site (point) recompute.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from recompute_vprm_fluxes import compute_fluxes, load_params, _load_vprm_input
+
 # ==================== Configuration ====================
 SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 GITHUB_PATH = os.getenv("GITHUB_PATH")
 OUTFOLDER = os.getenv("OUTFOLDER")
 CSVFOLDER = os.getenv("CSVFOLDER")
+
+# GPP-based per-site full parameter set (GMD revision).
+# Loaded from vprm_params_site.csv (built by build_site_param_csv.py after
+# main_tune_VPRM.py with diff_evo_V24_SITE).  Keyed by "{site}_SITE" to match
+# location["name"].  Each value is a dict: t_opt, par0, lambda, alpha, beta.
+def _load_site_params():
+    csv = Path(__file__).resolve().parent / "vprm_params_site.csv"
+    if not csv.exists():
+        raise FileNotFoundError(
+            f"vprm_params_site.csv not found at {csv}. "
+            "Run build_site_param_csv.py after the SITE tuning jobs complete."
+        )
+    df = pd.read_csv(csv)
+    result = {}
+    for _, row in df.iterrows():
+        result[f"{row['site']}_SITE"] = {
+            "t_opt":   float(row["t_opt"]),
+            "par0":    float(row["par0"]),
+            "lambda":  float(row["lambda"]),
+            "alpha":   float(row["alpha"]),
+            "beta":    float(row["beta"]),
+        }
+    return result
+
+SITE_PARAMS = _load_site_params()
+
+
+def site_point_flux(base_params, pft, site_params, swdown_cell, t2c_cell, vin_cell):
+    """Point recompute of VPRM-old GPP/RECO/NEE at a single grid cell using the
+    base (tag) parameter table with this site's full per-site params substituted
+    for its PFT row (t_opt, par0, lambda, alpha, beta).
+    site_params: dict with those five scalar keys (from SITE_PARAMS).
+    Returns scalars in umol m-2 s-1."""
+    m = pft - 1  # vprm_veg_id 1..7 -> index 0..6
+    p = dict(base_params)
+    for key in ("t_opt", "par0", "lambda", "alpha", "beta"):
+        arr = base_params[key].copy()
+        arr[m] = site_params[key]
+        p[key] = arr
+    gpp, reco, nee = compute_fluxes(swdown_cell, t2c_cell, vin_cell, p)
+    return float(gpp.ravel()[0]), float(reco.ravel()[0]), float(nee.ravel()[0])
 
 
 def compute_slope_aspect(hgt, lats, lons):
@@ -71,7 +116,23 @@ def find_best_fluxnet_match(
     radius,
     slope=None,
     aspect=None,
+    nearest_only=False,
 ):
+    """Pick the grid cell representing a FLUXNET tower.
+
+    Normally this minimises a terrain/vegetation cost function over all cells
+    within `radius`. With `nearest_only`, it returns the minimum-distance cell
+    instead and the cost function is not applied.
+
+    `nearest_only` exists for the 54 km domain, where the cost function has no
+    room to act: at dx = 54 km a 30 km radius contains 0-2 cell centres (AT-Neu
+    has none -- its nearest centre is 32.9 km away, which would raise below).
+    Widening the radius until the cost function nominally "runs" would select
+    cells up to 80 km from the tower and dress an arbitrary choice as a terrain
+    match, so the honest option is to take the nearest cell and say so.
+    Returns `n_cand`, the number of cells the rule actually chose between, so
+    the caller can report how much of a choice it was.
+    """
     if slope is None or aspect is None:
         slope, aspect = compute_slope_aspect(hgt, lats, lons)
 
@@ -101,13 +162,21 @@ def find_best_fluxnet_match(
         + 0.6 * (1.0 - veg_frac) ** 2
     )
 
-    # Apply radius mask
-    cost = np.where(dist_mask, cost, np.inf)
+    n_cand = int(dist_mask.sum())
 
-    if not np.any(np.isfinite(cost)):
-        raise ValueError("No valid grid cell within radius.")
+    if nearest_only:
+        # No radius mask and no cost minimisation: the nearest cell, full stop.
+        min_idx = np.unravel_index(np.argmin(dist_km), dist_km.shape)
+        n_cand = 1
+    else:
+        # Apply radius mask
+        cost = np.where(dist_mask, cost, np.inf)
 
-    min_idx = np.unravel_index(np.argmin(cost), cost.shape)
+        if not np.any(np.isfinite(cost)):
+            raise ValueError("No valid grid cell within radius.")
+
+        min_idx = np.unravel_index(np.argmin(cost), cost.shape)
+
     min_dist = dist_km[min_idx]
 
     return (
@@ -120,6 +189,7 @@ def find_best_fluxnet_match(
         veg_frac[min_idx],
         height_diff[min_idx],
         cost[min_idx],
+        n_cand,
     )
 
 
@@ -176,7 +246,31 @@ def extract_datetime_from_filename(filename):
     return datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
 
 
-def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
+def recalc_file_path(tag, res, sim_type, time):
+    """
+    Deterministic path of an offline-recomputed VPRM flux NetCDF for a given
+    parameter tag, resolution, sim_type and timestamp (see recompute_vprm_fluxes.py).
+    Returns None if no tag is requested.
+    """
+    if tag is None:
+        return None
+    base = os.path.join(
+        SCRATCH_PATH, "DATA/VPRM_recalc", f"vprm_recalc_{tag}_{res}{sim_type}"
+    )
+    ts = time.strftime("%Y-%m-%d_%H:%M:%S")
+    return os.path.join(base, f"vprm_recalc_{tag}_{res}{sim_type}_{ts}.nc")
+
+
+def extract_timeseries(
+    wrf_path, start_date, end_date, res, sim_type, radius, tag=None
+):
+
+    # Grid-point rule. At 1 km and 9 km the terrain/vegetation cost function
+    # has a real pool to choose from within `radius` (~2800 and ~35 cells
+    # respectively). At 54 km it does not -- 0-2 cell centres lie within 30 km,
+    # and AT-Neu has none -- so the nearest cell is taken and the cost function
+    # is not applied. See find_best_fluxnet_match's docstring.
+    nearest_only = res == "54km"
 
     run_Pmodel = False
     subday = ""
@@ -186,6 +280,12 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
         )
         migli_path = os.path.join(SCRATCH_PATH, "DATA/RECO_Migli")
         subday = "subdailyC3_"
+
+    # When a recompute tag is given, add offline-recomputed GPP/RECO/NEE columns
+    # for the ALPS channel (CO2_ID == "") alongside the WRF EBIO_* columns.
+    use_recomputed = tag is not None
+    # the recompute 1km grid is pre-trimmed [10:-10]; grid_idx is on the full grid
+    recalc_offset = 10 if res == "1km" else 0
 
     output_dir = CSVFOLDER
     d0X = "wrfout_d01"
@@ -608,6 +708,31 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
             + [f"{location['name']}_RECO_Migli" for location in locations]
         )
 
+    # Offline-recompute columns: ALPS channel (domain-uniform tag, read from the
+    # vprm_recalc NetCDF) and SITE channel (full per-site params, point recompute here).
+    recalc_locations = [
+        loc
+        for loc in locations
+        if loc["CO2_ID"] == "" or loc["name"] in SITE_PARAMS
+    ]
+    if use_recomputed:
+        columns = (
+            columns
+            + [f"{loc['name']}_GPP_recalc" for loc in recalc_locations]
+            + [f"{loc['name']}_RECO_recalc" for loc in recalc_locations]
+            + [f"{loc['name']}_NEE_recalc" for loc in recalc_locations]
+        )
+
+    # Base parameter table for the SITE point recompute = the same CSV as --tag,
+    # with each site's own Topt substituted for its PFT (see site_point_flux).
+    base_params = None
+    vin_by_day = {}  # cache of per-day full-grid VPRM input
+    if use_recomputed:
+        tag_csv = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), f"vprm_params_{tag}.csv"
+        )
+        base_params = load_params(tag_csv)
+
     df_out = pd.DataFrame(columns=columns)
     # Process each WRF file (representing one timestep)
     for nc_f1 in file_list:
@@ -619,6 +744,7 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
         xlat = nc_fid1.variables["XLAT"][0]  # Assuming the first time slice
         xlon = nc_fid1.variables["XLONG"][0]
         WRF_T2 = nc_fid1.variables["T2"][0]
+        WRF_SWDOWN = nc_fid1.variables["SWDOWN"][0]  # for SITE point recompute
         hgt = nc_fid1.variables["HGT"][0]
         IVGTYP = nc_fid1.variables["IVGTYP"][0]
         IVGTYP_vprm = np.vectorize(corine_to_vprm.get)(
@@ -650,6 +776,39 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
             gpp_pmodel = xr.open_dataset(gpp_pmodel_file)
             gpp_pmodel = gpp_pmodel["GPP_Pmodel"].values
 
+        # Offline-recomputed fluxes for this timestep (already in umol m-2 s-1).
+        gpp_rc = reco_rc = nee_rc = None
+        vin_day = None
+        if use_recomputed:
+            # ALPS channel: domain-uniform recompute NetCDF (pre-trimmed at 1km).
+            rc_path = recalc_file_path(
+                tag, res, sim_type, extract_datetime_from_filename(nc_f1)
+            )
+            if os.path.exists(rc_path):
+                with nc.Dataset(rc_path) as f_rc:
+                    gpp_rc = f_rc.variables["GPP"][:, :]
+                    reco_rc = f_rc.variables["RECO"][:, :]
+                    nee_rc = f_rc.variables["NEE"][:, :]
+            # SITE channel: per-day full-grid VPRM input for the point recompute.
+            day = extract_datetime_from_filename(nc_f1).strftime("%Y-%m-%d")
+            if day not in vin_by_day:
+                if res == "1km":
+                    vpath = os.path.join(
+                        SCRATCH_PATH,
+                        f"DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_{day}_00:00:00.nc",
+                    )
+                else:
+                    vpath = os.path.join(
+                        SCRATCH_PATH,
+                        f"DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_{day}_00:00:00.nc",
+                    )
+                vin_by_day[day] = (
+                    _load_vprm_input(vpath, trim=False)
+                    if os.path.exists(vpath)
+                    else None
+                )
+            vin_day = vin_by_day[day]
+
         # Initialize lists to store data for the current timestep
         data_row = {col: None for col in df_out.columns}  # Map columns to values
 
@@ -670,6 +829,7 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
                 veg_frac_idx,
                 height_diff_idx,
                 cost,
+                n_cand,
             ) = find_best_fluxnet_match(
                 lat_target,
                 lon_target,
@@ -680,9 +840,12 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
                 hgt,
                 location["hgt_site"],
                 radius,
+                nearest_only=nearest_only,
             )
             print(
                 f"Cost: \n  [{location['name']}] "
+                f"Rule={'nearest' if nearest_only else 'cost'} | "
+                f"Candidates={n_cand} | "
                 f"Dist={dist_km:.2f} km | "
                 f"Height Diff={height_diff_idx:.2f} m"
                 f"Idx={grid_idx} | "
@@ -703,6 +866,13 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
                     loc["hgt_wrf"] = hgt[grid_idx[0], grid_idx[1]]
                     loc["lat_wrf"] = xlat[grid_idx[0], grid_idx[1]]
                     loc["lon_wrf"] = xlon[grid_idx[0], grid_idx[1]]
+                    # Which cell was picked, by which rule, out of how many --
+                    # the coarse-domain evaluation is only interpretable with
+                    # this alongside it.
+                    loc["grid_i"] = int(grid_idx[0])
+                    loc["grid_j"] = int(grid_idx[1])
+                    loc["n_candidates"] = n_cand
+                    loc["rule"] = "nearest" if nearest_only else "cost"
                     break
 
             # Assign values to their respective columns
@@ -720,6 +890,44 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
                 data_row[f"{location['name']}_RECO_Migli"] = reco_migli[
                     grid_idx[0], grid_idx[1]
                 ]
+            # ALPS channel: take offline-recomputed flux at the matched cell.
+            # grid_idx is on the full grid; recompute 1km is trimmed [10:-10].
+            if use_recomputed and location["CO2_ID"] == "" and gpp_rc is not None:
+                ri = grid_idx[0] - recalc_offset
+                rj = grid_idx[1] - recalc_offset
+                if 0 <= ri < gpp_rc.shape[0] and 0 <= rj < gpp_rc.shape[1]:
+                    data_row[f"{location['name']}_GPP_recalc"] = gpp_rc[ri, rj]
+                    data_row[f"{location['name']}_RECO_recalc"] = reco_rc[ri, rj]
+                    data_row[f"{location['name']}_NEE_recalc"] = nee_rc[ri, rj]
+            # SITE channel: per-site Topt point recompute at the matched cell.
+            # Built from full-grid inputs at grid_idx (no trim offset).
+            elif (
+                use_recomputed
+                and location["name"] in SITE_PARAMS
+                and vin_day is not None
+            ):
+                i0, j0 = grid_idx[0], grid_idx[1]
+                vin_cell = {
+                    k: v[:, :, i0 : i0 + 1, j0 : j0 + 1] for k, v in vin_day.items()
+                }
+                swd_cell = np.asarray(
+                    WRF_SWDOWN[i0 : i0 + 1, j0 : j0 + 1], dtype=np.float64
+                )
+                t2c_cell = (
+                    np.asarray(WRF_T2[i0 : i0 + 1, j0 : j0 + 1], dtype=np.float64)
+                    - 273.15
+                )
+                g, r, n = site_point_flux(
+                    base_params,
+                    location["pft"],
+                    SITE_PARAMS[location["name"]],
+                    swd_cell,
+                    t2c_cell,
+                    vin_cell,
+                )
+                data_row[f"{location['name']}_GPP_recalc"] = g
+                data_row[f"{location['name']}_RECO_recalc"] = r
+                data_row[f"{location['name']}_NEE_recalc"] = n
 
         # Append the current timestep data as a new row in the DataFrame
         temp_df_out = pd.DataFrame([data_row])
@@ -736,7 +944,8 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
     # Set the time as the index of the DataFrame
     df_out.index = [extract_datetime_from_filename(f) for f in file_list]
     # Optionally, save the DataFrame to CSV
-    output_filename = f"wrf_FLUXNET_sites_{res}{sim_type}_{start_date.split('_')[0]}_{end_date.split('_')[0]}_r{radius}.csv"
+    recalc_suffix = f"_recalc_{tag}" if use_recomputed else ""
+    output_filename = f"wrf_FLUXNET_sites_{res}{sim_type}{recalc_suffix}_{start_date.split('_')[0]}_{end_date.split('_')[0]}_r{radius}.csv"
 
     df_out.to_csv(
         os.path.join(
@@ -751,7 +960,12 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
             dist_rows.append(
                 {
                     "name": loc["name"],
+                    "rule": loc["rule"],
+                    "n_candidates": loc["n_candidates"],
                     "dist": loc["dist"],
+                    "grid_i": loc["grid_i"],
+                    "grid_j": loc["grid_j"],
+                    "hgt_site": loc["hgt_site"],
                     "hgt_wrf": loc["hgt_wrf"],
                     "lat_wrf": loc["lat_wrf"],
                     "lon_wrf": loc["lon_wrf"],
@@ -763,7 +977,12 @@ def extract_timeseries(wrf_path, start_date, end_date, res, sim_type, radius):
         dist_rows,
         columns=[
             "name",
+            "rule",
+            "n_candidates",
             "dist",
+            "grid_i",
+            "grid_j",
+            "hgt_site",
             "hgt_wrf",
             "lat_wrf",
             "lon_wrf",
@@ -796,27 +1015,48 @@ def main():
             help="Format: '' or '_cloudy'",
             default="",
         )
+        parser.add_argument(
+            "--tag",
+            type=str,
+            default=None,
+            help="Recompute parameter tag (e.g. topt_p50). If set, adds offline "
+            "VPRM_recalc GPP/RECO/NEE columns for the ALPS channel.",
+        )
+        parser.add_argument(
+            "--res",
+            type=str,
+            default="1km",
+            help="Comma-separated resolutions to extract, e.g. '1km' or "
+            "'9km,54km'. Coarse domains read wrfout_d01 and evaluate the "
+            "coarse runs against the towers (Follow-up 15e).",
+        )
         args = parser.parse_args()
         start_date = args.start
         end_date = args.end
         sim_type = args.type
+        tag = args.tag
+        resolutions = [r.strip() for r in args.res.split(",") if r.strip()]
     else:  # to run locally
         start_date = "2012-01-01 00:00:00"
         end_date = "2012-12-31 00:00:00"
         sim_type = "_cloudy"  # "" or "_cloudy" - run one after the other
+        tag = None  # e.g. "topt_p50" to add offline-recomputed flux columns
+        resolutions = ["1km"]
 
     wrf_paths = [
-        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km",
-        # f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km",
+        f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_{r}" for r in resolutions
     ]
-    radius = 10  # radius in which the best fitting locaiton is searched
+    radius = 30  # radius in which the best fitting locaiton is searched
 
     for wrf_path in wrf_paths:
         res = wrf_path.split("_")[-1]
         wrf_path = wrf_path + sim_type
         print((wrf_path, start_date, end_date, res, sim_type))
-        extract_timeseries(wrf_path, start_date, end_date, res, "", radius)
-        extract_timeseries(wrf_path, start_date, end_date, res, "_cloudy", radius)
+        # single pass with the actual sim_type so the wrfout data, the recompute
+        # NetCDF lookup, and the output filename all stay consistent.
+        extract_timeseries(
+            wrf_path, start_date, end_date, res, sim_type, radius, tag=tag
+        )
 
 
 if __name__ == "__main__":

@@ -24,11 +24,47 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env")
 
+# Reuse the offline VPRM-old flux engine for the per-tag recompute path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from recompute_vprm_fluxes import compute_fluxes, load_params, _load_vprm_input
+
 # ==================== Configuration ====================
 SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 GITHUB_PATH = os.getenv("GITHUB_PATH")
 OUTFOLDER = os.getenv("OUTFOLDER")
 CSVFOLDER = os.getenv("CSVFOLDER")
+
+
+def _vprm_input_path(scratch, res, day):
+    """Per-day full-grid VPRM input file for a resolution (d02 at 1km, else d01)."""
+    if res == "1km":
+        return os.path.join(
+            scratch, f"DATA/VPRM_input/vprm_corine_1km/vprm_input_d02_{day}_00:00:00.nc"
+        )
+    return os.path.join(
+        scratch, f"DATA/VPRM_input/vprm_corine_{res}/vprm_input_d01_{day}_00:00:00.nc"
+    )
+
+
+def _vin_cached(cache, res, day, trim):
+    key = (res, day)
+    if key not in cache:
+        cache[key] = _load_vprm_input(_vprm_input_path(SCRATCH_PATH, res, day), trim)
+    return cache[key]
+
+
+def _engine_flux_and_dT(swdown, t2c, vin, params, delta=0.5, want_dT=True):
+    """Offline VPRM-old GPP/RECO (umol m-2 s-1) and, optionally, their temperature
+    sensitivities d/dT2 by central finite difference (umol m-2 s-1 K-1).
+    GPP is positive (uptake) and RECO positive (release), matching -EBIO_GEE/EBIO_RES."""
+    gpp, reco, _ = compute_fluxes(swdown, t2c, vin, params)
+    if not want_dT:
+        return gpp, reco, None, None
+    gpp_p, reco_p, _ = compute_fluxes(swdown, t2c + delta, vin, params)
+    gpp_m, reco_m, _ = compute_fluxes(swdown, t2c - delta, vin, params)
+    dgpp = (gpp_p - gpp_m) / (2.0 * delta)
+    dreco = (reco_p - reco_m) / (2.0 * delta)
+    return gpp, reco, dgpp, dreco
 
 
 def generate_coastal_mask(
@@ -112,7 +148,7 @@ def extract_datetime_from_filename(filename):
     return datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
 
 
-def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
+def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type, tag=None):
     ############# INPUT ############
     csv_folder = CSVFOLDER
     interp_method = "nearest"  # 'linear', 'nearest', 'cubic'
@@ -122,6 +158,19 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
     ref_sims = ["", "_REF"]  # "_REF" to use REF simulation or "" for tuned values
     val_at5C = 1  # limit value for max dGPPdT between 0-5°, below 0 its set to nan
     ###################################
+    # When a recompute tag is given, GPP/RECO and dGPP/dT, dRECO/dT are recomputed
+    # offline (engine + finite difference) with the tag's params instead of read
+    # from WRF's online EBIO_* / EBIO_*_DPDT (which carry the online Topt bug).
+    use_recomputed = tag is not None
+    params = None
+    vin_cache = {}
+    if use_recomputed:
+        ref_sims = [""]  # single tag; no _REF recompute
+        params = load_params(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), f"vprm_params_{tag}.csv"
+            )
+        )
 
     start_date_obj = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").date()
     end_date_obj = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S").date()
@@ -148,8 +197,6 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
             # Load the NetCDF file
             wrf_file_d02 = wrf_file.replace("d01", "d02")
             nc_fid1km = nc.Dataset(os.path.join(wrf_paths[0], wrf_file_d02), "r")
-            GPP_1km = -nc_fid1km.variables[f"EBIO_GEE{ref_sim}"][0, 0, 10:-10, 10:-10]
-            RECO_1km = nc_fid1km.variables[f"EBIO_RES{ref_sim}"][0, 0, 10:-10, 10:-10]
             HGT_1km = nc_fid1km.variables["HGT"][0, 10:-10, 10:-10]
             T2_1km = nc_fid1km.variables["T2"][0, 10:-10, 10:-10] - 273.15
             lats_fine = nc_fid1km.variables["XLAT"][0, 10:-10, 10:-10]
@@ -157,12 +204,29 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
             stdh_topo_1km = nc_fid1km.variables["VAR"][0, 10:-10, 10:-10]
             stdh_mask = stdh_topo_1km >= STD_TOPO
 
-            dGPPdT_ref = -nc_fid1km.variables[f"EBIO_GEE_DPDT{ref_sim}"][
-                0, 0, 10:-10, 10:-10
-            ]
-            dRECOdT_ref = nc_fid1km.variables[f"EBIO_RES_DPDT{ref_sim}"][
-                0, 0, 10:-10, 10:-10
-            ]
+            if use_recomputed:
+                # offline recompute: GPP/RECO + finite-difference dGPP/dT, dRECO/dT
+                day = extract_datetime_from_filename(wrf_file).strftime("%Y-%m-%d")
+                SW_1km = np.asarray(
+                    nc_fid1km.variables["SWDOWN"][0, 10:-10, 10:-10], dtype=np.float64
+                )
+                vin1 = _vin_cached(vin_cache, "1km", day, trim=True)
+                GPP_1km, RECO_1km, dGPPdT_ref, dRECOdT_ref = _engine_flux_and_dT(
+                    SW_1km, np.asarray(T2_1km, dtype=np.float64), vin1, params
+                )
+            else:
+                GPP_1km = -nc_fid1km.variables[f"EBIO_GEE{ref_sim}"][
+                    0, 0, 10:-10, 10:-10
+                ]
+                RECO_1km = nc_fid1km.variables[f"EBIO_RES{ref_sim}"][
+                    0, 0, 10:-10, 10:-10
+                ]
+                dGPPdT_ref = -nc_fid1km.variables[f"EBIO_GEE_DPDT{ref_sim}"][
+                    0, 0, 10:-10, 10:-10
+                ]
+                dRECOdT_ref = nc_fid1km.variables[f"EBIO_RES_DPDT{ref_sim}"][
+                    0, 0, 10:-10, 10:-10
+                ]
 
             dGPPdT_ref[T2_1km < 0] = np.nan
             mask_0to5 = (T2_1km >= 0) & (T2_1km <= 5)
@@ -170,12 +234,28 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
 
             for wrf_path in wrf_paths[1:]:
                 nc_fidcoarsegrid = nc.Dataset(os.path.join(wrf_path, wrf_file), "r")
-                GPP_coarsegrid = -nc_fidcoarsegrid.variables[f"EBIO_GEE{ref_sim}"][
-                    0, 0, :, :
-                ]
-                RECO_coarsegrid = nc_fidcoarsegrid.variables[f"EBIO_RES{ref_sim}"][
-                    0, 0, :, :
-                ]
+                if use_recomputed:
+                    res_c = wrf_path.split("_")[2]  # "9km" / "54km"
+                    SW_c = np.asarray(
+                        nc_fidcoarsegrid.variables["SWDOWN"][0, :, :], dtype=np.float64
+                    )
+                    T2c_c = (
+                        np.asarray(
+                            nc_fidcoarsegrid.variables["T2"][0, :, :], dtype=np.float64
+                        )
+                        - 273.15
+                    )
+                    vinc = _vin_cached(vin_cache, res_c, day, trim=False)
+                    GPP_coarsegrid, RECO_coarsegrid, _, _ = _engine_flux_and_dT(
+                        SW_c, T2c_c, vinc, params, want_dT=False
+                    )
+                else:
+                    GPP_coarsegrid = -nc_fidcoarsegrid.variables[f"EBIO_GEE{ref_sim}"][
+                        0, 0, :, :
+                    ]
+                    RECO_coarsegrid = nc_fidcoarsegrid.variables[f"EBIO_RES{ref_sim}"][
+                        0, 0, :, :
+                    ]
                 HGT_coarsegrid = nc_fidcoarsegrid.variables["HGT"][0]
                 T2_coarsegrid = nc_fidcoarsegrid.variables["T2"][0] - 273.15
                 veg_type = nc_fidcoarsegrid.variables["IVGTYP"][0, :, :]
@@ -233,7 +313,8 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
 
                 diff_HGT = proj_HGT_coarsegrid - HGT_1km
                 diff_HGT[proj_landmask_coarsegrid * stdh_mask == 0] = np.nan
-                conv_factor = 1 / 3600
+                # recompute fields are already umol m-2 s-1 (per K); EBIO needs /3600
+                conv_factor = 1.0 if use_recomputed else 1 / 3600
 
                 dT_calc = diff_HGT / 1000 * temp_gradient
                 dT_model = proj_T2_coarsegrid - T2_1km
@@ -296,9 +377,10 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type):
                 )
 
         # Save the DataFrame to a CSV file
+        recalc_suffix = f"_recalc_{tag}" if use_recomputed else ""
         output_file = os.path.join(
             csv_folder,
-            f"dPdT_timeseries_{start_date}_{end_date}{res_tag}{ref_sim}{sim_type}.csv",
+            f"dPdT_timeseries_{start_date}_{end_date}{res_tag}{ref_sim}{recalc_suffix}{sim_type}.csv",
         )
         df_out_dPdT.to_csv(output_file, index_label="datetime")
         print(f"Data saved to {output_file}")
@@ -319,14 +401,23 @@ def main():
             help="Format: '', '_parm_err' or '_cloudy'",
             default="",
         )
+        parser.add_argument(
+            "--tag",
+            type=str,
+            default=None,
+            help="Recompute parameter tag (e.g. topt_p50). If set, GPP/RECO and "
+            "dGPP/dT, dRECO/dT are recomputed offline instead of read from EBIO_*.",
+        )
         args = parser.parse_args()
         start_date = args.start
         end_date = args.end
         sim_type = args.type
+        tag = args.tag
     else:  # to run locally
         start_date = "2012-01-01 00:00:00"
         end_date = "2012-12-31 00:00:00"
         sim_type = ""  # "", "_parm_err" or "_cloudy"
+        tag = None  # e.g. "topt_p50" to recompute fluxes + dP/dT offline
 
     wrf_paths = [
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",  # 1km resolution hat to be included, as dPdT is calculated from 1km to a coarse resolution
@@ -334,7 +425,7 @@ def main():
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_54km{sim_type}",
     ]
 
-    exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type)
+    exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type, tag=tag)
 
 
 if __name__ == "__main__":

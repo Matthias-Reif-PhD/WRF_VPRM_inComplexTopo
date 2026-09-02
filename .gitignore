@@ -1,5 +1,40 @@
 .env
-WRF_VPRM_pre/run_WPS_WRF/job_wrf_chain_old.slurm
-**/*.csv
 **/*.pdf
 **/*.tex
+**/slurm-*.out
+**/*.log
+**/__pycache__/
+**/*.pyc
+**.png
+**.eps
+**/.vscode/launch.json
+
+# legacy, superseded
+WRF_VPRM_pre/run_WPS_WRF/job_wrf_chain_old.slurm
+
+# Claude-session / working notes, not part of the paper
+CLAUDE.md
+PLAN_server_GPP_revision.md
+REVISION_NUMBERS.md
+FIGURE_TEX_CHANGES.md
+WRF_VPRM_post/RECOMPUTE_VPRM_PLAN.md
+WRF_VPRM_post/COARSE_EVAL_15e.md
+WRF_VPRM_post/ITLAV_DIAGNOSIS.md
+WRF_VPRM_pre/run_WPS_WRF/campaign_time_estimate.md
+
+# Explored but not part of the published paper (see their own READMEs)
+glauch_sensitivity/
+acclim_experiment/
+
+# Dead intermediate dirs -- confirmed zero references from any current
+# script (superseded by the direct-wrfout radt1/radt54/swint1 approach in
+# Fig9_AppxG7_areafluxes_per_timestep.py / swint_delta_res_single_hour.py)
+WRF_VPRM_post/csv_radt1/
+WRF_VPRM_post/csv_radt54/
+
+# Orphaned output, superseded by plots/signcheck_Y_components*.csv
+WRF_VPRM_post/plots/components_cloudy_L2_members_*.csv
+
+# Glauch-tagged byproducts outside glauch_sensitivity/ itself -- same
+# archived/not-in-paper status, zero references from any current script
+WRF_VPRM_post/csv/*recalc_glauch*

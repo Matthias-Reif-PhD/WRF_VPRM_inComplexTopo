@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.ticker import MaxNLocator
 
 
 def plot_measured_vs_optimized_VPRM(
@@ -23,7 +25,10 @@ def plot_measured_vs_optimized_VPRM(
     df_year.set_index(timestamp, inplace=True)
     font_size = 16
 
-    fig, axes = plt.subplots(1, 3, figsize=(20, 10))
+    # Drawn at ~2x its printed size: the manuscript includes this at
+    # 0.8\linewidth = 400 pt, so 11.1 in wide puts the 16 pt fonts at ~8 pt on the
+    # page. At the old (20, 10) they printed at ~4.5 pt.
+    fig, axes = plt.subplots(1, 3, figsize=(11.1, 5.55))
 
     # Plot comparison of Reco
     axes[0].plot(
@@ -32,6 +37,7 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label=r"FLUXNET R$_\text{eco}$",
         color="blue",
     )
@@ -41,8 +47,10 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
-        label=r"Modeled R$_\text{eco}$ DF",
+        rasterized=True,
+        label=r"Modeled R$_\text{eco}$ DEFAULT",
         color="green",
+        zorder=5,  # DEFAULT on top of FLUXNET (blue) and SITE (red)
     )
     axes[0].plot(
         df_year.index,
@@ -50,13 +58,13 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label=r"Modeled R$_\text{eco}$ SITE",
         color="red",
     )
     axes[0].set_xlabel("Date", fontsize=font_size + 2)
     axes[0].set_ylabel(r"R$_\text{eco}$", fontsize=font_size + 2)
     # axes[0].set_title(site_name + " - Measured and Modeled GPP", fontsize=font_size + 2)
-    axes[0].legend(fontsize=font_size, markerscale=5)
     axes[0].grid(True)
     axes[0].tick_params(
         axis="both", which="major", labelsize=font_size, labelrotation=90
@@ -69,6 +77,7 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label="FLUXNET GPP",
         color="blue",
     )
@@ -78,8 +87,10 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
-        label="Modeled GPP DF",
+        rasterized=True,
+        label="Modeled GPP DEFAULT",
         color="green",
+        zorder=5,  # DEFAULT on top of FLUXNET (blue) and SITE (red)
     )
     axes[1].plot(
         df_year.index,
@@ -87,12 +98,12 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label="Modeled GPP SITE",
         color="red",
     )
     axes[1].set_xlabel("Date", fontsize=font_size + 2)
     axes[1].set_ylabel("GPP", fontsize=font_size + 2)
-    axes[1].legend(fontsize=font_size, markerscale=5)
     axes[1].grid(True)
     axes[1].tick_params(
         axis="both", which="major", labelsize=font_size, labelrotation=90
@@ -105,6 +116,7 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label="FLUXNET NEE",
         color="blue",
     )
@@ -114,8 +126,10 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
-        label="Modeled NEE DF",
+        rasterized=True,
+        label="Modeled NEE DEFAULT",
         color="green",
+        zorder=5,  # DEFAULT on top of FLUXNET (blue) and SITE (red)
     )
     axes[2].plot(
         df_year.index,
@@ -123,16 +137,20 @@ def plot_measured_vs_optimized_VPRM(
         linestyle="",
         marker="o",
         markersize=1,
+        rasterized=True,
         label="Modeled NEE SITE",
         color="red",
     )
     axes[2].set_xlabel("Date", fontsize=font_size + 2)
     axes[2].set_ylabel("NEE", fontsize=font_size + 2)
-    axes[2].legend(fontsize=font_size, markerscale=5)
     axes[2].grid(True)
     axes[2].tick_params(
         axis="both", which="major", labelsize=font_size, labelrotation=90
     )
+    # Fewer y ticks: on the narrower canvas the default count ran the labels
+    # together into an unreadable column.
+    for _ax in axes:
+        _ax.yaxis.set_major_locator(MaxNLocator(nbins=5))
     plt.tight_layout()
 
     plt.savefig(
@@ -154,7 +172,37 @@ def plot_measured_vs_optimized_VPRM(
     )
     plt.close(fig)
 
+    # one generalised legend for all three panels, as its own file
+    save_opt_fluxes_legend(
+        base_path + folder + "/legend_opt_fluxes.pdf", font_size=font_size
+    )
+
     return
+
+
+def save_opt_fluxes_legend(outfile, font_size=16):
+    """Standalone legend for the measured-vs-optimised flux figure.
+
+    The three panels differ only by variable (already named on each y axis), so
+    the entries are generalised -- "FLUXNET" rather than "FLUXNET GPP" etc. -- and
+    written once to their own PDF for placement under the figure, instead of
+    repeating three near-identical legends on top of the data.
+    """
+    handles = [
+        Line2D([0], [0], linestyle="", marker="o", markersize=8, color="blue",
+               label="FLUXNET"),
+        Line2D([0], [0], linestyle="", marker="o", markersize=8, color="green",
+               label="Modeled DEFAULT"),
+        Line2D([0], [0], linestyle="", marker="o", markersize=8, color="red",
+               label="Modeled SITE"),
+    ]
+    fig = plt.figure(figsize=(11.1, 0.8))
+    fig.legend(handles=handles, loc="center", ncol=3, fontsize=font_size,
+               frameon=False, handlelength=1.5, columnspacing=2.5)
+    plt.axis("off")
+    plt.savefig(outfile, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Legend written to {outfile}")
 
 
 def plot_site_input(

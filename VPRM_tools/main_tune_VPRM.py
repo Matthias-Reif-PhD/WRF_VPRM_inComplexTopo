@@ -157,14 +157,32 @@ def main():
             type=str,
             help="chose a model for CO2 parametrization",
         )
+        parser.add_argument(
+            "-y",
+            "--single_year",
+            action="store_true",
+            help="SITE run: tune only year 2012 with the per-site T_opt_site values",
+        )
+        parser.add_argument(
+            "-r",
+            "--replot",
+            action="store_true",
+            help=(
+                "Redraw the figures from the parameters already stored in this "
+                "site's optimized_params xlsx, skipping differential_evolution. "
+                "Use to refresh a figure without re-running (and perturbing) the "
+                "optimisation."
+            ),
+        )
         args = parser.parse_args()
 
+        replot = args.replot
         base_path = args.base_path
         maxiter = args.maxiter
         opt_method = args.opt_method
         CO2_parametrization = args.CO2_parametrization
         folder = args.folder
-        single_year = False  # set true to run only one year. For 2012 there are specific Topt values for chosen sites.
+        single_year = args.single_year  # -y -> only 2012 with site-specific Topt (SITE)
         year_to_plot = 2012
     else:  # to run locally for single cases
         base_path = f"{SCRATCH_PATH}/DATA/Fluxnet2015/Alps/"
@@ -174,6 +192,7 @@ def main():
         folder = "FLX_IT-MBo_FLUXNET2015_FULLSET_2003-2013_1-4"
         single_year = True  # True for local testing, default=False
         year_to_plot = 2012
+        replot = os.getenv("VPRM_REPLOT", "0") not in ("0", "")
 
     VEGFRA = 1  # not applied for EC measurements, set to 1
     site_info = pd.read_csv(base_path + "site_info_all_FLUXNET2015.csv")
@@ -973,26 +992,51 @@ def main():
     end_year = df_site_and_modis[timestamp].dt.year.max() + 1
 
     T_opt = {
-        "ENF": 14.25,
-        "DBF": 23.58,
-        "MF": 18.41,
+        "ENF": 16.42,
+        "DBF": 23.94,
+        "MF": 19.60,
         "SHB": 20.0,
-        "WET": 17.64,
+        "WET": 20.23,
         "CRO": 22.0,
-        "GRA": 15.88,
-    }  # T_opt constant again to reduce variation of parameters in V18
+        "GRA": 18.56,
+    }  # GPP-based Topt (GPP_NT_VUT_USTAR50) for the GMD revision; SHB/CRO kept as defaults (no Alpine SHB; crop cut). Previous NEE-based: ENF 14.25, DBF 23.58, MF 18.41, WET 17.64, GRA 15.88
+    # --- Topt sensitivity: if opt_method carries a percentile tag (_p10/_p25/_p50/_p75/_p90),
+    #     override the central T_opt for ENF/DBF/GRA from topt_percentiles.csv (others unchanged).
+    #     p50 == V24 central (identical to the dict above) for backward compatibility.
+    _topt_pct = next(
+        (
+            _p
+            for _p in ["p10", "p25", "p50", "p75", "p90"]
+            if opt_method
+            and (opt_method.endswith("_" + _p) or ("_" + _p + "_") in opt_method)
+        ),
+        None,
+    )
+    if _topt_pct is not None:
+        _pct_csv = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "topt_percentiles.csv"
+        )
+        _pct_df = pd.read_csv(_pct_csv).set_index("PFT")
+        for _pft in ["ENF", "DBF", "GRA"]:
+            if _pft in _pct_df.index:
+                T_opt[_pft] = float(_pct_df.loc[_pft, _topt_pct])
+        print(
+            f"[Topt sensitivity] {_topt_pct}: ENF={T_opt['ENF']} "
+            f"DBF={T_opt['DBF']} GRA={T_opt['GRA']}"
+        )
     if single_year and year_to_plot == 2012:
         print("Custom Topt for 2012 and chosen sites.")
+        # GPP-based (GPP_NT_VUT_USTAR50) per-site 2012 Topt for the five d03 SITE
+        # locations (GMD revision). From VPRM_tools/topt_raw_persiteyear.csv, except
+        # AT-Neu: its 2012 fit (27.3 C) is an unconstrained extrapolation (GPP never
+        # peaks in-range), so its multi-year GPP mean excl. 2012 (19.27 C) is used.
+        # Previous NEE-based: CH-Dav 9.70, IT-Lav 14.52, IT-Ren 11.90, AT-Neu 13.01, IT-MBo 16.28.
         T_opt_site = {
-            "DE-Hai": 27.00,
-            "CH-Dav": 9.70,
-            "DE-Lkb": 18.81,
-            "IT-Lav": 14.52,
-            "IT-Ren": 11.90,
-            "AT-Neu": 13.01,
-            "IT-MBo": 16.28,
-            "IT-Tor": 18.81,
-            "CH-Lae": 17.44,
+            "CH-Dav": 16.21,
+            "IT-Lav": 16.17,
+            "IT-Ren": 14.34,
+            "AT-Neu": 19.27,
+            "IT-MBo": 16.20,
         }
         try:
             T_opt[target_pft] = T_opt_site[site_name]
@@ -1066,7 +1110,30 @@ def main():
             ]
 
         ################### optimize with 'differential_evolution' ###############
-        if CO2_parametrization == "old":
+        if CO2_parametrization == "old" and replot:
+            # Replot mode: take the already-fitted parameters for this site-year
+            # from the stored xlsx so the figure can be refreshed without
+            # re-running the stochastic optimiser (which would change them).
+            _pfile = os.path.join(
+                base_path, folder,
+                f"{site_name}_{target_pft}_optimized_params_"
+                f"{CO2_parametrization}_{opt_method}_{maxiter}.xlsx",
+            )
+            _stored = pd.read_excel(_pfile)
+            _row = _stored[_stored["Year"] == year]
+            if _row.empty:
+                raise SystemExit(f"replot: no stored params for {year} in {_pfile}")
+            _row = _row.iloc[0]
+            Topt, PAR0, alpha, beta, lambd = (
+                float(_row["Topt"]), float(_row["PAR0"]), float(_row["alpha"]),
+                float(_row["beta"]), float(_row["lambd"]),
+            )
+            print(f"replot: reusing stored params for {site_name} {year}: "
+                  f"Topt={Topt:.2f} PAR0={PAR0:.1f} alpha={alpha:.4f} "
+                  f"beta={beta:.3f} lambda={lambd:.3f}")
+            Reco_optimized_0 = VPRM_old_only_Reco(alpha, beta, T2M)
+            optimized_params = [Topt, PAR0, alpha, beta, lambd]
+        elif CO2_parametrization == "old":
             result = differential_evolution(
                 objective_function_VPRM_old_Reco,
                 bounds_Reco,
@@ -1402,7 +1469,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [(df_year.set_index(timestamp) if timestamp in df_year.columns else df_year)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
@@ -1450,7 +1517,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [(df_year.set_index(timestamp) if timestamp in df_year.columns else df_year)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
@@ -1496,7 +1563,7 @@ def main():
                     "NNSE_NEE": [results_NEE["NNSE"]],
                     "AIC": [AIC],
                     "T_mean": [df_year[t_air].mean()],
-                    "T_max": [df_year[t_air].resample("D").max().mean()],
+                    "T_max": [(df_year.set_index(timestamp) if timestamp in df_year.columns else df_year)[t_air].resample("D").max().mean()],
                     "lat": [latitude],
                     "lon": [longitude],
                     "elev": [elevation],
@@ -1512,7 +1579,13 @@ def main():
             [optimized_params_df_all, data_to_append], ignore_index=True
         )
 
-    optimized_params_df.to_excel(
+    # In replot mode the parameters came *out* of this file, and writing it back
+    # would truncate it to whatever subset of years this run covered (with -y that
+    # is a single year). Replot must never touch the stored parameters.
+    if replot:
+        print("replot: leaving the stored optimized_params xlsx untouched")
+    else:
+        optimized_params_df.to_excel(
         base_path
         + folder
         + "/"
@@ -1527,7 +1600,7 @@ def main():
         + str(maxiter)
         + ".xlsx",
         index=False,
-    )
+        )
 
     ########################## plot each site year ################################
 

@@ -1,6 +1,11 @@
 # VPRM_tools
 
 Workflows for optimizing VPRM parameters using FLUXNET observations and MODIS satellite data.
+Conda env: `pyrealm311` (differential-evolution tuning dependencies; no exported `.yml` in
+this repo). Despite their names, `../VPRM_tools_pre.yml` and `../VPRM_tools_post.yml` are
+**not** this directory's env files -- they're named for the pipeline's pre-/post-processing
+stages and set up `WRF_VPRM_pre/pyVPRM/`'s `pyvprm4` and `WRF_VPRM_post/`'s `wrf_vprm`
+envs respectively (see the root `.env`'s `CONDA_ENV_PYVPRM`/`CONDA_ENV_WRF_VPRM`).
 
 ## Workflow
 
@@ -59,6 +64,26 @@ Main optimization script that:
 - `Modis_timeseries_FluxNet.r`: Extract MODIS time series for FLUXNET sites
 - `submit_jobs_tune_VPRM.sh`: Submit parameter optimization jobs to cluster (runs `main_tune_VPRM.py`)
 - `plots_for_VPRM_from_excel.ipynb`: Generate parameter distribution plots from optimization results
+- `submit_jobs_tune_SITE.sh`: Site-specific-parameter tuning jobs (the "SITE" parameter set used
+  in Table 1's FLUXNET evaluation, distinct from the domain-wide "ALPS" set)
+
+### Topt-percentile ensemble (5-member sensitivity, feeds Figs. 3b/5/7/10/11's shaded bands)
+
+The GPP-based $T_\text{opt}$ per-site-year fits (`WRF_VPRM_post/Fig3a_Topt_perSiteYear_fit.py`
+and `Fig3b_AppxG10_G11_Topt_tuneParam.py`, run after `main_tune_VPRM.py`) produce raw
+per-site-year dumps; these two scripts turn them into the 5-member (p10/p25/p50/p75/p90)
+percentile ensemble used throughout the paper's uncertainty bands:
+
+- `derive_topt_members.py`: builds `topt_percentiles.csv` (per-PFT $T_\text{opt}$ percentiles,
+  from `topt_raw_persiteyear.csv`)
+- `derive_param_members.py`: builds `param_percentiles.csv` (per-PFT PAR0/lambda percentiles,
+  from `params_raw_persiteyear.csv`), re-tuned against each $T_\text{opt}$ member
+- `submit_jobs_topt_sensitivity.sh`: submits the per-percentile re-tuning jobs these two
+  scripts' inputs are built from
+
+Both output CSVs are then consumed by `WRF_VPRM_post/build_member_param_csvs.py` to build
+the 5 full VPRM parameter sets, and by `WRF_VPRM_post/recompute_vprm_fluxes.py` to recompute
+fluxes for each member offline (no WRF re-run).
 
 
 

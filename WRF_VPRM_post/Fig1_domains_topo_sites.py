@@ -37,11 +37,11 @@ GITHUB_PATH = os.getenv("GITHUB_PATH")
 OUTFOLDER = os.getenv("OUTFOLDER")
 
 # Map rendering configuration
-FIGSIZE_SINGLE = (12, 15)
-FIGSIZE_NESTED = (12, 15)
-FONTSIZE_AXIS_LABELS = 22
-FONTSIZE_LEGEND = 20
-FONTSIZE_TITLE = 24
+FIGSIZE_SINGLE = (6.8, 8.5)  # 2x the 0.49\linewidth printed width
+FIGSIZE_NESTED = (6.8, 8.5)
+FONTSIZE_AXIS_LABELS = 16  # -> ~8 pt printed
+FONTSIZE_LEGEND = 14
+FONTSIZE_TITLE = 18
 
 # Topography contour configuration
 TOPO_CONTOUR_INTERVAL = 100  # meters
@@ -49,8 +49,8 @@ TOPO_MAX_LEVEL = 4000  # meters
 TOPO_COLORMAP = "terrain"
 
 # Site marker configuration
-SITE_MARKERSIZE = 12
-SITE_EDGEWIDTH = 1.5
+SITE_MARKERSIZE = 7  # points; scaled with the smaller canvas
+SITE_EDGEWIDTH = 0.9
 LEGEND_LOCATION = "lower right"
 LEGEND_FRAMEALPHA = 0.5
 
@@ -127,25 +127,19 @@ SITES = {
 }
 
 # PFT configuration
-PFT_CODES = ["ENF", "DBF", "MF", "SHB", "SAV", "CRO", "GRA"]
+PFT_CODES = ["ENF", "DBF", "MF", "CRO", "GRA"]
 PFT_LABELS = [
     "Evergreen forest",
     "Deciduous forest",
     "Mixed forest",
-    "Shrubland",
-    "Savannas",
     "Cropland",
     "Grassland",
 ]
-PFT_COLORS = [
-    "#006400",
-    "#228B22",
-    "#8FBC8F",
-    "#A0522D",
-    "#FFD700",
-    "#FFA07A",
-    "#7CFC00",
-]
+# Canonical palette lives in topt_box.PFT_COLORS (a dict); this module wants it
+# as a list ordered like PFT_CODES.
+from topt_box import PFT_COLORS as _CANON_PFT_COLORS
+
+PFT_COLORS = [_CANON_PFT_COLORS[c] for c in PFT_CODES]
 
 PFT_COLOR_MAP = dict(zip(PFT_CODES, PFT_COLORS))
 
@@ -207,7 +201,7 @@ def setup_map(ax, lon_min, lon_max, lat_min, lat_max, map_type=None):
     )
     gl.top_labels = False
     gl.right_labels = False
-    fontsize = FONTSIZE_AXIS_LABELS if map_type == "single" else 20
+    fontsize = FONTSIZE_AXIS_LABELS if map_type == "single" else 14
     gl.xlabel_style = {"size": fontsize}
     gl.ylabel_style = {"size": fontsize}
 

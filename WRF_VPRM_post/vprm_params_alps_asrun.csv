@@ -1,0 +1,18 @@
+# ALPS parameter set AS ACTUALLY RUN online (EBIO_GEE / EBIO_RES, no suffix).
+# Source: /scratch/c7071034/WRF_3km/chem/chemics_init.F  vprm_table_multi_eu
+#   (the ACTUAL build behind the archived wrfout; the .o is dated 2025-05-13,
+#    before the 2025-09 run. NOTE: WRF_V2 is a DIFFERENT/newer tree - do not use.)
+# lambda sign flipped to POSITIVE for the GPP convention of recompute_vprm_fluxes.py.
+# Tmin/Tmax from module_ghg_fluxes.F DATA statements.
+# Topt = /20,20,20,20,20,22,18/ : VALIDATED empirically as the value the run used
+#   (GPP reproduces online to ~1% across seasons; Reco reproduces to ~0%). The
+#   per-PFT "intended" Topt was never applied online (see vprm_params_alps_intended.csv
+#   and RECOMPUTE_VPRM_PLAN.md "Online Topt bug").
+vprm_veg_id,pft,t_opt,t_min,t_max,par0,lambda,alpha,beta
+1,ENF,20.0,0,40,207.685,0.467,0.175,1.702
+2,DBF,20.0,0,40,183.799,0.361,0.235,0.887
+3,MF,20.0,0,40,240.386,0.248,0.202,2.734
+4,SHB,20.0,2,40,363.000,0.087,0.024,0.000
+5,SAV,20.0,2,40,682.000,0.114,0.005,0.000
+6,CRO,22.0,5,40,364.145,0.230,0.234,1.050
+7,GRA,18.0,2,40,284.875,0.771,0.390,1.474

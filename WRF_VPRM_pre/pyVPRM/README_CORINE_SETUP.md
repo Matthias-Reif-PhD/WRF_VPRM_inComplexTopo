@@ -18,11 +18,11 @@ This README explains the necessary setup steps and processing workflow for worki
 
 Before running any processing jobs, you **must** modify the `VPRM.py` file in your installed pyVPRM package to properly handle CORINE data.
 
-The key modifications are in the `add_land_cover_map()` method. You need to ensure that CORINE data is read and mapped to VPRM classes exactly as shown in `VPRM_modified.py` in this directory.
+The key modifications are in the `add_land_cover_map()` method. You need to ensure that CORINE data is read and mapped to VPRM classes exactly as shown in `VPRM_modifed.py` in this directory.
 
 #### Modification Details
 
-Copy the CORINE data mapping and processing logic from **`VPRM_modified.py`** (specifically the section marked between `# cmr begin` and `# cmr end`) into your installed `VPRM.py`.
+Copy the CORINE data mapping and processing logic from **`VPRM_modifed.py`** (specifically the section marked between `# cmr begin` and `# cmr end`) into your installed `VPRM.py`.
 
 The critical section includes:
 - Sorted iteration through VPRM class mappings
@@ -34,7 +34,7 @@ The critical section includes:
 def add_land_cover_map(self, land_cover_map, var_name="band_1", ...):
     # ... other code ...
     
-    # INSERT THE MODIFICATIONS HERE (from VPRM_modified.py lines 597-611)
+    # INSERT THE MODIFICATIONS HERE (from VPRM_modifed.py lines 597-611)
     sorted_keys = sorted(self.map_to_vprm_class.keys())
     for key in sorted_keys:
         land_cover_map.sat_img[var_name] = xr.where(
