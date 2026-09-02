@@ -60,7 +60,10 @@ lon = ds["XLONG"].values
 
 # --- Load d02 domain and restrict data to that extent ---
 """Load d02 WRF domain extent and mask vegetation data accordingly."""
-d2 = xr.open_dataset(os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WPS/geo_em.d02.nc"))
+# d02 here is the 1 km nest of the 3 km parent run (domain_b="_d02", dx_b="_1km").
+d2 = xr.open_dataset(
+    os.path.join(SCRATCH_PATH, "DATA/WRFOUT/WRFOUT_ALPS_3km/geo_em.d02.nc")
+)
 lat2 = (
     d2["XLAT_M"]
     .isel(Time=0, south_north=slice(10, -10), west_east=slice(10, -10))
@@ -98,16 +101,12 @@ lon = lon[ymin:ymax, xmin:xmax]
 Define colors and labels for plant functional types (VPRM classification).
 8 classes: ENF, DBF, MF, SHB, SAV, CRO, GRA, OTH (Others)
 """
+# Canonical vegetation-class palette (topt_box.PFT_COLORS) + gray for "Others".
+from topt_box import PFT_COLORS as _CANON_PFT_COLORS
+
 colors = [
-    "#006400",  # Evergreen forest
-    "#228B22",  # Deciduous forest
-    "#8FBC8F",  # Mixed forest
-    "#A0522D",  # Shrubland
-    "#FFD700",  # Savannas
-    "#FFA07A",  # Cropland
-    "#7CFC00",  # Grassland
-    "#808080",  # Others
-]
+    _CANON_PFT_COLORS[c] for c in ("ENF", "DBF", "MF", "SHB", "SAV", "CRO", "GRA")
+] + ["#808080"]
 pft_labels = [
     "Evergreen forest",
     "Deciduous forest",
@@ -129,7 +128,7 @@ dominant_type = dominant_type.isel(Time=0).values  # Convert to numpy array
 
 # --- Create Base Map with Cartopy ---
 """Plot domain map with dominant vegetation type background and topographic features."""
-fig = plt.figure(figsize=(12, 15))
+fig = plt.figure(figsize=(6.8, 8.5))  # 2x the 0.49\linewidth printed width
 ax = plt.axes(projection=ccrs.PlateCarree())
 ax.set_extent(
     [float(lon2.min()), float(lon2.max()), float(lat2.min()), float(lat2.max())],
@@ -163,13 +162,13 @@ gl = ax.gridlines(
 )
 gl.top_labels = False
 gl.right_labels = False
-gl.xlabel_style = {"size": 18}
-gl.ylabel_style = {"size": 18}
+gl.xlabel_style = {"size": 14}
+gl.ylabel_style = {"size": 14}
 
 # --- Overlay: Fractional PFT Pies via Inset Axes ---
 """Plot mini pie charts at regular grid intervals showing fractional composition of each PFT."""
 step = 1
-pie_size = 1.2
+pie_size = 0.68  # inches; scaled with the smaller canvas
 
 for i in range(1, lat.shape[0] - 1, step):
     for j in range(1, lat.shape[1] - 1, step):
@@ -994,32 +993,22 @@ df_sites_match.to_csv("pft_site_match_at" + dx_b + ".csv")
 
 # --- Define Color Map for Simplified Vegetation Types ---
 """Create colormap and normalization for 8 VPRM classes."""
+# Canonical palette (topt_box.PFT_COLORS) + gray for "Others" -- same list as the
+# panel (a) `colors` above; do not re-hardcode it here.
 custom_colors = [
-    "#006400",
-    "#228B22",
-    "#8FBC8F",
-    "#A0522D",
-    "#FFD700",
-    "#FFA07A",
-    "#7CFC00",
-    "#808080",
-]  # Added gray for "Others"
+    _CANON_PFT_COLORS[c] for c in ("ENF", "DBF", "MF", "SHB", "SAV", "CRO", "GRA")
+] + ["#808080"]
 
 # Create a colormap using the defined colors
 cmap_simplified = mcolors.ListedColormap(custom_colors)
 
 # --- Define Vegetation Type Colormap and Normalization ---
 """ListedColormap for 8 VPRM classes with BoundaryNorm for discrete intervals."""
+# Canonical palette (topt_box.PFT_COLORS) + gray for "Others" -- same list as the
+# panel (a) `colors` above; do not re-hardcode it here.
 custom_colors = [
-    "#006400",
-    "#228B22",
-    "#8FBC8F",
-    "#A0522D",
-    "#FFD700",
-    "#FFA07A",
-    "#7CFC00",
-    "#808080",
-]  # Added gray for "Others"
+    _CANON_PFT_COLORS[c] for c in ("ENF", "DBF", "MF", "SHB", "SAV", "CRO", "GRA")
+] + ["#808080"]
 
 # Create a colormap using the defined colors
 cmap = mcolors.ListedColormap(custom_colors)
@@ -1040,7 +1029,9 @@ mask_low_std = STDVAR < std_threshold_b
 
 # --- Create Vegetation Plot ---
 """Main plot: dominant vegetation on Cartopy map with hatched overlay for low topography variability."""
-fig, ax = plt.subplots(figsize=(12, 15), subplot_kw={"projection": ccrs.PlateCarree()})
+fig, ax = plt.subplots(
+    figsize=(6.8, 8.5), subplot_kw={"projection": ccrs.PlateCarree()}
+)
 
 # --- Plot Dominant Vegetation Types ---
 """Draw dominant PFT as pcolormesh background (zorder=0)."""
@@ -1109,16 +1100,23 @@ hatched_patch = Patch(
 )
 patches.append(hatched_patch)
 
-leg = ax.legend(
+# The legend is written as a standalone strip (legend_PFTs.pdf, below) so it can
+# sit under panels (a) and (b) instead of covering the map.
+_leg_fig = plt.figure(figsize=(13.6, 1.1))
+_leg_fig.legend(
     handles=patches,
-    loc="lower left",
-    fontsize=20,
-    frameon=True,
-    framealpha=0.7,
+    loc="center",
+    ncol=5,
+    fontsize=16,
+    frameon=False,
+    handlelength=2.2,
+    columnspacing=1.6,
 )
-leg.set_zorder(1000)  # force legend to front
-leg.get_frame().set_facecolor("white")  # optional: ensure readability
-leg.get_frame().set_edgecolor("black")  # optional border
+plt.axis("off")
+_leg_fig.savefig(f"{OUTFOLDER}/legend_PFTs.pdf", bbox_inches="tight")
+plt.close(_leg_fig)
+print("wrote", f"{OUTFOLDER}/legend_PFTs.pdf")
+plt.figure(fig.number)  # back to the map figure
 
 # --- Add Gridlines ---
 """Geographic gridlines with coordinate labels."""
@@ -1184,7 +1182,9 @@ for index, site in df_sites_match.iterrows():
         label,
         color="black",
         transform=ccrs.PlateCarree(),
-        fontsize=24,
+        # 14 on the current 6.8 in canvas prints at ~7.1 pt -- the same size these
+        # site labels had originally (24 pt on the old 12 in canvas).
+        fontsize=14,
         fontweight="bold",
         bbox=dict(facecolor="white", alpha=0.3, boxstyle="round, pad=0.3"),
         ha="left",
@@ -1193,9 +1193,13 @@ for index, site in df_sites_match.iterrows():
 
 # --- Finalize and Save Figure ---
 """Set tick sizes and save to PDF."""
-plt.xticks(fontsize=20)  # for tick labels
-plt.yticks(fontsize=20)
+plt.xticks(fontsize=14)  # for tick labels
+plt.yticks(fontsize=14)
 plt.tight_layout()
 plt.savefig(
-    f"{OUTFOLDER}/VGT_VPRM_{domain_b+dx}_STD{std_threshold_b}.pdf", bbox_inches="tight"
+    # dx_b (not dx): this panel is the 1 km d02 map, and the manuscript includes it
+    # as VGT_VPRM__d02_1km_STD200.pdf. Using dx wrote a "_54km" name that no
+    # \includegraphics resolved to.
+    f"{OUTFOLDER}/VGT_VPRM_{domain_b+dx_b}_STD{std_threshold_b}.pdf",
+    bbox_inches="tight",
 )

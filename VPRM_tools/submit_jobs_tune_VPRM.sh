@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 # Load environment variables from project root .env
 # ------------------------------------------------------------------
-ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+ENV_FILE="$(dirname "$(pwd)")/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: .env file not found at $ENV_FILE" >&2
@@ -18,8 +18,9 @@ set +a
 base_paths="$SCRATCH_PATH"/DATA/Fluxnet2015/Alps/
  
 maxiter=42
-opt_method="diff_evo_V23_SW_05"  # method and version
+opt_method="diff_evo_V24_SW_05"  # method and version (V24 = GPP-based Topt + T_max fix, GMD revision)
 VPRM_options=("old") # "migli" "new" "old"
+tune_env="$SCRATCH_PATH/conda_envs/pyrealm311"  # env with pyrealm 2.x (SubdailyPModel/AcclimationModel API) for tuning
 
 # Loop through each base path
 for base_path in "${base_paths[@]}"; do
@@ -47,7 +48,7 @@ set -euo pipefail
 # ------------------------------------------------------------------
 # Load environment variables from project root .env
 # ------------------------------------------------------------------
-ENV_FILE="$(dirname "$(dirname "$(pwd)")")/.env"
+ENV_FILE="$(dirname "$(pwd)")/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
   echo "ERROR: .env file not found at $ENV_FILE" >&2
@@ -64,8 +65,8 @@ set +a
 module purge
 module load $CONDA_MODULE
 
-eval "$("$UIBK_CONDA_DIR/bin/conda" shell.bash hook)"
-conda activate "$CONDA_ENV"
+eval "\$(conda shell.bash hook)"
+conda activate "$tune_env"
 
 srun python main_tune_VPRM.py -p "$base_path" -f "$folder_name" -i "$maxiter" -m "$opt_method" -v "$VPRM_old_or_new"
 EOF

@@ -31,22 +31,16 @@ def pModel_subdaily(
     fpar_subdaily = df_site_and_modis.loc[:, "Fpar_500m"] * 100
     datetime_subdaily = pd.to_datetime(df_site_and_modis["TIMESTAMP_START"]).to_numpy()
 
-    # # Setup acclimation model
-    # acclim_model = AcclimationModel(
-    #     datetime_subdaily, allow_holdover=True, alpha=1 / days_memory
-    # )
-    # acclim_model.set_window(
-    #     window_center=np.timedelta64(window_center_i, "h"),
-    #     half_width=np.timedelta64(half_width_i, "m"),
-    # )
-
-    # Create the acclimation model - merging acclimation functions into a common class
+    # cmr: acclimation model driven by the TUNED arguments (days_memory,
+    # window_center_i [h], half_width_i [min]) instead of hardcoded values, so the
+    # objective_function_pmodel_subdaily optimization in main_tune_VPRM.py is live again
+    # (was inert while alpha/window were hardcoded to 1/15 and noon+-1h).
     acclim_model = AcclimationModel(
-        datetime_subdaily, alpha=1 / 15, allow_holdover=True
+        datetime_subdaily, alpha=1 / days_memory, allow_holdover=True
     )
     acclim_model.set_window(
-        window_center=np.timedelta64(12, "h"),
-        half_width=np.timedelta64(1, "h"),
+        window_center=np.timedelta64(int(window_center_i), "h"),
+        half_width=np.timedelta64(int(half_width_i), "m"),
     )
 
     # Create the PModelEnvironment, including FAPAR and PPFD
@@ -64,9 +58,12 @@ def pModel_subdaily(
     subdaily_model = SubdailyPModel(
         env=pm_env,
         acclim_model=acclim_model,
-        method_kphio="fixed",
+        method_kphio="temperature",  # cmr: temperature-dependent quantum yield.
+        # "fixed" (phi0=1/8) inflated GPP ~1.75x at IT-MBo (2.46x obs vs 1.38x with
+        # "temperature"); that error was the cause of the "unrealistic" pModel GPP and
+        # of the ad-hoc 1/3*2/3 band-aids in create_pmodel_area_timesteps.py.
         method_optchi="prentice14",
-        reference_kphio=1 / 8,  # Again, this is the default.
+        reference_kphio=1 / 8,
     )
     pmodel_subdaily_gpp = subdaily_model.gpp * gC_to_mumol
 

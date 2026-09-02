@@ -99,15 +99,39 @@ def extract_datetime_from_filename(filename):
     return datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
 
 
-def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_type):
+def recalc_file_path(tag, res, sim_type, time):
+    """
+    Deterministic path of an offline-recomputed VPRM flux NetCDF for a given
+    parameter tag, resolution, sim_type and timestamp (see recompute_vprm_fluxes.py).
+    Returns None if no tag is requested.
+    """
+    if tag is None:
+        return None
+    base = os.path.join(
+        SCRATCH_PATH, "DATA/VPRM_recalc", f"vprm_recalc_{tag}_{res}{sim_type}"
+    )
+    ts = time.strftime("%Y-%m-%d_%H:%M:%S")
+    return os.path.join(base, f"vprm_recalc_{tag}_{res}{sim_type}_{ts}.nc")
+
+
+def exctract_wrf_domains_mean_timeseries(
+    wrf_paths, start_date, end_date, sim_type, tag=None
+):
     ################################# INPUT ##############################################
 
     run_Pmodel = False  # set to True if you want to run Pmodel and Migliavacca RECO
+    # When a recompute tag is given, read GPP/RECO from the offline-recomputed
+    # VPRM NetCDFs instead of WRF's online EBIO_* fluxes (per-timestep fallback to
+    # WRF if a recompute file is missing).
+    use_recomputed = tag is not None
     csv_folder = CSVFOLDER
     # set standard deviation of topography
     STD_TOPOs = [200]
     STD_TOPO_flags = ["gt"]  # "lt" lower than or "gt" greater than STD_TOPO
     ref_sims = ["", "_REF"]  # "_REF" to use REF simulation or "" for tuned values
+    if use_recomputed:
+        # only a single tag is recomputed (no _REF recompute exists)
+        ref_sims = [""]
 
     if run_Pmodel:
         migli_path = os.path.join(SCRATCH_PATH, "DATA/RECO_Migli/")
@@ -136,8 +160,73 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
     factor_kgC = 1000 / 44.01 * 1000000  # consim_type from kgCO2/m2/s to  mumol/m2/s
     CAMS_factors = [factor_kgC, -factor_kgC, 273.15, 1 / 10800]
 
+    # ---- CAMS timing: build a clean 3-hourly axis for temporal interpolation ----
+    # ghg-reanalysis_surface_2012_full.nc is a concatenation of monthly cumulative
+    # CDS downloads, so `times_CAMS` is NOT monotonic (each month's file restarts
+    # from Jan 1) and every timestamp appears 2-4x (with identical values --
+    # verified: duplicate occurrences carry bit-identical ssrd/fco2gpp/etc.). Since
+    # CAMS is 3-hourly and WRF is hourly, matching on exact equality (as before)
+    # left ~2/3 of WRF hours with no CAMS value at all. Deduplicating + sorting
+    # gives a strictly increasing, gap-free 3-hourly axis spanning all of 2012
+    # (into 2013), which every hourly WRF timestamp can be bracketed within and
+    # linearly interpolated onto (see the CAMS block in the main loop below).
+    _cams_times_raw = np.array(
+        [datetime(1970, 1, 1) + timedelta(seconds=int(x)) for x in times_CAMS[:]]
+    )
+    _first_cams_idx = {}
+    for _i, _tt in enumerate(_cams_times_raw):
+        if _tt not in _first_cams_idx:
+            _first_cams_idx[_tt] = _i
+    cams_times_sorted = np.array(sorted(_first_cams_idx))
+    cams_idx_sorted = np.array([_first_cams_idx[_tt] for _tt in cams_times_sorted])
+    lat_CAMS = CAMS_data.variables["latitude"][:]
+    lon_CAMS = CAMS_data.variables["longitude"][:]
+
+    def cams_topo_at(cams_idx, WRF_var, CAMS_var, factor, lats_fine, lons_fine, WRF_var_1km, mask):
+        """Spatially projected + masked domain-mean CAMS value at one CAMS time index."""
+        if WRF_var == "T2":
+            var_CAMS = CAMS_data.variables[CAMS_var][cams_idx, :, :].data - factor
+        else:
+            var_CAMS = CAMS_data.variables[CAMS_var][cams_idx, :, :].data * factor
+        CAMS_proj = proj_CAMS_on_WRF_grid(
+            lat_CAMS, lon_CAMS, var_CAMS, lats_fine, lons_fine, WRF_var_1km
+        )
+        return np.mean(CAMS_proj[mask])
+
+    def cams_topo_interp(new_time, WRF_var, CAMS_var, factor, lats_fine, lons_fine, WRF_var_1km, mask):
+        """Domain-mean CAMS value at an arbitrary (hourly) WRF time, linearly
+        interpolated between the two bracketing 3-hourly CAMS instants. Masking
+        and spatial averaging are linear, so interpolating the already-projected
+        domain means equals projecting an interpolated field -- just far cheaper."""
+        pos = np.searchsorted(cams_times_sorted, new_time)
+        if pos <= 0:
+            lo = hi = 0
+        elif pos >= len(cams_times_sorted):
+            lo = hi = len(cams_times_sorted) - 1
+        else:
+            lo, hi = pos - 1, pos
+        if lo == hi:
+            return cams_topo_at(
+                cams_idx_sorted[lo], WRF_var, CAMS_var, factor,
+                lats_fine, lons_fine, WRF_var_1km, mask,
+            )
+        t_lo, t_hi = cams_times_sorted[lo], cams_times_sorted[hi]
+        frac = (new_time - t_lo) / (t_hi - t_lo)
+        v_lo = cams_topo_at(
+            cams_idx_sorted[lo], WRF_var, CAMS_var, factor,
+            lats_fine, lons_fine, WRF_var_1km, mask,
+        )
+        v_hi = cams_topo_at(
+            cams_idx_sorted[hi], WRF_var, CAMS_var, factor,
+            lats_fine, lons_fine, WRF_var_1km, mask,
+        )
+        return v_lo + frac * (v_hi - v_lo)
+
     WRF_factors = [-1 / 3600, 1 / 3600, 273.15, 1]
-    columns = ["GPP", "RECO", "T2", "SWDOWN"]
+    # NEE is appended as an extra column but is NOT iterated in the var loop below
+    # (that loop zips against the 4-element WRF_vars); it is filled as RECO - GPP
+    # after each timestep's per-resolution means are computed.
+    columns = ["GPP", "RECO", "T2", "SWDOWN", "NEE"]
 
     # Convert to datetime (but ignore time part for full-day selection)
     start_date_obj = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").date()
@@ -301,6 +390,25 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                             WRF_var_9km = nc_fid9km.variables[WRF_var][0, :, :]
                             # WRF_var_27km = nc_fid27km.variables[WRF_var][0, :, :]
                             WRF_var_54km = nc_fid54km.variables[WRF_var][0, :, :]
+                        elif use_recomputed and column in ("GPP", "RECO") and all(
+                            os.path.exists(recalc_file_path(tag, r, sim_type, time))
+                            for r in ("1km", "9km", "54km")
+                        ):
+                            # offline-recomputed flux: already in umol m-2 s-1 with
+                            # final sign; 1km is pre-trimmed [10:-10], coarse grids
+                            # are full d01 (no WRF_factor, no re-slice).
+                            with nc.Dataset(
+                                recalc_file_path(tag, "1km", sim_type, time)
+                            ) as f_rc:
+                                WRF_var_1km = f_rc.variables[column][:, :]
+                            with nc.Dataset(
+                                recalc_file_path(tag, "9km", sim_type, time)
+                            ) as f_rc:
+                                WRF_var_9km = f_rc.variables[column][:, :]
+                            with nc.Dataset(
+                                recalc_file_path(tag, "54km", sim_type, time)
+                            ) as f_rc:
+                                WRF_var_54km = f_rc.variables[column][:, :]
                         else:
                             WRF_var_1km = (
                                 nc_fid1km.variables[WRF_var][0, 0, 10:-10, 10:-10]
@@ -386,43 +494,18 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                         WRF_var_9km_topo = np.nanmean(proj_WRF_var_9km[mask])
                         # WRF_var_27km_topo = np.nanmean(proj_WRF_var_27km[mask])
                         WRF_var_54km_topo = np.nanmean(proj_WRF_var_54km[mask])
-                        # process CAMS data if times fit
+                        # CAMS is 3-hourly, WRF is hourly: linearly interpolate
+                        # onto this WRF timestamp between the two bracketing
+                        # CAMS instants (see cams_topo_interp / cams_times_sorted
+                        # above) instead of requiring an exact timestamp match.
                         start_date_nc_f1 = datetime.strptime(
                             start_date_str, "%Y-%m-%d_%H:%M:%S"
                         )
                         new_time = start_date_nc_f1
-                        j = 0
-                        CAMS_topo = np.nan
-                        for time_CAMS in times_CAMS:
-                            date_CAMS = (
-                                datetime(1970, 1, 1)
-                                + timedelta(seconds=int(time_CAMS))
-                                # - timedelta(hours=1)
-                            )
-                            j = j + 1
-                            if new_time == date_CAMS:
-                                lat_CAMS = CAMS_data.variables["latitude"][:]
-                                lon_CAMS = CAMS_data.variables["longitude"][:]
-                                if WRF_var == "T2":
-                                    var_CAMS = (
-                                        CAMS_data.variables[CAMS_var][j - 1, :, :].data
-                                        - factor
-                                    )  # convert unit to mmol m-2 s-1
-                                else:
-                                    var_CAMS = (
-                                        CAMS_data.variables[CAMS_var][j - 1, :, :].data
-                                        * factor
-                                    )  # convert unit to mmol m-2 s-1
-                                CAMS_proj = proj_CAMS_on_WRF_grid(
-                                    lat_CAMS,
-                                    lon_CAMS,
-                                    var_CAMS,
-                                    lats_fine,
-                                    lons_fine,
-                                    WRF_var_1km,
-                                )
-
-                                CAMS_topo = np.mean(CAMS_proj[mask])
+                        CAMS_topo = cams_topo_interp(
+                            new_time, WRF_var, CAMS_var, factor,
+                            lats_fine, lons_fine, WRF_var_1km, mask,
+                        )
 
                         data_row_1km[column] = WRF_var_1km_topo_m
                         # data_row_3km[column] = WRF_var_3km_topo
@@ -631,6 +714,15 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
 
                         i += 1
 
+                    # NEE = RECO - GPP (same definition for WRF and recompute paths)
+                    for _dr in (
+                        data_row_1km,
+                        data_row_9km,
+                        data_row_54km,
+                        data_row_cams,
+                    ):
+                        _dr["NEE"] = _dr["RECO"] - _dr["GPP"]
+
                     df_out_1km.loc[time, :] = data_row_1km
                     # df_out_3km.loc[time, :] = data_row_3km
                     df_out_9km.loc[time, :] = data_row_9km
@@ -711,8 +803,9 @@ def exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_ty
                         index=True,
                     )
                 else:
+                    recalc_suffix = f"_recalc_{tag}" if use_recomputed else ""
                     merged_df.to_csv(
-                        f"{csv_folder}timeseries_domain_averaged{ref_sim}_std_topo_{STD_TOPO_flag}_{STD_TOPO}{sim_type}_{start_date}_{end_date}.csv",
+                        f"{csv_folder}timeseries_domain_averaged{ref_sim}{recalc_suffix}_std_topo_{STD_TOPO_flag}_{STD_TOPO}{sim_type}_{start_date}_{end_date}.csv",
                         index=True,
                     )
 
@@ -732,14 +825,23 @@ def main():
             help="Format: '', '_parm_err' or '_cloudy'",
             default="",
         )
+        parser.add_argument(
+            "--tag",
+            type=str,
+            default=None,
+            help="Recompute parameter tag (e.g. topt_p50). If set, GPP/RECO are "
+            "read from the offline VPRM_recalc NetCDFs instead of WRF EBIO_*.",
+        )
         args = parser.parse_args()
         start_date = args.start
         end_date = args.end
         sim_type = args.type
+        tag = args.tag
     else:  # to run locally
         start_date = "2012-01-01 00:00:00"
         end_date = "2012-12-31 00:00:00"
         sim_type = ""  # "" or "_cloudy" or "_parm_err"
+        tag = None  # e.g. "topt_p50" to use offline-recomputed fluxes
 
     wrf_paths = [
         f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_1km{sim_type}",
@@ -749,7 +851,9 @@ def main():
         # f"{SCRATCH_PATH}/DATA/WRFOUT/WRFOUT_ALPS_3km{sim_type}",
     ]
 
-    exctract_wrf_domains_mean_timeseries(wrf_paths, start_date, end_date, sim_type)
+    exctract_wrf_domains_mean_timeseries(
+        wrf_paths, start_date, end_date, sim_type, tag=tag
+    )
 
 
 if __name__ == "__main__":

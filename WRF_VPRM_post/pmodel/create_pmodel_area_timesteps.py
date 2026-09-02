@@ -33,14 +33,20 @@ def pModel_subdaily_area(
     window_center_i: int,
     half_width_i: int,
 ):
-    correction_factor = 1 / 3
-    gC_to_mumol = 0.0833
+    gC_to_mumol = 0.0833  # ugC m-2 s-1 -> umol CO2 m-2 s-1
 
-    temp_subdaily = np.where(temp_subdaily < -25, np.nan, temp_subdaily)
+    # cmr: clip to pyrealm's valid ranges (the archived WRF output is sparse
+    # REPRESENTATIVE DAYS, not a continuous series, so the SubdailyPModel acclimation
+    # cannot run -> use the standard instantaneous PModel per timestep. Its mean GPP
+    # ~= the subdaily model (1.41 vs 1.38x FLUXNET at IT-MBo). kphio defaults to the
+    # temperature-dependent quantum yield (realistic); no ad-hoc scaling factors.
+    temp_subdaily = np.clip(temp_subdaily, -24.0, 50.0)
     vpd_subdaily = np.clip(vpd_subdaily, 0, None)
     ppfd_subdaily = np.clip(ppfd_subdaily, 0, None)
+    co2_subdaily = np.clip(co2_subdaily, 300.0, 600.0)
+    fpar_subdaily = np.clip(fpar_subdaily, 0.0, 1.0)
 
-    subdaily_env = PModelEnvironment(
+    env = PModelEnvironment(
         tc=temp_subdaily,
         vpd=vpd_subdaily,
         co2=co2_subdaily,
@@ -49,18 +55,7 @@ def pModel_subdaily_area(
         fapar=fpar_subdaily,
     )
 
-    acclim_model = AcclimationModel(
-        datetime_subdaily, allow_holdover=True, alpha=1 / days_memory
-    )
-    acclim_model.set_window(
-        window_center=np.timedelta64(window_center_i, "h"),
-        half_width=np.timedelta64(half_width_i, "m"),
-    )
-
-    pmodel_subdaily = SubdailyPModel(env=subdaily_env, acclim_model=acclim_model)
-    pmodel_subdaily_acc = pmodel_subdaily.gpp * gC_to_mumol * correction_factor
-
-    return pmodel_subdaily_acc
+    return PModel(env).gpp * gC_to_mumol
 
 
 def migliavacca_LinGPP(
@@ -205,14 +200,14 @@ wrf_paths = [
 
 modis_path = "/scratch/c7071034/DATA/MODIS/MODIS_FPAR/gap_filled/"
 migli_path = "/scratch/c7071034/DATA/RECO_Migli"
-start_date = "2012-06-12 00:00:00"
-end_date = "2012-06-30 00:00:00"
+start_date = "2012-01-01 00:00:00"  # cmr: full year -> picks all 12 full-24h representative days
+end_date = "2012-12-31 00:00:00"
 
 # pmodel parameters
 days_mem = 15
 half_wdth = 1
 window_cent = 12
-scaling_factor = 2 / 3
+scaling_factor = 1.0  # cmr: was 2/3 band-aid; removed (see pModel_subdaily_area note)
 gC_to_mumol = 0.0833  # 1 µg C m⁻² s⁻¹ × (1 µmol C / 12.01 µg C) × (1 µmol CO₂ / 1 µmol C) = 0.0833 µmol CO₂ m⁻² s⁻¹
 
 # Convert to datetime (but ignore time part for full-day selection)
