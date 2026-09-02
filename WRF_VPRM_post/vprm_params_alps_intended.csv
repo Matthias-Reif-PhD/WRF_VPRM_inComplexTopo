@@ -1,0 +1,17 @@
+# ALPS parameter set AS INTENDED (what the online ALPS/EBIO_GEE run was meant to use).
+# Identical to vprm_params_alps_asrun.csv (WRF_3km vprm_table_multi_eu par0/lambda/
+# alpha/beta) EXCEPT Topt, which here uses the domain-optimized FLUXNET2015 values
+# that module_ghg_fluxes.F intended for the p_ebio_gee channel
+#   (DATA Topt /14.250,23.580,17.440,20,20,22,15.880,0/)
+# but never actually applied at runtime (the online Topt bug).
+# Validation: this Topt does NOT reproduce online (29% high in winter, ~5% off in
+# summer), whereas asrun Topt=20 matches to ~1% -> confirms it did not run.
+# Difference offline(intended) - offline(asrun) = the flux impact of that bug.
+vprm_veg_id,pft,t_opt,t_min,t_max,par0,lambda,alpha,beta
+1,ENF,14.250,0,40,207.685,0.467,0.175,1.702
+2,DBF,23.580,0,40,183.799,0.361,0.235,0.887
+3,MF,17.440,0,40,240.386,0.248,0.202,2.734
+4,SHB,20.000,2,40,363.000,0.087,0.024,0.000
+5,SAV,20.000,2,40,682.000,0.114,0.005,0.000
+6,CRO,22.000,5,40,364.145,0.230,0.234,1.050
+7,GRA,15.880,2,40,284.875,0.771,0.390,1.474

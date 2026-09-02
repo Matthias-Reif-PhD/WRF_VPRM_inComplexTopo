@@ -34,6 +34,24 @@ Prepares and submits WRF jobs with updated chemistry options.
 ### `run_WPS_and_WRF_sequential.sh`
 Sequential version of entire WPS+REAL+WRF chain for single runs. Includes date hardcoding.
 
+### `job_real.slurm` / `job_real_small.slurm`
+SLURM wrappers around REAL.exe, submitted by `job_wrf_chain.slurm`/`run_WPS_and_REAL.sh`
+for the full-size and reduced-domain runs respectively.
+
+### `job_WRF.slurm_{27,9,3,54}km`
+Per-resolution SLURM wrappers around wrf.exe, one for each of the four
+independent grid spacings used in the paper (54/9/3 km are independent
+ERA5-driven runs; only 3 km nests down to 1 km).
+
+### `copy_wrf_output.sh`
+Copies finished `wrfout_*` files from the run directory to
+`$SCRATCH_PATH/DATA/WRFOUT/`, the location the `WRF_VPRM_post/extract_*.py`
+scripts read from.
+
+### `namelists/`
+The `namelist.input_{27,9,3,54}km` templates `job_wrf_chain.slurm` copies
+into place per resolution before submitting.
+
 ## Key Features
 - Automated VPRM input file copying
 - CO₂ boundary condition updates via Python scripts

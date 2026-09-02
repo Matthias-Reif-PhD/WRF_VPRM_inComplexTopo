@@ -1,0 +1,26 @@
+# Offline VPRM-old parameter table for recompute_vprm_fluxes.py
+# One row per VPRM vegetation class (vprm_veg_id 1..7), matching the PFT axis
+# order of VEGFRA_VPRM/EVI/LSWI in DATA/VPRM_input/vprm_corine_*/vprm_input_*.nc
+# and the m=0..6 loop in Fig10_linPertComp_hourly_mean.py.
+#
+# Columns:
+#   vprm_veg_id : VPRM class (1 ENF,2 DBF,3 MF,4 SHB,5 SAV/WET,6 CRO,7 GRA)
+#   pft         : label (informational only)
+#   t_opt,t_min,t_max : Tscale parameters [degC]   (GPP)
+#   par0        : PAR/RAD half-saturation [W m-2]   (GPP)
+#   lambda      : light-use efficiency [POSITIVE sign convention, as in
+#                 Fig10 lambda_of_PFT]; GPP = lambda*Tscale*Wscale*Pscale*RAD*EVI*vegfra
+#   alpha,beta  : Reco = max(0, alpha*T2[degC] + beta)
+#
+# DEFAULTS BELOW reproduce Fig10's GPP_validate (par0/lambda) with the
+# GPP-based T_opt from CLAUDE.md, and Reco alpha/beta from the VPRM_table
+# first guess in main_tune_VPRM.py. >>> REPLACE par0/lambda/alpha/beta with the
+# tuned *_optimized_params_*.xlsx values (Step 1) for the final run. <<<
+vprm_veg_id,pft,t_opt,t_min,t_max,par0,lambda,alpha,beta
+1,ENF,16.4,0,40,207.685,0.467,0.1797,0.8800
+2,DBF,23.9,0,40,183.799,0.361,0.1495,0.8233
+3,MF,19.6,0,40,240.386,0.248,0.2258,0.4321
+4,SHB,20.0,0,40,363.000,0.087,0.0239,0.0000
+5,SAV,20.2,0,40,682.000,0.114,0.1110,0.8200
+6,CRO,22.0,0,40,364.145,0.230,0.1699,-0.0144
+7,GRA,18.6,0,40,284.875,0.771,0.0881,0.5843

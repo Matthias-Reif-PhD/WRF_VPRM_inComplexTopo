@@ -65,9 +65,9 @@ Download and merge:
 
 ```bash
 cd $HOME/Github/WRF_VPRM_pre/CAMS
-bash job_get_CAMS_CO2.sh
-bash job_get_CAMS_lnsp.sh
-bash job_get_CAMS_surface.sh
+sbatch job_get_CAMS_CO2.slurm
+sbatch job_get_CAMS_lnsp.slurm
+sbatch job_get_CAMS_surface.slurm
 bash merge_CAMS_month_to_year.sh
 ```
 
