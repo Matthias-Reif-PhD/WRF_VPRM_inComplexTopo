@@ -41,25 +41,31 @@ USER_ID="c7071034" # adjust your User ID
 REAL_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WPS_and_REAL.sh
 WRF_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/run_WRF.sh
 COPY_SCRIPT="$GITHUB_PATH"/WRF_VPRM_inComplexTopo/WRF_VPRM_pre/run_WPS_WRF/copy_wrf_output.sh
-resx=("54km")
+resx=("3km")
 # Options: "" (clear sky) or "_cloudy" (cloudy and rainy)
-type="_cloudy"
+# Anything other than "_cloudy" selects clear_sky_dates; the string is also the
+# suffix of the output dir ($SCRATCH/DATA/WRFOUT/WRFOUT_ALPS_${res}${type}).
+# "_toptfix" keeps the corrected runs separate from the archived buggy-Topt runs
+# in WRFOUT_ALPS_54km/, which are the before-reference for the regression check.
+type="_toptfix"
 
 # START/END dates (6h spinup, end = 0h next day)
 # Define date sets for each scenario
 clear_sky_dates=(
-  "2012-01-11_18:00:00 2012-01-13_00:00:00"
-  "2012-02-21_18:00:00 2012-02-23_00:00:00"
-  "2012-03-26_18:00:00 2012-03-28_00:00:00"
-  "2012-04-26_18:00:00 2012-04-28_00:00:00"
-  "2012-05-25_18:00:00 2012-05-27_00:00:00"
-  "2012-06-27_18:00:00 2012-06-29_00:00:00"
+  # Trimmed to the single Zenodo date (2012-07-27) for the Topt-fix verification.
+  # Restore the full list below to run the whole clear-sky campaign again.
   "2012-07-26_18:00:00 2012-07-28_00:00:00"
-  "2012-08-26_18:00:00 2012-08-28_00:00:00"
-  "2012-09-20_18:00:00 2012-09-22_00:00:00"
-  "2012-10-19_18:00:00 2012-10-21_00:00:00"
-  "2012-11-14_18:00:00 2012-11-16_00:00:00"
-  "2012-12-23_18:00:00 2012-12-25_00:00:00"
+# "2012-01-11_18:00:00 2012-01-13_00:00:00"
+# "2012-02-21_18:00:00 2012-02-23_00:00:00"
+# "2012-03-26_18:00:00 2012-03-28_00:00:00"
+# "2012-04-26_18:00:00 2012-04-28_00:00:00"
+# "2012-05-25_18:00:00 2012-05-27_00:00:00"
+# "2012-06-27_18:00:00 2012-06-29_00:00:00"
+# "2012-08-26_18:00:00 2012-08-28_00:00:00"
+# "2012-09-20_18:00:00 2012-09-22_00:00:00"
+# "2012-10-19_18:00:00 2012-10-21_00:00:00"
+# "2012-11-14_18:00:00 2012-11-16_00:00:00"
+# "2012-12-23_18:00:00 2012-12-25_00:00:00"
 )
 
 cloudy_dates=(
@@ -104,6 +110,17 @@ for d in "${dates[@]}"; do
       sleep 60
     done
     echo "Job $jid finished."
+    # Check HOW it finished, not just that it stopped. real.exe writes wrfbdy_d01
+    # progressively, so a job killed part-way (e.g. OUT_OF_MEMORY, job 7590899)
+    # leaves a truncated but existing wrfbdy that the -f test below happily
+    # accepts -- which would launch the multi-hour WRF job on corrupt boundary
+    # data. Fail here instead.
+    state=$(sacct -j "$jid" -X -n -o State 2>/dev/null | head -1 | awk '{print $1}')
+    if [ "$state" != "COMPLETED" ]; then
+      echo "ERROR: real job $jid ended as '$state', not COMPLETED." >&2
+      echo "       Any wrfbdy_d01 it wrote is likely truncated - not proceeding." >&2
+      exit 1
+    fi
   done
   # Verify wrfbdy files exist
   for res in "${resx[@]}"; do
