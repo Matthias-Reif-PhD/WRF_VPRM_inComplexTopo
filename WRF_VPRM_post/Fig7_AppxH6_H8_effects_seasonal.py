@@ -161,7 +161,9 @@ C = {"p25": "#A5D6A7", "p75": "#A5D6A7", "par": "#2E7D32",
 # set, so they must read as one green family with the ALPS bar rather than as
 # warm colours the eye groups against the blue/red resolution bars. Hatching,
 # leaning opposite ways, distinguishes the two variants without leaving green.
-H = {"p25": "///", "p75": "\\\\\\", "par": "", "r9": "", "r9d": "",
+# Doubled hatch density: at the printed panel size the 3-stroke pattern was
+# barely resolved in the legend swatches, which are only ~1.1 handlelengths wide.
+H = {"p25": "//////", "p75": r"\\\\\\", "par": "", "r9": "", "r9d": "",
      "r54": "", "r54d": ""}
 E = {"p25": "#2E7D32", "p75": "#2E7D32"}
 # every bar is referenced to ALPS, so the ones that are not the DEFAULT counterpart say so
