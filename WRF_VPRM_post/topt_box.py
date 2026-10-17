@@ -202,7 +202,7 @@ def draw_topt_box(
 
 
 def topt_legend_elements(
-    central_label=r"central $T_{opt}$ (V24)",
+    central_label=r"central $T_{opt}$ (V24, mean of site means)",
     iqr_label=r"ALPS p25-p75 (ens.)",
     whisker_label=r"ALPS p10-p90 (ens.)",
     outlier_label="outliers",
@@ -212,6 +212,13 @@ def topt_legend_elements(
     The labels are overridable so one legend can serve both the per-class and the
     per-site figure: the per-site boxes are percentiles of that site's own years,
     not the ALPS T_opt ensemble, so there the wording has to stay generic.
+
+    The central line is NOT a median. For the published per-class path the `med=`
+    value comes from the p50 column of VPRM_tools/topt_percentiles.csv, which
+    derive_topt_members.py fills with V24_CENTRAL -- the mean of the per-site mean
+    T_opt, each site weighted equally -- after explicitly discarding the computed
+    50th percentile. Only the `_stats_for` fallback below (no percentile row for
+    the class) is a true median, which is why the wording stays overridable.
     """
     return [
         Patch(facecolor="#bbbbbb", edgecolor="#333333", alpha=0.55,

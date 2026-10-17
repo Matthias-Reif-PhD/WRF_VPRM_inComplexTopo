@@ -1446,7 +1446,7 @@ def write_seasonal_domain_average_table(ALPS_dfs, df_ref, outfile):
             }
             # No bolding here: the appendix tables carry no "bold marks the NEE
             # resolution difference" convention, only Table 1 does.
-            _t1_block(f, name, cells, bold_nee=False, annotate_hdr=False)
+            _t1_block(f, name, cells, bold_nee=False, annotate_hdr=True)
         f.write("\\bottomrule\n\\end{tabular}\n")
     print(f"LaTeX table written to {outfile}")
 
@@ -2058,16 +2058,17 @@ _DEVIATION_INNER = ("p25", "p75")  # the two percentile-adjacent comparisons, ch
 
 
 def _deviation_header():
-    """Fixed tabular header for the p50-deviation tables: four signed
-    x(p50)-x(pX) columns per flux, X in {p10,p25,p75,p90}."""
+    """Fixed tabular header for the central-member deviation tables: four
+    signed x(ALPS)-x(pX) columns per flux, X in {p10,p25,p75,p90}. ALPS is the
+    central member (mean of the per-site means), internally tagged topt_p50."""
     return (
         "\\begin{tabular}{l|rrrr|rrrr|rrrr}\n\\toprule\n"
         "& \\multicolumn{4}{c|}{GPP} & \\multicolumn{4}{c|}{$R_\\text{eco}$}"
         " & \\multicolumn{4}{c}{NEE} \\\\\n"
         "Season"
         + (
-            " & $x(p50){-}x(p10)$ & $x(p50){-}x(p25)$"
-            " & $x(p50){-}x(p75)$ & $x(p50){-}x(p90)$"
+            " & $x(\\text{ALPS}){-}x(p10)$ & $x(\\text{ALPS}){-}x(p25)$"
+            " & $x(\\text{ALPS}){-}x(p75)$ & $x(\\text{ALPS}){-}x(p90)$"
         )
         * 3
         + " \\\\\n\\midrule\n"
@@ -2109,8 +2110,8 @@ def _par_members_header():
         "\\begin{tabular}{ll|rrr|rrr}\n\\toprule\n"
         "& & \\multicolumn{3}{c|}{GPP} & \\multicolumn{3}{c}{NEE} \\\\\n"
         "Season & Set"
-        + (" & $\\Delta_\\text{par}^\\text{1 km}$ & $\\Delta_\\text{par}^\\text{54 km}$"
-           " & $\\Delta_\\text{res}^\\text{54 km}$") * 2
+        + (" & $\\Delta_\\text{par}^\\text{1km}$ & $\\Delta_\\text{par}^\\text{54km}$"
+           " & $\\Delta_\\text{res}^\\text{54km}$") * 2
         + " \\\\\n\\midrule\n"
     )
 
@@ -2133,7 +2134,13 @@ def _par_members_block(name, months, member_dfs, ref_df, p50_idx, tag_labels):
     ref = {v: {res: _smean(ref_df, f"{v}_{res}", months) for res in ("1km", "54km")}
            for v in _PAR_MEMBERS_FLUXES}
     for i, tag in enumerate(tag_labels):
-        lab = "p50 (ALPS)" if i == p50_idx else tag
+        # The central member is the MEAN of the per-site mean Topt (each site
+        # weighted equally), not the 50th percentile -- derive_topt_members.py
+        # computes np.percentile(site_means, ...) and then discards the 50th in
+        # favour of V24_CENTRAL. "p50" was therefore a misnomer in the printed
+        # table; the internal tag topt_p50 is left alone. p10/p25/p75/p90 ARE
+        # genuine percentiles of that distribution and keep their labels.
+        lab = "ALPS (central)" if i == p50_idx else tag
         row = (name if i == 0 else "") + f" & {lab}"
         for v in _PAR_MEMBERS_FLUXES:
             # Manuscript convention (Eq. dpar): Delta_par = x_DEFAULT - x_s,
