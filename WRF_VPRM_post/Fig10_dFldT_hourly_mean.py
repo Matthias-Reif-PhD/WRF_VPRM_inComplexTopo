@@ -232,12 +232,21 @@ def save_all_legend_only_combined(
         resolutions, resolution_colors, resolution_colors_light
     )
 
-    fig = plt.figure(figsize=(7.0, 1.25))
+    # Five columns, one per series group, two rows of ALPS-then-DEFAULT:
+    #   Delta_res 54km | Delta_res 9km | Delta_dT 54km | Delta_dT 9km | percentiles
+    # matplotlib fills a legend COLUMN-major, so with 10 handles and ncol=5 each
+    # column takes the next consecutive pair -- which is exactly the order
+    # get_all_legend_elements_combined builds them in. Keep the two in step: a
+    # reordering there silently regroups the columns here.
+    # At ncol=4 the 10 entries wrapped into 3 ragged rows that split the pairs
+    # across columns (9km-ALPS sat under 54km-DEFAULT), which is what made the
+    # groups hard to read.
+    fig = plt.figure(figsize=(11.0, 0.9))
     fig.legend(
         handles,
         labels,
         loc="center",
-        ncol=4,  # 4 columns
+        ncol=5,
         fontsize=16,
         frameon=False,
         handlelength=3,
