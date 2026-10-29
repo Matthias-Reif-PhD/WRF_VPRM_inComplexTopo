@@ -325,8 +325,9 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type, tag=None
                 dRECO_model = dRECOdT_ref * conv_factor * dT_model
                 dRECO_real = (proj_RECO_coarsegrid - RECO_1km) * conv_factor
 
-                # R_eco needs no T mask (its derivative is constant); with
-                # DPDT_RECO_NOMASK set, dRECO_* use the area of analysis only.
+                # The T2m < 5 degC threshold applies to GPP only: dGPP/dT2m grows
+                # unrealistically large near T_min, whereas dRECO/dT2m is constant,
+                # so dRECO_* use the area of analysis without the threshold.
                 aoa_mask = proj_landmask_coarsegrid * (stdh_topo_1km >= STD_TOPO)
                 stdh_mask[T2_1km < 5] = False
                 dT_calc[proj_landmask_coarsegrid * stdh_mask == 0] = np.nan
@@ -334,9 +335,9 @@ def exctract_dPdT_timeseries(wrf_paths, start_date, end_date, sim_type, tag=None
                 dGPP_calc[proj_landmask_coarsegrid * stdh_mask == 0] = np.nan
                 dGPP_model[proj_landmask_coarsegrid * stdh_mask == 0] = np.nan
                 dGPP_real[proj_landmask_coarsegrid * stdh_mask == 0] = np.nan
-                dRECO_calc[(aoa_mask if os.getenv("DPDT_RECO_NOMASK") else proj_landmask_coarsegrid * stdh_mask) == 0] = np.nan
-                dRECO_model[(aoa_mask if os.getenv("DPDT_RECO_NOMASK") else proj_landmask_coarsegrid * stdh_mask) == 0] = np.nan
-                dRECO_real[(aoa_mask if os.getenv("DPDT_RECO_NOMASK") else proj_landmask_coarsegrid * stdh_mask) == 0] = np.nan
+                dRECO_calc[aoa_mask == 0] = np.nan
+                dRECO_model[aoa_mask == 0] = np.nan
+                dRECO_real[aoa_mask == 0] = np.nan
 
                 try:
                     dT_calc_mean = np.nanmean(dT_calc)
