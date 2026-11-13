@@ -466,7 +466,15 @@ if plot_boxplot:
         Patch(facecolor="#bbbbbb", edgecolor="#333333", alpha=0.55,
               label=r"ALPS p25-p75 (ens.)"),
         Line2D([0], [0], color="#333333", lw=1.6, label=r"ALPS p10-p90 (ens.)"),
-        Line2D([0], [0], color="black", lw=2.6, label="central $T_{opt}$ (V24)"),
+        # The box's median line is the central T_opt, which is the MEAN of the
+        # per-site means (topt_percentiles.csv p50 column = V24_CENTRAL), not a
+        # median -- say so rather than letting the box style imply otherwise.
+        # Kept to "(V24, mean)" rather than the fuller "mean of site means" used
+        # in the standalone legend strip: this legend sits inside the axes at
+        # upper left and already clips the DBF column, so the extra words would
+        # widen the overlap. The full statement belongs in the caption.
+        Line2D([0], [0], color="black", lw=2.6,
+               label="central $T_{opt}$ (V24, mean)"),
         Line2D([0], [0], marker="o", color="w", markerfacecolor="#666666",
                markeredgecolor="black", markersize=9, label="site means"),
         Line2D([0], [0], marker="o", color="w", markerfacecolor="#666666",

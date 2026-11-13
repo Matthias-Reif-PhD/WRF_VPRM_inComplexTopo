@@ -118,15 +118,26 @@ def plot_combined(ALPS_dfs, df_ref, variable_groups):
 
         for res in resolutions:
             # which quantities to draw and their base styling
+            # Styling follows Fig. 6 (save_legend_only_diff in the Fig5_6 script):
+            # ALPS solid, DEFAULT dashed, with colour lightness -- not a third and
+            # fourth linestyle -- carrying Delta_res vs Delta_dT. The former
+            # ":"/"-." pair made four linestyles compete with the two colours.
+            #
+            # zorder: the res loop is OUTER and kinds INNER, so draw order is
+            # 54km Delta_res -> 54km Delta_dT -> 9km Delta_res -> 9km Delta_dT, and
+            # the 9km Delta_res bands and lines used to paint over the 54km
+            # Delta_dT curves. The temperature contribution is what this figure is
+            # about, so it is pinned above everything rather than reordering the
+            # loops: bands 1, Delta_res lines 2, Delta_dT lines 3.
             if var_prefix == "dT":
-                kinds = [("model", "-", resolution_colors)]  # dT: single line
+                kinds = [("model", "-", resolution_colors, 3, 2.4)]  # dT: single line
             else:
                 kinds = [
-                    ("real", "-", resolution_colors),  # Delta_res
-                    ("model", "--", resolution_colors_light),  # Delta_dT
+                    ("real", "-", resolution_colors, 2, 2.0),  # Delta_res
+                    ("model", "-", resolution_colors_light, 3, 2.4),  # Delta_dT
                 ]
 
-            for kind, style, cdict in kinds:
+            for kind, style, cdict, z, lw in kinds:
                 col = f"{var_prefix}_{kind}_mean_{res}"
                 base = cdict.get(res, "gray")
 
@@ -135,23 +146,23 @@ def plot_combined(ALPS_dfs, df_ref, variable_groups):
                 if hours is not None:
                     if np.nanmax(np.abs(P[90] - P[10])) > 1e-9:
                         plt.fill_between(
-                            hours, P[10], P[90], color=base, alpha=0.15, linewidth=0
+                            hours, P[10], P[90], color=base, alpha=0.15,
+                            linewidth=0, zorder=1,
                         )
                         plt.fill_between(
-                            hours, P[25], P[75], color=base, alpha=0.35, linewidth=0
+                            hours, P[25], P[75], color=base, alpha=0.35,
+                            linewidth=0, zorder=1,
                         )
-                    plt.plot(hours, P[50], linestyle=style, color=base, lw=2)
+                    plt.plot(hours, P[50], linestyle=style, color=base, lw=lw,
+                             zorder=z)
 
-                # DEFAULT single reference line (online _REF)
-                if var_prefix == "dT":
-                    ref_style, ref_color = ":", resolution_colors.get(res, "gray")
-                elif kind == "model":
-                    ref_style, ref_color = "-.", resolution_colors_light.get(res, "gray")
-                else:
-                    ref_style, ref_color = ":", resolution_colors.get(res, "gray")
+                # DEFAULT single reference line (online _REF); dashed in every
+                # family, per Fig. 6's ALPS-solid/DEFAULT-dashed convention.
+                ref_color = cdict.get(res, "gray")
                 rh, rv = _hourly_mean(df_ref, col)
                 if rh is not None:
-                    plt.plot(rh, rv, linestyle=ref_style, color=ref_color, lw=2)
+                    plt.plot(rh, rv, linestyle="--", color=ref_color, lw=lw,
+                             zorder=z)
 
         plt.xticks(np.arange(0, 24, 3))  # 3-hourly; data is hour 0..23
         plt.xlabel("UTC [h]", fontsize=18)
@@ -169,29 +180,37 @@ def plot_combined(ALPS_dfs, df_ref, variable_groups):
 def get_all_legend_elements_combined(
     resolutions, resolution_colors, resolution_colors_light
 ):
-    """Generate comprehensive legend elements for all plot_combined variants (8 entries)."""
+    """Generate comprehensive legend elements for all plot_combined variants (8 entries).
+
+    Wording and styles follow Fig. 6 (`save_legend_only_diff` in the Fig5_6
+    script): the "{res}-1km, ALPS" / "{res}-1km, DEFAULT" naming, and ALPS solid
+    against DEFAULT dashed. The Delta prefix is Fig. 10's own addition, needed
+    because it draws two families where Fig. 6 draws one; those two are separated
+    by colour lightness, matching the line weights plot_combined uses.
+    """
     handles = []
     labels = []
 
-    # dT entries (dark colors: red and blue)
+    # Delta_res entries (dark colors: red and blue)
     for res in resolutions:
         color = resolution_colors[res]
-        # ALPS (solid, p50 median)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle="-"))
-        labels.append(r"$\Delta_{\text{res}}$ (" + res + ", ALPS)")
-        # DEFAULT (dotted)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle=":"))
-        labels.append(r"$\Delta_{\text{res}}$ (" + res + ", DEFAULT)")
+        # ALPS (solid, central member)
+        handles.append(Line2D([0], [0], color=color, lw=2.0, linestyle="-"))
+        labels.append(r"$\Delta_{\text{res}}$ " + res + "-1km, ALPS")
+        # DEFAULT (dashed)
+        handles.append(Line2D([0], [0], color=color, lw=2.0, linestyle="--"))
+        labels.append(r"$\Delta_{\text{res}}$ " + res + "-1km, DEFAULT")
 
-    # dGPP/dRECO entries (light colors: salmon and lightskyblue)
+    # Delta_dT entries (light colors: salmon and lightskyblue), drawn in the
+    # foreground and a touch heavier, as in plot_combined
     for res in resolutions:
         color = resolution_colors_light[res]
-        # ALPS (dashed, p50 median)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle="--"))
-        labels.append(r"$\Delta_{\partial\text{T}}$ (" + res + ", ALPS)")
-        # DEFAULT (dashdot)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle="-."))
-        labels.append(r"$\Delta_{\partial\text{T}}$ (" + res + ", DEFAULT)")
+        # ALPS (solid, central member)
+        handles.append(Line2D([0], [0], color=color, lw=2.4, linestyle="-"))
+        labels.append(r"$\Delta_{\partial\text{T}}$ " + res + "-1km, ALPS")
+        # DEFAULT (dashed)
+        handles.append(Line2D([0], [0], color=color, lw=2.4, linestyle="--"))
+        labels.append(r"$\Delta_{\partial\text{T}}$ " + res + "-1km, DEFAULT")
 
     # Topt percentile bands (ALPS spread)
     handles.append(Patch(facecolor="gray", alpha=0.35, linewidth=0))
@@ -213,12 +232,21 @@ def save_all_legend_only_combined(
         resolutions, resolution_colors, resolution_colors_light
     )
 
-    fig = plt.figure(figsize=(7.0, 1.25))
+    # Five columns, one per series group, two rows of ALPS-then-DEFAULT:
+    #   Delta_res 54km | Delta_res 9km | Delta_dT 54km | Delta_dT 9km | percentiles
+    # matplotlib fills a legend COLUMN-major, so with 10 handles and ncol=5 each
+    # column takes the next consecutive pair -- which is exactly the order
+    # get_all_legend_elements_combined builds them in. Keep the two in step: a
+    # reordering there silently regroups the columns here.
+    # At ncol=4 the 10 entries wrapped into 3 ragged rows that split the pairs
+    # across columns (9km-ALPS sat under 54km-DEFAULT), which is what made the
+    # groups hard to read.
+    fig = plt.figure(figsize=(11.0, 0.9))
     fig.legend(
         handles,
         labels,
         loc="center",
-        ncol=4,  # 4 columns
+        ncol=5,
         fontsize=16,
         frameon=False,
         handlelength=3,
@@ -233,83 +261,11 @@ def save_all_legend_only_combined(
     plt.close()
 
 
-def get_legend_elements_combined(
-    resolutions, resolution_colors, resolution_colors_light, var_prefix
-):
-    """Generate legend elements for plot_combined function."""
-    handles = []
-    labels = []
-
-    # Determine type_x based on var_prefix
-    if var_prefix == "dGPP":
-        type_x = "GPP"
-    else:
-        type_x = r"R$_{eco}$"
-
-    # Determine type_key based on var_prefix
-    if var_prefix == "dT":
-        type_key = "dT"
-        color_dict = resolution_colors
-    elif var_prefix == "dGPP":
-        type_key = r"$\Delta_{\partial\text{T}}$"
-        color_dict = resolution_colors_light
-    else:  # dRECO
-        type_key = r"$\Delta_{\partial\text{T}}$"
-        color_dict = resolution_colors_light
-
-    # Create legend entries for each resolution
-    for res in resolutions:
-        color = color_dict.get(res, "gray")
-
-        # Determine line styles based on variable type
-        if var_prefix == "dT":
-            alps_style = "-"
-            ref_style = ":"
-        else:  # dGPP or dRECO
-            alps_style = "--"
-            ref_style = "-."
-
-        # ALPS (solid or dashed line)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle=alps_style))
-        labels.append(rf"{type_key} ({res}, ALPS)")
-
-        # DEFAULT (dotted or dashdot line)
-        handles.append(Line2D([0], [0], color=color, lw=2, linestyle=ref_style))
-        labels.append(rf"{type_key} ({res}, DEFAULT)")
-
-    return handles, labels
-
-
-def save_legend_only_combined(
-    resolutions,
-    resolution_colors,
-    resolution_colors_light,
-    var_prefix,
-    OUTFOLDER,
-):
-    """Save legend for plot_combined in a separate figure."""
-    handles, labels = get_legend_elements_combined(
-        resolutions, resolution_colors, resolution_colors_light, var_prefix
-    )
-
-    fig = plt.figure(figsize=(6.0, 1.0))
-    fig.legend(
-        handles,
-        labels,
-        loc="center",
-        ncol=4,  # 4 columns
-        fontsize=16,
-        frameon=False,
-        handlelength=3,
-        columnspacing=1.8,
-    )
-
-    plt.axis("off")
-    plt.savefig(
-        f"{OUTFOLDER}legend_combined_{var_prefix}.pdf",
-        bbox_inches="tight",
-    )
-    plt.close()
+# Removed: get_legend_elements_combined / save_legend_only_combined (per-variable
+# legend_combined_{var}.pdf). Never called -- the manuscript uses the single
+# legend_combined_all.pdf from save_all_legend_only_combined above -- and they
+# still encoded the pre-round-2 ":"/"-." linestyles, so leaving them in place
+# would have contradicted the figure they claimed to describe.
 
 
 def plot_gpp_percent_explained(

@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import filecmp
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -102,13 +103,83 @@ REPORT_ONLY = [
     "Table_member_deviations_dres_2012_all.tex",
 ]
 
+# Figures reached plots_final/ by hand until round 2 -- there was no figure-copy
+# step at all, and two Fig. 10 files had silently gone stale there (plots_final/
+# held an Aug 12 build against an Aug 14 source).
+#
+# Rather than a hand-maintained list, which drifted the moment the manuscript was
+# restructured (the round-2 draft gained a supplement, dropped five seasonal
+# tables and never picked up the new terrain panel), the figure set is read
+# straight out of the manuscript: whatever it \includegraphics from plots_final/
+# is what gets shipped. That makes "shipped" and "used" the same set by
+# construction, and turns both kinds of drift into a printed report.
+#
+# Commented-out lines are skipped, so a figure the author has parked behind a %
+# is treated as unused -- which is why removing it is only ever *suggested* here,
+# never done.
+TEX_GLOBS = ("Draft_*.tex", "Supplement_*.tex")
 
-def copy_tables():
-    """Copy each table into plots_final/, reporting whether it is new, changed
+# Fallback when no manuscript is next to the repo (the .tex files are gitignored,
+# so a fresh checkout has none): the round-2 figure set, as last shipped.
+SHIP_FIGURES_FALLBACK = [
+    "regression_Topt_vs_Tmean_old_Alps_VPRM_optimized_params_diff_evo_V24_SW_05_42.pdf",
+    "boxplot_PFTs_old_Alps_VPRM_optimized_params_diff_evo_V24_SW_05_42.pdf",
+    "boxplot_siteIDs_old_Alps_VPRM_optimized_params_diff_evo_V24_SW_05_42.pdf",
+    "boxplot_NNSE_old_Alps_VPRM_optimized_params_diff_evo_V24_SW_05_42.pdf",
+    "legend_topt_boxplots.pdf",
+    "areafluxes_dT_model_2012-07-27_12h.pdf",
+    "areafluxes_dGPPdT_1km_radt54_swint1_2012-07-27_12h.pdf",
+    "areafluxes_dGPP_model_02_radt54_swint1_2012-07-27_12h.pdf",
+    "hourly_avg_dGPP_combined_std_topo_200all_"
+    "2012-01-01 00:00:00_2012-12-31 00:00:00.pdf",
+    "hourly_avg_dRECO_combined_std_topo_200all_"
+    "2012-01-01 00:00:00_2012-12-31 00:00:00.pdf",
+    "legend_combined_all.pdf",
+]
+
+
+def tex_sources():
+    """The manuscript files sitting next to the repo, newest naming first."""
+    found = []
+    for pat in TEX_GLOBS:
+        found += sorted(ROOT.glob(pat))
+    return found
+
+
+def referenced_assets():
+    """Everything the manuscript pulls out of plots_final/, as a set of names.
+
+    Lines whose first non-space character is `%` are LaTeX comments and are
+    skipped -- the round-2 draft has `%\\input{plots_final/Table_seasonal_effects_
+    2012_cloudy.tex}`, which must not count as a live reference.
+    """
+    names = set()
+    for tex in tex_sources():
+        for line in tex.read_text(errors="replace").splitlines():
+            if line.lstrip().startswith("%"):
+                continue
+            names.update(re.findall(r'plots_final/([^}"]+\.(?:pdf|tex))', line))
+    return names
+
+
+def figures_to_ship(referenced):
+    """Referenced figures that actually exist in plots/, sorted.
+
+    Missing ones are reported by main() rather than raised on: a manuscript
+    routinely references figures whose script has not been re-run yet, and that
+    should not block shipping the ones that are ready.
+    """
+    if not referenced:
+        return [n for n in SHIP_FIGURES_FALLBACK if (SRC / n).exists()]
+    return sorted(n for n in referenced if n.endswith(".pdf") and (SRC / n).exists())
+
+
+def copy_tables(names=SHIP):
+    """Copy each file into plots_final/, reporting whether it is new, changed
     or already identical. Returns the list of shipped destination paths."""
     DST.mkdir(parents=True, exist_ok=True)
     shipped = []
-    for name in SHIP:
+    for name in names:
         src, dst = SRC / name, DST / name
         if not src.exists():
             raise FileNotFoundError(
@@ -126,16 +197,46 @@ def copy_tables():
     return shipped
 
 
-def verify_byte_identical():
+def verify_byte_identical(names=SHIP, what="shipped copies"):
     """'Shipped' has to mean 'identical', not 'similar'. filecmp with
     shallow=False compares contents, not just size/mtime."""
-    for name in SHIP:
+    for name in names:
         src, dst = SRC / name, DST / name
         assert dst.exists(), f"{dst} missing after copy"
         assert filecmp.cmp(src, dst, shallow=False), (
             f"{name}: shipped copy differs from {src}"
         )
-    print(f"  [ok] all {len(SHIP)} shipped copies byte-identical to their sources")
+    print(f"  [ok] all {len(names)} {what} byte-identical to their sources")
+
+
+def report_drift(referenced, shipped_figures):
+    """Print the two gaps between what the manuscript wants and what exists.
+
+    Neither is an error. A referenced-but-unbuilt figure means its script has not
+    been re-run yet; a shipped-but-unreferenced one means the manuscript dropped
+    it (or has it behind a `%`). Both are printed so they are visible rather than
+    silently carried -- which is exactly how plots_final/ drifted before.
+    """
+    if not referenced:
+        return
+    want_pdf = {n for n in referenced if n.endswith(".pdf")}
+    unbuilt = sorted(n for n in want_pdf if not (SRC / n).exists())
+    in_final = {p.name for p in DST.glob("*") if p.is_file()}
+    unused = sorted(in_final - referenced)
+
+    print(f"\nManuscript coverage: {len(want_pdf) - len(unbuilt)}/{len(want_pdf)} "
+          "referenced figures are built and shipped.")
+    if unbuilt:
+        print(f"\nReferenced but NOT BUILT ({len(unbuilt)}) -- re-run the "
+              "producing script, then ship again:")
+        for n in unbuilt:
+            print(f"  {n}")
+    if unused:
+        print(f"\nIn plots_final/ but not referenced ({len(unused)}) -- stale, or "
+              "parked behind a % in the manuscript. Left in place; delete by hand "
+              "if genuinely dropped:")
+        for n in unused:
+            print(f"  {n}")
 
 
 def main():
@@ -150,15 +251,31 @@ def main():
     print(f"source: {SRC}")
     print(f"target: {DST}\n")
 
+    referenced = referenced_assets()
+    sources = tex_sources()
+    if sources:
+        print("manuscript: " + ", ".join(t.name for t in sources))
+        print(f"  {len(referenced)} plots_final/ references (commented-out lines ignored)\n")
+    else:
+        print("manuscript: none found next to the repo -- using the fallback "
+              "figure list\n")
+    ship_figures = figures_to_ship(referenced)
+
     if args.check:
-        missing = [n for n in SHIP if not (DST / n).exists()]
+        missing = [n for n in SHIP + ship_figures if not (DST / n).exists()]
         if missing:
             raise SystemExit(f"not shipped yet: {', '.join(missing)}")
     else:
-        print("Shipping:")
+        print("Shipping tables:")
         copy_tables()
         print()
         verify_byte_identical()
+        print("\nShipping figures (every figure the manuscript references):")
+        copy_tables(ship_figures)
+        print()
+        verify_byte_identical(ship_figures, what="shipped figures")
+
+    report_drift(referenced, ship_figures)
 
     print("\nAsserting against the SHIPPED copies:")
 

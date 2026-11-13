@@ -172,7 +172,10 @@ pie_size = 0.68  # inches; scaled with the smaller canvas
 
 for i in range(1, lat.shape[0] - 1, step):
     for j in range(1, lat.shape[1] - 1, step):
-        f = veg_frac_map[0, i, j].values
+        # VEGFRA_VPRM dims are (Time, vprm_vgcls, south_north, west_east), so the
+        # class axis must be sliced explicitly: [0, i, j] would return a west_east
+        # row of one single class, not this cell's 8 PFT fractions.
+        f = veg_frac_map[0, :, i, j].values
         if np.isnan(f).all() or np.sum(f) == 0:
             continue
         f = f / np.sum(f)

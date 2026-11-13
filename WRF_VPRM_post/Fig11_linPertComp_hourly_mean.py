@@ -567,6 +567,7 @@ for dx in dx_all:
     spread_cols = ["dlambda", "dTscale", "dWscale", "dPscale", "dRAD", "dEVI", "Residual"]
     spread_dfs = {mi: pd.DataFrame(columns=spread_cols)
                   for mi in range(len(MEMBERS)) if mi != CENTRAL_IDX}
+    _warm_rows = []
 
     # Collect all files
     files_d01 = sorted(
@@ -735,6 +736,9 @@ for dx in dx_all:
         EVI_d01 = np.zeros_like(SWDOWN_d01)
         Lambda_d01 = np.zeros_like(SWDOWN_d01)
         GPP_validate_d01 = np.zeros_like(SWDOWN_d01)
+        # Temperature-only GPP change at 1 km fractions (diagnostic, DUMP_LINPERT)
+        _T2c_on1km = np.asarray(project_nn(np.asarray(T2_d01), proj_idx, np.shape(T2_1km)), dtype=float)
+        _dGPP_Tpure = np.zeros_like(SWDOWN_1km)
 
         for m in range(7):
 
@@ -827,6 +831,13 @@ for dx in dx_all:
                 * EVI_temp_1km
                 * vegfrac_1km
             )
+            _c1 = _T2c_on1km - Tvar_of_PFT[list(Tvar_of_PFT.keys())[m]][1]
+            _c2 = _T2c_on1km - Tvar_of_PFT[list(Tvar_of_PFT.keys())[m]][2]
+            _c3 = _T2c_on1km - Tvar_of_PFT[list(Tvar_of_PFT.keys())[m]][0]
+            _tsc = np.nan_to_num(np.where((_c1 < 0) | (_c2 > 0), 0, _c1 * _c2 / (_c1 * _c2 - _c3**2)),
+                                 nan=0.0, posinf=0.0, neginf=0.0)
+            _dGPP_Tpure += GPP_temp_1km * 0 + (Lambda_temp_1km * np.where(_tsc < 0, 0, _tsc) * Wscale_temp_1km
+                            * Pscale_temp_1km * RAD_temp_1km * EVI_temp_1km * vegfrac_1km) - GPP_temp_1km
             GPP_temp_1km[GPP_temp_1km < 0] = 0
             GPP_validate_1km += GPP_temp_1km
 
@@ -1136,6 +1147,20 @@ for dx in dx_all:
 
         mean_contribs = np.nanmean(contribs, axis=(1, 2))  # shape (6,)
         mean_residual = np.nanmean(residual)
+        # Same means restricted to T2_1km >= 5 degC, the domain of the
+        # temperature-derivative analysis. Only collected with DUMP_LINPERT.
+        if os.getenv("DUMP_LINPERT"):
+            _warm = np.asarray(T2_1km) >= 5
+            # exact GPP change from T_scale alone (GPP is linear in T_scale)
+            _ts = np.asarray(Tscale_1km, dtype=float)
+            _yan = np.where(_ts > 0.05, dTscale * np.asarray(GPP_validate_1km, dtype=float) / np.where(_ts > 0.05, _ts, 1.0), 0.0)
+            _yan[~np.isfinite(contribs[1])] = np.nan
+            _warm_rows.append([time] + [np.nanmean(contribs[i][_warm]) for i in range(6)]
+                              + [np.nanmean(residual[_warm]), _warm.mean(),
+                                 np.nanmean(_yan), np.nanmean(_yan[_warm]),
+                                 np.nanmean(contribs[1]), np.nanmean((contribs.sum(0) + residual)),
+                                 np.nanmean(np.where(np.isfinite(contribs[1]), _dGPP_Tpure, np.nan)),
+                                 np.nanmean(np.where(np.isfinite(contribs[1]) & _warm, _dGPP_Tpure, np.nan))])
         lin_pert_mean_diffs_df.loc[time] = [
             mean_contribs[0],
             mean_contribs[1],
@@ -1315,6 +1340,16 @@ for dx in dx_all:
     lin_pert_mean_diffs_df_hour = (
         lin_pert_mean_diffs_df[numeric_columns].groupby("hour").mean()
     )
+    # Per-timestep area means of the central member (Y components and
+    # residual), for quantifying shares of the 24-day mean. Off unless
+    # DUMP_LINPERT is set.
+    if os.getenv("DUMP_LINPERT"):
+        _lp = (f"{plots_folder}linpert_{dx[1:]}-1km{file_label_extra}"
+               f"_{date_str_min}_{date_str_max}.csv")
+        lin_pert_mean_diffs_df.to_csv(_lp)
+        pd.DataFrame(_warm_rows, columns=["time"] + driver_names + ["Residual", "warm_frac", "YT_an_full", "YT_an_warm", "YT_reg_full", "dG_full", "dT_pure_full", "dT_pure_warm"]
+                     ).set_index("time").to_csv(_lp.replace(".csv", "_T2ge5.csv"))
+        print(f"  [dump] per-timestep Y components -> {_lp}")
 
     # hourly means of every ensemble member (central + spread) -> min/max band.
     # Keyed by MEMBER_TAGS so the p25/p75 pair below cannot be transposed by a

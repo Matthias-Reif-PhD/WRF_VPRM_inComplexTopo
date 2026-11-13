@@ -395,6 +395,19 @@ print("DEBUG dGPPdT_1km BEFORE first mask: nonnan={}".format(int(np.sum(~np.isna
 for arr in all_fields:
     arr[proj_landmask_54km * stdh_mask == 0] = np.nan
 print("DEBUG dGPPdT_1km AFTER first mask: nonnan={}".format(int(np.sum(~np.isnan(dGPPdT_1km)))))
+
+# Terrain height for the Fig. 9 panel (d) context map (referee round 2). Taken
+# HERE, between the two mask loops, and as a COPY:
+#  - HGT_1km itself is never masked (it is absent from both all_fields lists) and
+#    is still needed unmasked by diff_HGT above, so it must not be clobbered;
+#  - the first mask (land AND sigma_topo >= 200 m) is the area of analysis, which
+#    is what makes the panel register with (a)-(c);
+#  - the SECOND loop first tightens stdh_mask with T2_1km < 5 degC, a
+#    flux-activity criterion that would blank out exactly the high terrain this
+#    panel exists to show -- hence before line `stdh_mask[T2_1km < 5] = False`,
+#    not after.
+HGT_1km_masked = np.where(proj_landmask_54km * stdh_mask == 0, np.nan, HGT_1km)
+
 # mask out fluxes where T is below 5°C
 stdh_mask[T2_1km < 5] = False
 all_fields = [dT_calc, dT_model, dGPP_calc, dGPP_model, dGPPdT_real, T2_1km]
@@ -551,6 +564,24 @@ styled_imshow_plot(
     "PiYG",
     r"$\frac{\partial \text{GPP}}{\partial \text{T}}$ ([$\mu$mol m$^{-2}$ s$^{-1}$ °C$^{-1}$]",
     "dGPPdT_1km" + wrf_tag_d01,
+)
+
+
+# Terrain height -- Fig. 9 panel (d). Added for referee round 2, which asked for
+# the terrain context needed to read panels (a)-(c): the dT/dGPP patterns follow
+# the valleys, and without relief the reader cannot locate them.
+# Colormap and the "[m] AMSL" label match Fig1_domains_topo_sites.py (TOPO_COLORMAP
+# = "terrain", TOPO_MAX_LEVEL = 4000), so the two terrain maps in the paper read
+# the same. Range 0-3600 covers the masked field (max 3605 m over the full grid).
+# Goes through styled_imshow_plot like every other panel, so it shares the imshow
+# extent and registers pixel-for-pixel with (a)-(c) in the LaTeX row.
+styled_imshow_plot(
+    HGT_1km_masked,
+    0,
+    3600,
+    "terrain",
+    "[m] AMSL",
+    "HGT_1km",
 )
 
 

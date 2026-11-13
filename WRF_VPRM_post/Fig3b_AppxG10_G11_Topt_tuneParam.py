@@ -71,6 +71,26 @@ from topt_box import (
     topt_legend_elements,
 )
 
+# Per-class marker shapes for the Topt-vs-T regression scatters (Fig. 3b and its
+# T_max twin). Referee round 2 asked for classes to be distinguishable: four of
+# the seven palette entries are greens (ENF #003300, DBF #228B22, MF #8FBC8F,
+# GRA #00A86B), and those four are exactly the classes with Alpine sites, so
+# colour alone cannot carry the distinction in print or in greyscale.
+#
+# Deliberately LOCAL to this figure rather than added to topt_box: PFT_COLORS is
+# imported by Fig1, Fig2, Fig3a and Fig8 as the canonical paper palette, and
+# touching it there would restyle all of them. Markers only -- no colour changes.
+PFT_MARKERS = {
+    "ENF": "o",  # circle
+    "DBF": "s",  # square
+    "MF": "^",  # triangle up
+    "SHB": "v",  # triangle down
+    "SAV": "P",  # plus (filled)
+    "CRO": "X",  # cross (filled)
+    "GRA": "D",  # diamond
+}
+_FALLBACK_MARKER = "o"
+
 # ==================== Configuration ====================
 SCRATCH_PATH = os.getenv("SCRATCH_PATH")
 GITHUB_PATH = os.getenv("GITHUB_PATH")
@@ -161,8 +181,12 @@ def save_topt_box_legend(outfile, pft_order, pft_colors, fontsize):
     """Standalone legend for Fig. I16: boxplot_PFTs and boxplot_siteIDs share this
     one file (5 columns), meant to sit below both panels in the manuscript rather
     than inside either PDF."""
+    # Not "median p50": the central line is the mean of the per-site means (see
+    # topt_legend_elements' docstring). The per-site panel's boxes are genuine
+    # percentiles of that site's own years, hence the bare p25-p75 / p10-p90.
     handles = topt_legend_elements(
-        central_label="median p50", iqr_label="p25-p75", whisker_label="p10-p90",
+        central_label="ALPS (central, mean)", iqr_label="p25-p75",
+        whisker_label="p10-p90",
     ) + [plt.scatter([], [], c=pft_colors[pft], label=pft) for pft in pft_order]
     fig = plt.figure(figsize=(9.0, 1.3))
     fig.legend(handles=handles, loc="center", ncol=5, fontsize=fontsize,
@@ -648,13 +672,20 @@ for CO2_parametrization in ["old"]:  # "migli","old","new"
         # whose saved PDF has aspect 0.66 (417.8 x 277.0 pt).
         plt.figure(figsize=(6.25, 4.08))
         _df_reg = df_gpp_topt[df_gpp_topt["PFT"] != "CRO"]
-        _reg_colors = [pft_colors.get(p, "#999999") for p in _df_reg["PFT"]]
-        plt.scatter(
-            _df_reg["T_mean"],
-            _df_reg["Topt"],
-            alpha=1,
-            c=_reg_colors,
-        )
+        # One scatter call per class so each can carry its own marker: a single
+        # vectorised scatter with a colour list cannot vary the marker, and the
+        # four classes present here are all greens (see PFT_MARKERS above).
+        # Each call also carries label=pft, which replaces the former loop of
+        # empty dummy scatters built purely to populate the legend.
+        for _pft, _grp in _df_reg.groupby("PFT", sort=False):
+            plt.scatter(
+                _grp["T_mean"],
+                _grp["Topt"],
+                alpha=1,
+                color=pft_colors.get(_pft, "#999999"),
+                marker=PFT_MARKERS.get(_pft, _FALLBACK_MARKER),
+                label=_pft,
+            )
         coefficients = np.polyfit(_df_reg["T_mean"], _df_reg["Topt"], 1)
         poly = np.poly1d(coefficients)
         equation_regression = f"y = {coefficients[0]:.2f}x + {coefficients[1]:.2f}"
@@ -671,17 +702,11 @@ for CO2_parametrization in ["old"]:  # "migli","old","new"
         plt.yticks(fontsize=font_size)
         plt.grid(True)
 
-        # Legend from the classes actually plotted, not from the palette: CRO is
-        # filtered out of _df_reg (cutting events) and SHB/SAV have no Alpine
-        # sites, so keying off the 7-class palette listed classes with no points.
-        _reg_pfts = set(_df_reg["PFT"])
-        for pft, color in pft_colors.items():
-            if pft not in _reg_pfts:
-                continue
-            plt.scatter(
-                [], [], c=color, label=pft
-            )  # Create an empty scatter plot for each PFT label
-
+        # The per-class scatters above already carry label=pft, so the legend is
+        # populated from the classes actually plotted -- CRO is filtered out of
+        # _df_reg (cutting events) and SHB/SAV have no Alpine sites, and neither
+        # can appear here now that the labels come from the data rather than from
+        # iterating the 7-class palette.
         plt.legend(
             fontsize=font_size - 3,
             frameon=True,
@@ -703,12 +728,19 @@ for CO2_parametrization in ["old"]:  # "migli","old","new"
         plt.close()
 
         plt.figure(figsize=(6.25, 6.25))
-        plt.scatter(
-            df_parameters["T_max"].dropna(),
-            df_parameters["Topt"].dropna(),
-            alpha=1,
-            c=df_parameters["PFT"].map(pft_colors),
-        )
+        # Per-class marker + colour, as in the T_mean panel above. Dropping NaNs
+        # row-wise rather than per column also keeps x and y aligned, which the
+        # former pair of independent .dropna() calls did not guarantee.
+        _df_tmax = df_parameters.dropna(subset=["T_max", "Topt"])
+        for _pft, _grp in _df_tmax.groupby("PFT", sort=False):
+            plt.scatter(
+                _grp["T_max"],
+                _grp["Topt"],
+                alpha=1,
+                color=pft_colors.get(_pft, "#999999"),
+                marker=PFT_MARKERS.get(_pft, _FALLBACK_MARKER),
+                label=_pft,
+            )
         coefficients = np.polyfit(df_parameters["T_max"], df_parameters["Topt"], 1)
         poly = np.poly1d(coefficients)
         plt.plot(
@@ -726,11 +758,8 @@ for CO2_parametrization in ["old"]:  # "migli","old","new"
 
         plt.grid(True)
 
-        for pft, color in pft_colors.items():
-            plt.scatter(
-                [], [], c=color, label=pft
-            )  # Create an empty scatter plot for each PFT label
-
+        # Labels come from the per-class scatters above (classes with data only),
+        # so no dummy empty scatters are needed to populate the legend.
         plt.legend(
             fontsize=font_size,
             frameon=True,
